@@ -989,7 +989,7 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "10:mm", "Result " + testmask.value);
   });
 
-  qunit.test("hh:mm TT type 99a - goto first pos - type 1", function (assert) {
+  qunit.test("hh:mm TT type 99a - goto first pos - type 10", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     const testmask = document.getElementById("testmask");
@@ -1001,6 +1001,8 @@ export default function (qunit, Inputmask) {
     $("#testmask").Type("99a");
     $.caret(testmask, 0);
     $("#testmask").Type("1");
+    assert.equal(testmask.value, "1h:09 AM", "Result " + testmask.value);
+    $("#testmask").Type("0");
     assert.equal(testmask.value, "10:09 AM", "Result " + testmask.value);
   });
 
@@ -1789,6 +1791,204 @@ export default function (qunit, Inputmask) {
         "03.1M.2026 14:30",
         "Result " + testmask.value
       );
+    }
+  );
+
+  qunit.module("Fixed issues - milestone 5.1.0");
+
+  qunit.test(
+    "HH:mm - single-digit hour gets a leading zero when the separator is typed - #2061",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "HH:mm" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("9:30");
+
+      assert.equal(testmask.value, "09:30", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "hh:MM TT - single-digit hour with 12h marker gets a leading zero - #2061",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "hh:MM TT" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("9:5pm");
+
+      assert.equal(testmask.value, "09:05 PM", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "min option changed via option() get picked up - #1931",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      const im = Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01011999");
+      assert.equal(
+        testmask.value,
+        "01/01/1999",
+        "min not set yet - date types"
+      );
+
+      // change min at runtime and verify it is enforced from then on
+      im.option({ min: "01/01/2010" });
+
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("01011999"); // 01/01/1999 < new min
+      assert.notEqual(
+        testmask.value,
+        "01/01/1999",
+        "below the new min is rejected: " + testmask.value
+      );
+
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("01012015"); // within the new range
+      assert.equal(testmask.value, "01/01/2015", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "max option changed via option() get picked up - #1931",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      const im = Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01012022");
+      assert.equal(
+        testmask.value,
+        "01/01/2022",
+        "max not set yet - date types"
+      );
+
+      // change max at runtime and verify it is enforced from then on
+      im.option({ max: "31/12/2020" });
+
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("01012022"); // 01/01/2022 > new max
+      assert.notEqual(
+        testmask.value,
+        "01/01/2022",
+        "above the new max is rejected: " + testmask.value
+      );
+
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("01012019"); // within the new range
+      assert.equal(testmask.value, "01/01/2019", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "dd.mm.yyyy - deleting the entered date with backspace - #1899",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "dd.mm.yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("23031986");
+
+      assert.equal(testmask.value, "23.03.1986", "Result " + testmask.value);
+
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+
+      assert.equal(
+        testmask.value,
+        "",
+        "Result " +
+          testmask.value +
+          " - the whole date deletes, no stuck digits"
+      );
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy - overtype a prefilled date, first digit of the day clears the stale second digit - #550",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "dd/MM/yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).val("04/07/2014");
+      $.caret(testmask, 0);
+      $("#testmask").Type("3");
+      assert.equal(testmask.value, "3d/07/2014", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy - overtype a prefilled date, first digit of the month clears the stale second digit - #550",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "dd/MM/yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).val("04/07/2014");
+      $.caret(testmask, 3);
+      $("#testmask").Type("1");
+      assert.equal(testmask.value, "04/1M/2014", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy - select-all overtype a prefilled date, starting fresh - #550",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "dd/MM/yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).val("04/07/2014");
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("3");
+      assert.equal(testmask.value, "3d/MM/yyyy", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy - retype a full date over a prefilled date - #550",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "dd/MM/yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).val("04/07/2014");
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").Type("30112020");
+      assert.equal(testmask.value, "30/11/2020", "Result " + testmask.value);
     }
   );
 }
