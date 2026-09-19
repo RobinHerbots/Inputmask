@@ -47,7 +47,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 ## Code style
 
 - Prettier: double quotes, no trailing commas, 2-space indent
-- ESLint: flat config (`eslint.config.js`), extends `standard` + `prettier`
+- ESLint: flat config (`eslint.config.mjs`), ESM native flat config based on `@eslint/js` + `eslint-plugin-import-x` + `eslint-plugin-n` + `eslint-plugin-prettier` (rules ported inline from the legacy `eslint-config-standard`)
 - Semicolons required (with omitLastInOneLineBlock)
 - `import-x/order` enforced: newlines between import groups, alphabetical
 - Source files live in `lib/`, never edit `dist/` or `build/`
