@@ -76,6 +76,7 @@
     "./bundle.colormask.js",
     "./lib/global/FormData.js",
     "./lib/inputmaskElement.js",
+    "./lib/jquery.inputmask.js",
     "./lib/extensions/inputmask.date.i18n.js",
     "./lib/bindings/inputmask.binding.js"
   ],
