@@ -4068,4 +4068,62 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  // Backspacing the last decimal digit left the empty mask plus the radix,
+  // which the negation-delete check mistook for a lone sign and cleared the
+  // whole field.
+  [
+    { typed: "0.5", expected: "0." },
+    { typed: "1.5", expected: "1." }
+  ].forEach(function (tc) {
+    qunit.test(
+      "numeric - type " + tc.typed + " then Backspace keeps the value",
+      function (assert) {
+        const done = assert.async(),
+          $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask({ alias: "decimal" }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          $("#testmask").Type(tc.typed);
+          $.caret(testmask, tc.typed.length);
+          $("#testmask").SendKey(keys.Backspace);
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              tc.expected,
+              "Result " + testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }
+    );
+  });
+
+  qunit.test(
+    "numeric - type -5 then Backspace clears the orphan sign",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        $.caret(testmask, 2);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
 }
