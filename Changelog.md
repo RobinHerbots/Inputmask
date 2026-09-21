@@ -20,6 +20,7 @@
 - caret focus lands on the radix point when setting a grouped initial value #2850
 - typing over a fully-selected numeric value with digitsOptional no longer inserts into decimal slot #2893
 - deleting the month in a datetime mask re-adds a leading zero #2002
+- a partially typed date keeps the entered digits in the unmasked value (e.g. a half-typed year stays `20yy` instead of collapsing to the output-format token)
 
 ## [5.0.10 - 31/07/2026]
 

@@ -2041,7 +2041,7 @@ export default function (qunit, Inputmask) {
       );
       assert.equal(
         $(testmask).val(),
-        "yyyy-12-25",
+        "20yy-12-25",
         "val() " + $(testmask).val()
       );
     }
