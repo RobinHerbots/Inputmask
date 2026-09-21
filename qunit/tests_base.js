@@ -698,4 +698,40 @@ export default function (qunit, Inputmask) {
       testmask.inputmask.isComposing = false;
     }
   );
+
+  qunit.test(
+    "extending with a __proto__ key does not pollute Object.prototype",
+    function (assert) {
+      try {
+        Inputmask.extendDefaults(
+          JSON.parse('{"__proto__":{"pollutedDefault":"yes"}}')
+        );
+        Inputmask.extendDefinitions(
+          JSON.parse('{"__proto__":{"pollutedDefinition":"yes"}}')
+        );
+        Inputmask.extendAliases(
+          JSON.parse('{"__proto__":{"pollutedAlias":"yes"}}')
+        );
+        assert.equal({}.pollutedDefault, undefined, "extendDefaults");
+        assert.equal({}.pollutedDefinition, undefined, "extendDefinitions");
+        assert.equal({}.pollutedAlias, undefined, "extendAliases");
+      } finally {
+        // the assertions above fail loudly; leaving the prototype dirty would
+        // take the rest of the suite down with them
+        delete Object.prototype.pollutedDefault;
+        delete Object.prototype.pollutedDefinition;
+        delete Object.prototype.pollutedAlias;
+      }
+    }
+  );
+
+  qunit.test("a deep merge still merges nested options", function (assert) {
+    const target = { negationSymbol: { front: "-", back: "" }, digits: 2 };
+    Inputmask.dependencyLib.extend(true, target, {
+      negationSymbol: { back: ")" }
+    });
+    assert.equal(target.negationSymbol.front, "-", "kept the existing key");
+    assert.equal(target.negationSymbol.back, ")", "merged the new key");
+    assert.equal(target.digits, 2, "left the rest alone");
+  });
 }
