@@ -106,7 +106,8 @@ Visual format when the input looses focus
 
 ### outputFormat
 
-Unmasking format
+Unmasking format  
+Whole values written to the input (via the native `.value` setter, `setValue` or a datepicker setting the field value) are also accepted in this format and converted to the `inputFormat` before masking. Values already conforming to the `inputFormat` are left untouched.
 
 ### min
 

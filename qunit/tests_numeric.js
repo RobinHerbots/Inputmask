@@ -3877,18 +3877,19 @@ export default function (qunit, Inputmask) {
         radixPoint: ".",
         digits: 2,
         min: 0,
-        // digitsOptional default: the clamp yields the integer +/-boundary
-        // ("$1,000", not "$1,000.00"). decimals-only output is covered by
-        // the digitsOptional: false row below.
+        // The setvalue path now runs onBeforeMask, which string-clamps the
+        // whole value to the +/-boundary and alignDigits keeps the explicit
+        // radix ("$1,000.00", not "$1,000"). integers-only output is covered
+        // by the "12345" row above.
         max: 1000,
         SetMaxOnOverflow: false
       },
       value: "$5,000.00",
-      expected: "$1,000"
+      expected: "$1,000.00"
     },
-    // With digitsOptional: false the mask is not alternative, so the strict
-    // 5.x setvalue keeps the input's radix and the clamp boundary keeps the
-    // mandatory fractional digits: ""$1,000.00"" instead of ""$1,000"".
+    // With digitsOptional: false the mask is not alternative, so the setvalue
+    // clamp boundary keeps the mandatory fractional digits: ""$1,000.00""
+    // instead of ""$1,000"".
     {
       label:
         "numeric prefix='$' groupSeparator=',' max=1000 digitsOptional=false SMOO=false - setvalue('$5,000.00') clamps to max #2846",
@@ -3934,10 +3935,9 @@ export default function (qunit, Inputmask) {
     },
 
     // European locale: a formatted "1.234,56" string (radixPoint=",",
-    // groupSeparator=".") must pass through in-range. Note the 5.x strict
-    // setvalue path skips onBeforeMask, so the onBeforeMask numberâåÆradixPoint
-    // normalization does not run for JS Number arguments; the string form
-    // keeps this test valid without a core-library change.
+    // groupSeparator=".") must pass through in-range. The setvalue path runs
+    // onBeforeMask, whose integerPart/decimalPart normalization tolerates the
+    // groupSeparator; the min/max clamp keeps the in-range value untouched.
     {
       label:
         "numeric radixPoint=',' groupSeparator='.' - setValue('1234,56') preserves in-range value #2846",

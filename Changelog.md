@@ -6,6 +6,7 @@
 
 - Provide TypeScript definitions #1939
 - add displayChar option to mask definitions (masked display, native value) #2402
+- datetime accepts whole values written in the outputFormat and converts them to the inputFormat #576
 
 ### Updates
 

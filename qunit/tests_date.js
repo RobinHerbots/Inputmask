@@ -2065,4 +2065,100 @@ export default function (qunit, Inputmask) {
     );
     assert.equal($(testmask).val(), "2014-12-25", "val() " + $(testmask).val());
   });
+
+  qunit.module(
+    "Dates - whole value written in outputFormat (native value setter)"
+  );
+  qunit.test(
+    "value written in outputFormat is masked to inputFormat",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        outputFormat: "yyyy-MM-dd",
+        autoUnmask: true
+      }).mask(testmask);
+
+      testmask.value = "2014-12-25";
+      assert.equal(
+        testmask.inputmask._valueGet(true),
+        "25/12/2014",
+        "native value " + testmask.inputmask._valueGet(true)
+      );
+      assert.equal(
+        $(testmask).val(),
+        "2014-12-25",
+        "val() " + $(testmask).val()
+      );
+    }
+  );
+  qunit.test(
+    "value written in inputFormat is left untouched",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        outputFormat: "yyyy-MM-dd",
+        autoUnmask: true
+      }).mask(testmask);
+
+      testmask.value = "25/12/2014";
+      assert.equal(
+        testmask.inputmask._valueGet(true),
+        "25/12/2014",
+        "native value " + testmask.inputmask._valueGet(true)
+      );
+      assert.equal(
+        $(testmask).val(),
+        "2014-12-25",
+        "val() " + $(testmask).val()
+      );
+    }
+  );
+  qunit.test("setvalue with outputFormat conform value", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      outputFormat: "yyyy-MM-dd",
+      autoUnmask: true
+    }).mask(testmask);
+
+    Inputmask.setValue(testmask, "2014-12-25");
+    assert.equal(
+      testmask.inputmask._valueGet(true),
+      "25/12/2014",
+      "native value " + testmask.inputmask._valueGet(true)
+    );
+  });
+  qunit.test(
+    "inputFormat precedence keeps ambiguous value unconverted",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "yyyy/MM/dd",
+        outputFormat: "dd/MM/yyyy",
+        autoUnmask: true
+      }).mask(testmask);
+
+      testmask.value = "2001/02/03";
+      assert.equal(
+        testmask.inputmask._valueGet(true),
+        "2001/02/03",
+        "native value " + testmask.inputmask._valueGet(true)
+      );
+      assert.equal(
+        $(testmask).val(),
+        "03/02/2001",
+        "val() " + $(testmask).val()
+      );
+    }
+  );
 }
