@@ -258,6 +258,16 @@ export default function ($, Inputmask) {
         composed: true,
         inputType
       });
+      // WebKit ignores inputType in the InputEvent init dictionary
+      // (https://bugs.webkit.org/show_bug.cgi?id=170416), so on Safari it stays
+      // "" on synthetic events and inputFallBackEvent would misdetect e.g. IME
+      // composition text as a backspace. Patch the read-only property on the
+      // event, like the autocomplete helper does below.
+      if (evt.inputType !== inputType) {
+        Object.defineProperty(evt, "inputType", {
+          value: inputType
+        });
+      }
       input.dispatchEvent(evt);
     } else {
       $(input).trigger("input");
