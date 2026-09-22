@@ -481,7 +481,7 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
-    '([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type 1 (non-matching) - no freeze',
+    "([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type 1 (non-matching) - no freeze",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
@@ -498,7 +498,7 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
-    '([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type uppercase',
+    "([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type uppercase",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
@@ -515,7 +515,7 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
-    '([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type lowercase',
+    "([A-Z]* [A-Z]*)|([a-z]* [a-z]*) - type lowercase",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
@@ -530,4 +530,88 @@ export default function (qunit, Inputmask) {
       assert.equal(testmask.value, "ab cd", "Result " + testmask.value);
     }
   );
+
+  qunit.test(
+    "{ } that is not a quantifier is treated as a literal",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask({ regex: "\\d{" }).mask(testmask);
+
+      var defs = [];
+      (function walk(token) {
+        token.matches.forEach(function (m) {
+          if (m.matches) walk(m);
+          else defs.push(m);
+        });
+      })(testmask.inputmask.maskset.maskToken[0]);
+      var brace = defs.filter(function (d) {
+        return d.def === "{";
+      });
+
+      assert.equal(brace.length, 1, "stray { becomes one token");
+      assert.equal(brace[0].static, true, "stray { becomes a static literal");
+    }
+  );
+
+  qunit.test("char escape \\u0041 (unicode)", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask({ regex: "\\u0041[0-9]" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("A5");
+
+    assert.equal(testmask.value, "A5", "Result " + testmask.value);
+  });
+
+  qunit.test("unicode category \\P{...}", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask({ regex: "\\P{L}[0-9]" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("a12");
+
+    assert.equal(testmask.value, "12", "Result " + testmask.value);
+  });
+
+  qunit.test("named capture group (?<year>...)", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask({ regex: "(?<year>\\d{4})-(?<month>\\d{2})" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("202412");
+
+    assert.equal(testmask.value, "2024-12", "Result " + testmask.value);
+  });
+
+  qunit.test("lookbehind (?<=...)", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask({ regex: "(?<=\\d)[a-z]" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("5a");
+
+    assert.equal(testmask.value, "5a", "Result " + testmask.value);
+  });
+
+  qunit.test("negative lookbehind (?<!...)", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask({ regex: "(?<!\\d)[a-z]" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("5a");
+
+    assert.equal(testmask.value, "5a", "Result " + testmask.value);
+  });
 }
