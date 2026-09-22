@@ -603,6 +603,37 @@ export default function (qunit, Inputmask) {
     }
   );
 
+  qunit.test(
+    "placeholder restored to externally changed value - #2817",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append(
+        '<input type="text" id="testmask" placeholder="old placeholder" />'
+      );
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        mask: "99-999999",
+        showMaskOnHover: true
+      }).mask(testmask);
+
+      testmask.setAttribute("placeholder", "new placeholder");
+
+      $(testmask).trigger("mouseenter");
+      assert.notEqual(
+        testmask.placeholder,
+        "new placeholder",
+        "mask placeholder is shown while hovering"
+      );
+
+      $(testmask).trigger("mouseleave");
+      assert.equal(
+        testmask.placeholder,
+        "new placeholder",
+        "Result " + testmask.placeholder
+      );
+    }
+  );
+
   qunit.test("Title Case - Especially", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
