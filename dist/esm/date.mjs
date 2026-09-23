@@ -115,18 +115,21 @@ class DateObject {
         case "ampm":
           dateObj[targetProp] = value;
           dateObj["raw" + targetProp] = value.replace(/\s/g, "_");
+          dateObj["partial" + targetProp] = !/^[ap](m)?$/i.test(value);
           break;
         case "month":
           if (fcode === "MMM" || fcode === "MMMM") {
             fcode === "MMM" ? dateObj[targetProp] = pad(i18n.monthNames.slice(0, 12).findIndex(item => value.toLowerCase() === item.toLowerCase()) + 1, 2) : dateObj[targetProp] = pad(i18n.monthNames.slice(12, 24).findIndex(item => value.toLowerCase() === item.toLowerCase()) + 1, 2);
             dateObj[targetProp] = dateObj[targetProp] === "00" ? "" : dateObj[targetProp].toString();
             dateObj["raw" + targetProp] = dateObj[targetProp];
+            dateObj["partial" + targetProp] = dateObj[targetProp] === "" || dateObj[targetProp] === undefined;
             break;
           }
         // eslint-disable-next-line no-fallthrough
         default:
           dateObj[targetProp] = value.replace(/[^0-9]/g, "0");
           dateObj["raw" + targetProp] = value.replace(/\s/g, "_");
+          dateObj["partial" + targetProp] = /[^0-9]/.test(value);
       }
     }
     if (dateOperation !== undefined) {
@@ -502,7 +505,7 @@ function parse(format, dateObjValue, opts) {
         }
       } else {
         if (!escaped && (fcode = formatcode(match[0]))) {
-          if (fcode[3]) {
+          if (fcode[3] && dateObjValue["partial" + fcode[2]] !== true) {
             const getFn = fcode[3];
             mask += getFn.call(dateObjValue.date);
           } else if (fcode[2] && dateObjValue["raw" + fcode[2]] !== undefined) {
@@ -739,13 +742,27 @@ const datetimeAlias = {
       validator = fcode[0];
       const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
       if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
-        maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+        if (pos.begin === tokenMatch.targetMatchIndex) {
+          // first char of a 2-char group typed over a stale second char that
+          // makes the combination invalid: clear the second position so it can
+          // be typed freely instead of auto-correcting to "0" (issue #550)
+          const tpl = validation_tests/* getMaskTemplate */.XR.call(inputmask, false, 1, undefined, true);
+          delete maskset.validPositions[tokenMatch.targetMatchIndex + 1];
+          buffer[tokenMatch.targetMatchIndex + 1] = tpl[tokenMatch.targetMatchIndex + 1];
+        } else {
+          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+        }
       }
       if (fcode[2] == "year") {
-        const _buffer = validation_tests/* getMaskTemplate */.XR.call(inputmask, false, 1, undefined, true);
-        for (let i = pos.begin + 1; i < buffer.length; i++) {
+        // Clear the rest of the year while it is being retyped, so a half typed year does not
+        // keep validating against the previous digits. Bounded to the year token: running to
+        // buffer.length wiped every segment behind it, and splicing shifted those positions
+        // down instead of clearing them.
+        const _buffer = validation_tests/* getMaskTemplate */.XR.call(inputmask, false, 1, undefined, true),
+          yearEnd = tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length;
+        for (let i = pos.begin + 1; i < yearEnd; i++) {
           buffer[i] = _buffer[i];
-          maskset.validPositions.splice(pos.begin + 1, 1);
+          delete maskset.validPositions[i];
         }
       }
     }
@@ -784,6 +801,16 @@ const datetimeAlias = {
   onBeforeMask: function (initialValue, opts) {
     if (Object.prototype.toString.call(initialValue) === "[object Date]") {
       initialValue = importDate(initialValue, opts);
+    } else if (typeof initialValue === "string" && opts.outputFormat !== opts.inputFormat) {
+      // accept whole values written in the outputFormat (e.g. by a datepicker
+      // setting input.value natively) next to values already in the inputFormat;
+      // the value is converted only when it unmistakeably matches a format
+      const matches = (dateParts, format) => dateParts !== undefined && !isNaN(dateParts.date.getTime()) && parse(format, dateParts, opts) === initialValue,
+        inFormat = analyseMask.call(this, initialValue, opts.inputFormat, opts);
+      if (!matches(inFormat, opts.inputFormat)) {
+        const outFormat = analyseMask(initialValue, opts.outputFormat, opts);
+        if (matches(outFormat, opts.outputFormat)) initialValue = importDate(outFormat.date, opts);
+      }
     }
     return initialValue;
   },

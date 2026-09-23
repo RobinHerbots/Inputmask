@@ -81,6 +81,12 @@ function extend() {
     if ((options = arguments[i]) != null) {
       // Extend the base object
       for (name in options) {
+        // "__proto__" would resolve through the prototype chain: src comes back
+        // as Object.prototype and the deep merge below writes into it. Inherited
+        // keys are not ours to copy either.
+        if (name === "__proto__" || !Object.prototype.hasOwnProperty.call(options, name)) {
+          continue;
+        }
         src = target[name];
         copy = options[name];
 
@@ -418,8 +424,14 @@ const EventHandlers = {
       maskset = inputmask.maskset,
       input = this,
       $input = $(input),
-      c = e.key,
-      pos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input),
+      c = e.key;
+
+    // Browsers and password managers can fill in a field in a way that fires
+    // a keydown event without any real key attached to it (it isn't an
+    // actual keystroke). If we don't stop here, the code below assumes a
+    // real key was pressed and crashes the page.
+    if (!c) return;
+    const pos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input),
       kdResult = opts.onKeyDown.call(this, e, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask), pos, opts);
     if (kdResult !== undefined) return kdResult;
 
@@ -750,6 +762,8 @@ const EventHandlers = {
       value = e && e.detail ? e.detail[0] : arguments[1];
     if (value === undefined) {
       value = input.inputmask._valueGet(true);
+    } else if (typeof inputmask.opts.onBeforeMask === "function") {
+      value = inputmask.opts.onBeforeMask.call(inputmask, value, inputmask.opts) || value;
     }
     (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .applyInputValue */ .gc)(input, value, new $.Event("input"), (e && e.detail ? e.detail[0] : arguments[1]) !== undefined);
     if (e.detail && e.detail[1] !== undefined || arguments[2] !== undefined) {
@@ -782,7 +796,10 @@ const EventHandlers = {
       input = this;
     inputmask.mouseEnter = false;
     if (opts.clearMaskOnLostFocus && input.getRootNode().activeElement !== input) {
-      (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
+      const bufferTemplate = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
+      }
     }
   },
   clickEvent: function (e, tabbed) {
@@ -819,7 +836,10 @@ const EventHandlers = {
     const $input = $(this),
       input = this;
     if (input.inputmask) {
-      (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
+      const bufferTemplate = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
+      }
       let nptValue = input.inputmask._valueGet(),
         buffer = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).slice();
       if (nptValue !== "") {
@@ -866,6 +886,7 @@ const EventHandlers = {
     if (input.getRootNode().activeElement !== input) {
       const bufferTemplate = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
       if (showMaskOnHover) {
+        inputmask.originalPlaceholder = input.placeholder;
         (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .HandleNativePlaceholder */ .b1)(input, bufferTemplate);
       }
     }
@@ -1789,7 +1810,7 @@ var escapeRegex = __webpack_require__(340);
 
 const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g,
   // Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
-  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
+  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?(?:[:=!]|<[\w$][^>]*>|<[=!])?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
 
 /**
  * A single test definition of the mask.
@@ -1813,6 +1834,8 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  *
  * @typedef {Object} Maskset
  * @property {string} mask
+ * @property {string} [regexSource] source of the regex mask
+ * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask (lazy)
  * @property {import("./masktoken").MaskToken[]} maskToken
  * @property {any[]} validPositions
  * @property {string[] | undefined} _buffer
@@ -1907,6 +1930,7 @@ function generateMaskSet(opts, nocache) {
       /** @type {Maskset} */
       masksetDefinition = {
         mask,
+        regexSource: regexMask ? opts.regex : undefined,
         maskToken: analyseMask(mask, regexMask, opts),
         validPositions: [],
         _buffer: undefined,
@@ -1999,7 +2023,7 @@ function analyseMask(mask, regexMask, opts) {
     let prevMatch = mtoken.matches[position - 1],
       flag = opts.casing ? "i" : "";
     if (regexMask) {
-      if (element.indexOf("[") === 0 || escaped && /\\d|\\s|\\w|\\p/i.test(element) || element === ".") {
+      if (element.indexOf("[") === 0 || escaped && /\\(?:[dDsSwWpPnrtfv]|0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z])/.test(element) || element === ".") {
         if (/\\p\{.*}/i.test(element)) flag += "u";
         mtoken.matches.splice(position++, 0, {
           fn: new RegExp(element, flag),
@@ -2214,6 +2238,23 @@ function analyseMask(mask, regexMask, opts) {
     }
     return lastMatch;
   }
+  function skipAssertion() {
+    // consume the balanced content of an inline regex assertion
+    // (?= (?! (?<= (?<! so it leaks no characters into the mask template
+    let depth = 1;
+    do {
+      const assertionToken = regexTokenizer.exec(mask);
+      if (assertionToken === null) break;
+      if (assertionToken[0].charAt(0) === "(") depth++;else if (assertionToken[0] === ")") depth--;
+    } while (depth > 0);
+    if (depth === 0) {
+      // drop a quantifier that would otherwise attach to the token before the assertion
+      const quantToken = regexTokenizer.exec(mask);
+      if (quantToken && !/^[?*+]|\{[0-9]+(?:,[0-9]*)?\}/.test(quantToken[0])) {
+        regexTokenizer.lastIndex = quantToken.index;
+      }
+    }
+  }
   if (regexMask) {
     opts.optionalmarker[0] = undefined;
     opts.optionalmarker[1] = undefined;
@@ -2250,18 +2291,39 @@ function analyseMask(mask, regexMask, opts) {
         case "\\d":
           m = "[0-9]";
           break;
-        case "\\p":
-          // Unicode Categories
-          m += regexTokenizer.exec(mask)[0]; // {
-          m += regexTokenizer.exec(mask)[0]; // ?}
+        case "\\p": // Unicode Categories
+        case "\\P":
+          {
+            // consume the property part { ... } of the escape
+            const prop = regexTokenizer.exec(mask);
+            if (prop && prop[0] === "{") {
+              const rest = regexTokenizer.exec(mask);
+              if (rest && rest[0].charAt(rest[0].length - 1) === "}") {
+                m += "{" + rest[0];
+              } else {
+                // incomplete property => put the tokens back
+                regexTokenizer.lastIndex = rest ? rest.index : prop.index;
+              }
+            } else if (prop) {
+              // not a property => put the token back
+              regexTokenizer.lastIndex = prop.index;
+            }
+            break;
+          }
+        case "(?:":
+          // non capturing group
+          // treat as group
           break;
-        case "(?:": // non capturing group
         case "(?=": // lookahead
-        case "(?!": // negative lookahead
+        case "(?!":
+          // negative lookahead
+          // skip the assertion so it leaks no characters into the mask template
+          skipAssertion();
+          continue;
         case "(?<=": // lookbehind
         case "(?<!":
           // negative lookbehind
-          // treat as group
+          // treat as group (lookbehind content is typed in the template)
           break;
       }
     }
@@ -2299,6 +2361,11 @@ function analyseMask(mask, regexMask, opts) {
           // Quantifier
           const quantifier = new masktoken(false, false, true);
           quantifier.quantifier = parseQuantifier(m);
+          if (isNaN(quantifier.quantifier.min) && isNaN(quantifier.quantifier.max)) {
+            // a "{" that is not a quantifier is a literal character
+            defaultCase();
+            break;
+          }
           const matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
           match = matches.pop();
           if (!match.isGroup) {
@@ -2653,7 +2720,11 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
       p;
     if (attrOptions && attrOptions !== "") {
       attrOptions = attrOptions.replace(/'/g, '"');
-      dataoptions = JSON.parse("{" + attrOptions + "}");
+      try {
+        dataoptions = JSON.parse("{" + attrOptions + "}");
+      } catch (e) {
+        dataoptions = undefined;
+      }
     }
 
     // resolve aliases
@@ -4269,6 +4340,31 @@ function isComplete(buffer) {
     maskset = this.maskset;
   if (typeof opts.isComplete === "function") return opts.isComplete(buffer, opts);
   if (opts.repeat === "*") return undefined;
+  if (maskset.regexSource !== undefined && maskset.wholeRegex === undefined) {
+    // compile the full-string regex once per instance
+    try {
+      maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$");
+    } catch (e) {
+      try {
+        maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$", "u");
+      } catch (e2) {
+        // broken regex => don't gate completeness
+        maskset.wholeRegex = null;
+      }
+    }
+  }
+  if (maskset.wholeRegex) {
+    // a regex mask is complete when its full-string regex matches the value
+    // with placeholder-only positions omitted
+    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, i, _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTestTemplate */ .t.call(inputmask, i).match);
+    let filledValue = "";
+    for (let i = 0; i < buffer.length; i++) {
+      if (maskset.validPositions[i] !== undefined || buffer[i] !== phChar(i)) {
+        filledValue += buffer[i];
+      }
+    }
+    return maskset.wholeRegex.test(filledValue);
+  }
   let complete = false,
     lrp = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
     aml = lrp.l; // seekPrevious.call(inputmask, lrp.l);

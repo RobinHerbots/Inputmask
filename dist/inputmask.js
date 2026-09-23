@@ -3115,6 +3115,12 @@ function extend() {
     if ((options = arguments[i]) != null) {
       // Extend the base object
       for (name in options) {
+        // "__proto__" would resolve through the prototype chain: src comes back
+        // as Object.prototype and the deep merge below writes into it. Inherited
+        // keys are not ours to copy either.
+        if (name === "__proto__" || !Object.prototype.hasOwnProperty.call(options, name)) {
+          continue;
+        }
         src = target[name];
         copy = options[name];
 
@@ -4724,6 +4730,31 @@ function isComplete(buffer) {
     maskset = this.maskset;
   if (typeof opts.isComplete === "function") return opts.isComplete(buffer, opts);
   if (opts.repeat === "*") return undefined;
+  if (maskset.regexSource !== undefined && maskset.wholeRegex === undefined) {
+    // compile the full-string regex once per instance
+    try {
+      maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$");
+    } catch (e) {
+      try {
+        maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$", "u");
+      } catch (e2) {
+        // broken regex => don't gate completeness
+        maskset.wholeRegex = null;
+      }
+    }
+  }
+  if (maskset.wholeRegex) {
+    // a regex mask is complete when its full-string regex matches the value
+    // with placeholder-only positions omitted
+    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : getPlaceholder.call(inputmask, i, getTestTemplate.call(inputmask, i).match);
+    let filledValue = "";
+    for (let i = 0; i < buffer.length; i++) {
+      if (maskset.validPositions[i] !== undefined || buffer[i] !== phChar(i)) {
+        filledValue += buffer[i];
+      }
+    }
+    return maskset.wholeRegex.test(filledValue);
+  }
   let complete = false,
     lrp = determineLastRequiredPosition.call(inputmask, true),
     aml = lrp.l; // seekPrevious.call(inputmask, lrp.l);
@@ -5538,8 +5569,14 @@ const EventHandlers = {
       maskset = inputmask.maskset,
       input = this,
       $input = $(input),
-      c = e.key,
-      pos = caret.call(inputmask, input),
+      c = e.key;
+
+    // Browsers and password managers can fill in a field in a way that fires
+    // a keydown event without any real key attached to it (it isn't an
+    // actual keystroke). If we don't stop here, the code below assumes a
+    // real key was pressed and crashes the page.
+    if (!c) return;
+    const pos = caret.call(inputmask, input),
       kdResult = opts.onKeyDown.call(this, e, getBuffer.call(inputmask), pos, opts);
     if (kdResult !== undefined) return kdResult;
 
@@ -5870,6 +5907,8 @@ const EventHandlers = {
       value = e && e.detail ? e.detail[0] : arguments[1];
     if (value === undefined) {
       value = input.inputmask._valueGet(true);
+    } else if (typeof inputmask.opts.onBeforeMask === "function") {
+      value = inputmask.opts.onBeforeMask.call(inputmask, value, inputmask.opts) || value;
     }
     applyInputValue(input, value, new $.Event("input"), (e && e.detail ? e.detail[0] : arguments[1]) !== undefined);
     if (e.detail && e.detail[1] !== undefined || arguments[2] !== undefined) {
@@ -5902,7 +5941,10 @@ const EventHandlers = {
       input = this;
     inputmask.mouseEnter = false;
     if (opts.clearMaskOnLostFocus && input.getRootNode().activeElement !== input) {
-      HandleNativePlaceholder(input, inputmask.originalPlaceholder);
+      const bufferTemplate = (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        HandleNativePlaceholder(input, inputmask.originalPlaceholder);
+      }
     }
   },
   clickEvent: function (e, tabbed) {
@@ -5939,7 +5981,10 @@ const EventHandlers = {
     const $input = $(this),
       input = this;
     if (input.inputmask) {
-      HandleNativePlaceholder(input, inputmask.originalPlaceholder);
+      const bufferTemplate = (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        HandleNativePlaceholder(input, inputmask.originalPlaceholder);
+      }
       let nptValue = input.inputmask._valueGet(),
         buffer = getBuffer.call(inputmask).slice();
       if (nptValue !== "") {
@@ -5986,6 +6031,7 @@ const EventHandlers = {
     if (input.getRootNode().activeElement !== input) {
       const bufferTemplate = (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).join("");
       if (showMaskOnHover) {
+        inputmask.originalPlaceholder = input.placeholder;
         HandleNativePlaceholder(input, bufferTemplate);
       }
     }
@@ -6668,7 +6714,7 @@ function escapeRegex(str) {
 
 const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g,
   // Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
-  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
+  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?(?:[:=!]|<[\w$][^>]*>|<[=!])?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
 
 /**
  * A single test definition of the mask.
@@ -6692,6 +6738,8 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  *
  * @typedef {Object} Maskset
  * @property {string} mask
+ * @property {string} [regexSource] source of the regex mask
+ * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask (lazy)
  * @property {import("./masktoken").MaskToken[]} maskToken
  * @property {any[]} validPositions
  * @property {string[] | undefined} _buffer
@@ -6786,6 +6834,7 @@ function generateMaskSet(opts, nocache) {
       /** @type {Maskset} */
       masksetDefinition = {
         mask,
+        regexSource: regexMask ? opts.regex : undefined,
         maskToken: analyseMask(mask, regexMask, opts),
         validPositions: [],
         _buffer: undefined,
@@ -6878,7 +6927,7 @@ function analyseMask(mask, regexMask, opts) {
     let prevMatch = mtoken.matches[position - 1],
       flag = opts.casing ? "i" : "";
     if (regexMask) {
-      if (element.indexOf("[") === 0 || escaped && /\\d|\\s|\\w|\\p/i.test(element) || element === ".") {
+      if (element.indexOf("[") === 0 || escaped && /\\(?:[dDsSwWpPnrtfv]|0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z])/.test(element) || element === ".") {
         if (/\\p\{.*}/i.test(element)) flag += "u";
         mtoken.matches.splice(position++, 0, {
           fn: new RegExp(element, flag),
@@ -7093,6 +7142,23 @@ function analyseMask(mask, regexMask, opts) {
     }
     return lastMatch;
   }
+  function skipAssertion() {
+    // consume the balanced content of an inline regex assertion
+    // (?= (?! (?<= (?<! so it leaks no characters into the mask template
+    let depth = 1;
+    do {
+      const assertionToken = regexTokenizer.exec(mask);
+      if (assertionToken === null) break;
+      if (assertionToken[0].charAt(0) === "(") depth++;else if (assertionToken[0] === ")") depth--;
+    } while (depth > 0);
+    if (depth === 0) {
+      // drop a quantifier that would otherwise attach to the token before the assertion
+      const quantToken = regexTokenizer.exec(mask);
+      if (quantToken && !/^[?*+]|\{[0-9]+(?:,[0-9]*)?\}/.test(quantToken[0])) {
+        regexTokenizer.lastIndex = quantToken.index;
+      }
+    }
+  }
   if (regexMask) {
     opts.optionalmarker[0] = undefined;
     opts.optionalmarker[1] = undefined;
@@ -7129,18 +7195,39 @@ function analyseMask(mask, regexMask, opts) {
         case "\\d":
           m = "[0-9]";
           break;
-        case "\\p":
-          // Unicode Categories
-          m += regexTokenizer.exec(mask)[0]; // {
-          m += regexTokenizer.exec(mask)[0]; // ?}
+        case "\\p": // Unicode Categories
+        case "\\P":
+          {
+            // consume the property part { ... } of the escape
+            const prop = regexTokenizer.exec(mask);
+            if (prop && prop[0] === "{") {
+              const rest = regexTokenizer.exec(mask);
+              if (rest && rest[0].charAt(rest[0].length - 1) === "}") {
+                m += "{" + rest[0];
+              } else {
+                // incomplete property => put the tokens back
+                regexTokenizer.lastIndex = rest ? rest.index : prop.index;
+              }
+            } else if (prop) {
+              // not a property => put the token back
+              regexTokenizer.lastIndex = prop.index;
+            }
+            break;
+          }
+        case "(?:":
+          // non capturing group
+          // treat as group
           break;
-        case "(?:": // non capturing group
         case "(?=": // lookahead
-        case "(?!": // negative lookahead
+        case "(?!":
+          // negative lookahead
+          // skip the assertion so it leaks no characters into the mask template
+          skipAssertion();
+          continue;
         case "(?<=": // lookbehind
         case "(?<!":
           // negative lookbehind
-          // treat as group
+          // treat as group (lookbehind content is typed in the template)
           break;
       }
     }
@@ -7178,6 +7265,11 @@ function analyseMask(mask, regexMask, opts) {
           // Quantifier
           const quantifier = new masktoken(false, false, true);
           quantifier.quantifier = parseQuantifier(m);
+          if (isNaN(quantifier.quantifier.min) && isNaN(quantifier.quantifier.max)) {
+            // a "{" that is not a quantifier is a literal character
+            defaultCase();
+            break;
+          }
           const matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
           match = matches.pop();
           if (!match.isGroup) {
@@ -7532,7 +7624,11 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
       p;
     if (attrOptions && attrOptions !== "") {
       attrOptions = attrOptions.replace(/'/g, '"');
-      dataoptions = JSON.parse("{" + attrOptions + "}");
+      try {
+        dataoptions = JSON.parse("{" + attrOptions + "}");
+      } catch (e) {
+        dataoptions = undefined;
+      }
     }
 
     // resolve aliases
@@ -7990,18 +8086,21 @@ class DateObject {
         case "ampm":
           dateObj[targetProp] = value;
           dateObj["raw" + targetProp] = value.replace(/\s/g, "_");
+          dateObj["partial" + targetProp] = !/^[ap](m)?$/i.test(value);
           break;
         case "month":
           if (fcode === "MMM" || fcode === "MMMM") {
             fcode === "MMM" ? dateObj[targetProp] = pad(i18n.monthNames.slice(0, 12).findIndex(item => value.toLowerCase() === item.toLowerCase()) + 1, 2) : dateObj[targetProp] = pad(i18n.monthNames.slice(12, 24).findIndex(item => value.toLowerCase() === item.toLowerCase()) + 1, 2);
             dateObj[targetProp] = dateObj[targetProp] === "00" ? "" : dateObj[targetProp].toString();
             dateObj["raw" + targetProp] = dateObj[targetProp];
+            dateObj["partial" + targetProp] = dateObj[targetProp] === "" || dateObj[targetProp] === undefined;
             break;
           }
         // eslint-disable-next-line no-fallthrough
         default:
           dateObj[targetProp] = value.replace(/[^0-9]/g, "0");
           dateObj["raw" + targetProp] = value.replace(/\s/g, "_");
+          dateObj["partial" + targetProp] = /[^0-9]/.test(value);
       }
     }
     if (dateOperation !== undefined) {
@@ -8377,7 +8476,7 @@ function parse(format, dateObjValue, opts) {
         }
       } else {
         if (!escaped && (fcode = formatcode(match[0]))) {
-          if (fcode[3]) {
+          if (fcode[3] && dateObjValue["partial" + fcode[2]] !== true) {
             const getFn = fcode[3];
             mask += getFn.call(dateObjValue.date);
           } else if (fcode[2] && dateObjValue["raw" + fcode[2]] !== undefined) {
@@ -8614,13 +8713,27 @@ const datetimeAlias = {
       validator = fcode[0];
       const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
       if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
-        maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+        if (pos.begin === tokenMatch.targetMatchIndex) {
+          // first char of a 2-char group typed over a stale second char that
+          // makes the combination invalid: clear the second position so it can
+          // be typed freely instead of auto-correcting to "0" (issue #550)
+          const tpl = getMaskTemplate.call(inputmask, false, 1, undefined, true);
+          delete maskset.validPositions[tokenMatch.targetMatchIndex + 1];
+          buffer[tokenMatch.targetMatchIndex + 1] = tpl[tokenMatch.targetMatchIndex + 1];
+        } else {
+          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+        }
       }
       if (fcode[2] == "year") {
-        const _buffer = getMaskTemplate.call(inputmask, false, 1, undefined, true);
-        for (let i = pos.begin + 1; i < buffer.length; i++) {
+        // Clear the rest of the year while it is being retyped, so a half typed year does not
+        // keep validating against the previous digits. Bounded to the year token: running to
+        // buffer.length wiped every segment behind it, and splicing shifted those positions
+        // down instead of clearing them.
+        const _buffer = getMaskTemplate.call(inputmask, false, 1, undefined, true),
+          yearEnd = tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length;
+        for (let i = pos.begin + 1; i < yearEnd; i++) {
           buffer[i] = _buffer[i];
-          maskset.validPositions.splice(pos.begin + 1, 1);
+          delete maskset.validPositions[i];
         }
       }
     }
@@ -8659,6 +8772,16 @@ const datetimeAlias = {
   onBeforeMask: function (initialValue, opts) {
     if (Object.prototype.toString.call(initialValue) === "[object Date]") {
       initialValue = importDate(initialValue, opts);
+    } else if (typeof initialValue === "string" && opts.outputFormat !== opts.inputFormat) {
+      // accept whole values written in the outputFormat (e.g. by a datepicker
+      // setting input.value natively) next to values already in the inputFormat;
+      // the value is converted only when it unmistakeably matches a format
+      const matches = (dateParts, format) => dateParts !== undefined && !isNaN(dateParts.date.getTime()) && parse(format, dateParts, opts) === initialValue,
+        inFormat = date_analyseMask.call(this, initialValue, opts.inputFormat, opts);
+      if (!matches(inFormat, opts.inputFormat)) {
+        const outFormat = date_analyseMask(initialValue, opts.outputFormat, opts);
+        if (matches(outFormat, opts.outputFormat)) initialValue = importDate(outFormat.date, opts);
+      }
     }
     return initialValue;
   },
@@ -8697,6 +8820,7 @@ var es_iterator_some = __webpack_require__(3579);
 
 
 
+
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
@@ -8728,6 +8852,17 @@ function alignDigits(buffer, digits, opts, force) {
   }
   if (negationBack) buffer.push(opts.negationSymbol.back);
   return buffer;
+}
+function unmaskAsNumber(str, opts) {
+  return opts.onUnMask(str, undefined, inputmask_dependencyLib.extend({}, opts, {
+    unmaskAsNumber: true
+  }));
+}
+function boundaryBuffer(bound, opts) {
+  // 5.x: the boundary keeps opts.digits only when they are not optional
+  // (alignDigits pads when !opts.digitsOptional); with digitsOptional the
+  // clamped value keeps its integer form.
+  return alignDigits(bound.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse();
 }
 function findValidator(symbol, maskset) {
   let posNdx = 0;
@@ -8822,18 +8957,23 @@ function genMask(opts) {
     opts.__financeInput = false; // needed to keep original selection when remasking
     opts.numericInput = true;
   }
+
+  // Register the groupSeparator as a definition *before* escaping prefix/suffix
+  // so that a groupSeparator character appearing inside the prefix or suffix
+  // (e.g. prefix: "€ " with groupSeparator: " ") is escaped as a literal instead
+  // of being picked up by the lexer as a dynamic placeholder. Fixes #2262.
+  if (opts.groupSeparator !== "" && opts.definitions[opts.groupSeparator] === undefined) {
+    opts.definitions[opts.groupSeparator] = {
+      validator: "[" + opts.groupSeparator + "]",
+      placeholder: opts.groupSeparator,
+      static: true,
+      generated: true // forced marker as generated input
+    };
+  }
   let mask = "[+]",
     altMask;
   mask += autoEscape(opts.prefix, opts);
   if (opts.groupSeparator !== "") {
-    if (opts.definitions[opts.groupSeparator] === undefined) {
-      // update separator definition
-      opts.definitions[opts.groupSeparator] = {};
-      opts.definitions[opts.groupSeparator].validator = "[" + opts.groupSeparator + "]";
-      opts.definitions[opts.groupSeparator].placeholder = opts.groupSeparator;
-      opts.definitions[opts.groupSeparator].static = true;
-      opts.definitions[opts.groupSeparator].generated = true; // forced marker as generated input
-    }
     mask += opts._mask(opts);
   } else {
     mask += "9{+}";
@@ -8888,10 +9028,15 @@ function decimalValidator(chrs, maskset, pos, strict, opts) {
   }
   return result;
 }
+
+// Match the numeric body of the (reversed) buffer against the prefix/suffix
+// wrapper, returning the captured "number" group or null if the match fails.
+function matchNumberInWrapper(buffer, opts) {
+  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? escapeRegex(opts.negationSymbol.front) + "?" : "") + escapeRegex(opts.prefix) + ")(.*)(" + escapeRegex(opts.suffix) + (opts.negationSymbol.back !== "" ? escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join(""));
+  return match ? match[2] : null;
+}
 function checkForLeadingZeroes(buffer, opts) {
-  // check leading zeros
-  let numberMatches = new RegExp("(^" + (opts.negationSymbol.front !== "" ? escapeRegex(opts.negationSymbol.front) + "?" : "") + escapeRegex(opts.prefix) + ")(.*)(" + escapeRegex(opts.suffix) + (opts.negationSymbol.back != "" ? escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")),
-    number = numberMatches ? numberMatches[2] : "",
+  let number = matchNumberInWrapper(buffer, opts) ?? "",
     leadingzeroes = false;
   if (number) {
     number = number.split(opts.radixPoint.charAt(0))[0];
@@ -8974,12 +9119,27 @@ const numericAlias = {
       pos = handleRadixDance(pos, c, radixPos, maskset, opts);
       if (c === "-" || c === opts.negationSymbol.front) {
         if (opts.allowMinus !== true) return false;
-        let isNegative = false,
-          front = findValid("+", maskset),
+        let isNegative = false;
+        const front = findValid("+", maskset),
           back = findValid("-", maskset);
         if (front !== -1) {
           isNegative = [front];
           if (back !== -1) isNegative.push(back);
+        }
+        const checkMax = isNegative !== false && opts.max !== null,
+          checkMin = isNegative === false && opts.min !== null;
+        // Reject typing "-" against a non-negative min — alignDigits would
+        // pad the orphan sign to "-0". SetMaxOnOverflow=true has its own
+        // boundary refresh in postValidation.
+        if (!opts.SetMaxOnOverflow && checkMin && opts.min >= 0) return false;
+        // Reject sign flips that would push the buffer out of range.
+        // postValidation's range check doesn't fire after the validator's
+        // `{remove: ...}` return (toggle-off path), so overflow on that
+        // path must be caught here.
+        if ((checkMax || checkMin) && this.maskset.validPositions.length > 0) {
+          const absVal = Math.abs(unmaskAsNumber(buffer.slice().reverse().join(""), opts));
+          if (checkMax && absVal > opts.max) return false;
+          if (checkMin && -absVal < opts.min) return false;
         }
         return isNegative !== false ? {
           remove: isNegative,
@@ -9076,25 +9236,26 @@ const numericAlias = {
     postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate) {
       if (currentResult === false) return currentResult;
       if (strict) return true;
+      // A checkval write (setvalue, paste, initial value) is whole-value: accept
+      // every char and let the final onBeforeWrite clamp normalize the boundary,
+      // instead of rejecting overflow chars mid-write (which truncates the value).
+      if (fromCheckval) return currentResult;
       if (opts.min !== null || opts.max !== null) {
-        const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, inputmask_dependencyLib.extend({}, opts, {
-          unmaskAsNumber: true
-        }));
-        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && typeof fromAlternate !== "number" && (unmasked.toString().length > opts.min.toString().length ||
+        const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
+        if (opts.min !== null && unmasked < opts.min && (fromAlternate !== true && typeof fromAlternate !== "number" || unmasked < 0) && (unmasked.toString().length > opts.min.toString().length ||
         // > instead of >= because we want to allow to type a bigger number
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
         unmasked < 0)) {
-          return false;
-          // return {
-          // 	refreshFromBuffer: true,
-          // 	buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
-          // };
+          return unmasked < 0 && opts.SetMaxOnOverflow ? {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.min, opts)
+          } : false;
         }
         if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
           return opts.SetMaxOnOverflow ? {
             refreshFromBuffer: true,
-            buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+            buffer: boundaryBuffer(opts.max, opts)
           } : false;
         }
       }
@@ -9130,7 +9291,8 @@ const numericAlias = {
     },
     onBeforeMask: function (initialValue, opts) {
       initialValue = initialValue ?? "";
-      const radixPoint = opts.radixPoint || ",";
+      const radixPoint = opts.radixPoint || ",",
+        originalValue = initialValue;
       if (isFinite(opts.digits)) opts.digits = parseInt(opts.digits);
       if ((typeof initialValue === "number" || opts.inputType === "number") && radixPoint !== "") {
         initialValue = initialValue.toString().replace(".", radixPoint);
@@ -9139,27 +9301,36 @@ const numericAlias = {
         valueParts = initialValue.split(radixPoint),
         integerPart = valueParts[0].replace(/[^\-0-9]/g, ""),
         decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "",
-        forceDigits = valueParts.length > 1;
+        forceDigits = valueParts.length > 1,
+        // beyond Number.MAX_SAFE_INTEGER (9007199254740991, 16 digits) any
+        // parseFloat/rounding or string min/max compare would collapse the
+        // integer precision (#2715)
+        isHuge = integerPart.replace("-", "").length > 15;
       initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
       let digits = 0;
       if (radixPoint !== "") {
         digits = !opts.digitsOptional ? opts.digits : opts.digits < decimalPart.length ? opts.digits : decimalPart.length;
         if (decimalPart !== "" || !opts.digitsOptional) {
-          const digitsFactor = Math.pow(10, digits || 1);
+          if (isHuge) {
+            // keep the incoming value as-is: numeric rounding would collapse it
+            initialValue = originalValue;
+          } else {
+            const digitsFactor = Math.pow(10, digits || 1);
 
-          // make the initialValue a valid javascript number for the parsefloat
-          initialValue = initialValue.replace(escapeRegex(radixPoint), ".");
-          if (!isNaN(parseFloat(initialValue))) {
-            initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
+            // make the initialValue a valid javascript number for the parsefloat
+            initialValue = initialValue.replace(escapeRegex(radixPoint), ".");
+            if (!isNaN(parseFloat(initialValue))) {
+              initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
+            }
+            initialValue = initialValue.toString().replace(".", radixPoint);
           }
-          initialValue = initialValue.toString().replace(".", radixPoint);
         }
       }
       // this needs to be in a separate part and not directly in decimalPart to allow rounding
       if (opts.digits === 0 && initialValue.indexOf(radixPoint) !== -1) {
         initialValue = initialValue.substring(0, initialValue.indexOf(radixPoint));
       }
-      if (initialValue !== "" && (opts.min !== null || opts.max !== null)) {
+      if (initialValue !== "" && !isHuge && (opts.min !== null || opts.max !== null)) {
         const numberValue = initialValue.toString().replace(radixPoint, ".");
         if (opts.min !== null && numberValue < opts.min) {
           initialValue = opts.min.toString().replace(".", radixPoint);
@@ -9218,35 +9389,63 @@ const numericAlias = {
           buffer.splice(caretNdx + i, 1);
         }
       }
+
+      // When the integer part has no digit yet (typing starts at the radix
+      // point, e.g. ".5", or at a bare suffix, e.g. "%", which under
+      // jitMasking has no placeholder), the leading zero is missing. Inject
+      // it explicitly at the integer position instead of leaving a lonely
+      // radix or suffix. #2561 #1810
+      if (opts.jitMasking !== false && opts.jitMasking !== undefined && e && buffer.length > 0 && (typeof e.key === "string" && e.key.length === 1 || e.type === "input" && typeof e.data === "string" && e.data.length === 1)) {
+        const number = matchNumberInWrapper(buffer, opts) ?? "",
+          radixNdx = buffer.indexOf(opts.radixPoint),
+          backLen = opts.negationSymbol.back.length,
+          display = buffer.slice().reverse().join(""),
+          isRadixStart = number.charAt(0) === opts.radixPoint.charAt(0) || number === "" && display.charAt(0) === opts.radixPoint.charAt(0),
+          isBareSuffix = number === "" && opts.suffix !== "" && buffer.length === opts.suffix.length + backLen;
+        if (isBareSuffix || isRadixStart && radixNdx !== -1) {
+          // the buffer is reversed, so an integer digit goes directly behind
+          // the radix, or behind the suffix (and the closing negation symbol
+          // when the value is already negative) when there is no radix yet
+          const injectNdx = isRadixStart ? radixNdx + 1 : opts.suffix.length + backLen;
+          // place a real input digit, like the engine's own insert command
+          isValid.call(inputmask, injectNdx, "0", true, true);
+          buffer.splice(injectNdx, 0, "0");
+        }
+      }
       if (e) {
         switch (e.type) {
           case "blur":
           case "checkval":
-            if (opts.min !== null || opts.max !== null) {
-              const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, inputmask_dependencyLib.extend({}, opts, {
-                unmaskAsNumber: true
-              }));
-              if (opts.min !== null && unmasked < opts.min && buffer.join() !== "") {
+          case "input":
+            if ((opts.min !== null || opts.max !== null) && this.maskset.validPositions.length > 0) {
+              const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
+              if (opts.min !== null && unmasked < opts.min) {
                 return {
                   refreshFromBuffer: true,
-                  buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+                  buffer: boundaryBuffer(opts.min, opts)
                 };
               } else if (opts.max !== null && unmasked > opts.max) {
                 return {
                   refreshFromBuffer: true,
-                  buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+                  buffer: boundaryBuffer(opts.max, opts)
                 };
               }
             }
             if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
-              // strip negation symbol on blur when value is 0
-              const nmbrMtchs = new RegExp("(^" + (opts.negationSymbol.front != "" ? escapeRegex(opts.negationSymbol.front) + "?" : "") + escapeRegex(opts.prefix) + ")(.*)(" + escapeRegex(opts.suffix) + (opts.negationSymbol.back != "" ? escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(stripBuffer(buffer.slice(), true).reverse().join("")),
-                number = nmbrMtchs ? nmbrMtchs[2] : "";
-              if (number == 0) {
-                result = {
-                  refreshFromBuffer: true,
-                  buffer: [0]
-                };
+              // strip negation symbol on blur when value is 0. Match on the
+              // raw buffer so a groupSeparator-colliding char inside the
+              // prefix/suffix (e.g. space in "€ ") is preserved; normalize
+              // only the extracted number group. Fixes #2262.
+              const rawNumber = matchNumberInWrapper(buffer, opts);
+              if (rawNumber !== null) {
+                let number = rawNumber.split(opts.groupSeparator).join("");
+                if (opts.radixPoint) number = number.replace(opts.radixPoint, ".");
+                if (number === "" || number == 0) {
+                  result = {
+                    refreshFromBuffer: true,
+                    buffer: [0]
+                  };
+                }
               }
             } else if (opts.radixPoint !== "") {
               // strip radixpoint on blur when it is the latest char
