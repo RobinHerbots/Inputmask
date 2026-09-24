@@ -4068,4 +4068,543 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  // Backspacing the last decimal digit left the empty mask plus the radix,
+  // which the negation-delete check mistook for a lone sign and cleared the
+  // whole field.
+  [
+    { typed: "0.5", expected: "0." },
+    { typed: "1.5", expected: "1." }
+  ].forEach(function (tc) {
+    qunit.test(
+      "numeric - type " + tc.typed + " then Backspace keeps the value",
+      function (assert) {
+        const done = assert.async(),
+          $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask({ alias: "decimal" }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          $("#testmask").Type(tc.typed);
+          $.caret(testmask, tc.typed.length);
+          $("#testmask").SendKey(keys.Backspace);
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              tc.expected,
+              "Result " + testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }
+    );
+  });
+
+  qunit.test(
+    "numeric - type -5 then Backspace clears the orphan sign",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        $.caret(testmask, 2);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // a value that is negative but holds no entered digit is cleared, while a
+  // negative value that still has one is left alone
+  qunit.test(
+    "numeric - type -0.5 then Backspace keeps the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-0.5");
+        $.caret(testmask, 4);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-0.", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric - Backspace inside a negative value keeps the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5460");
+        $.caret(testmask, 3);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-560", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + mandatory digits - Backspace on the last digit clears -0.00",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="-0.05" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal", numericInput: true, digits: 2 }).mask(
+        testmask
+      );
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $.caret(testmask, testmask.value.length);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + digit in the suffix - Backspace on the last digit keeps the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="-5 m2" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal", suffix: " m2" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $.caret(testmask, 3);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-5 m2", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric - Backspace on -0.005 keeps the entered decimal zeros",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-.005");
+        assert.equal(testmask.value, "-0.005", "typed " + testmask.value);
+        $.caret(testmask, 6);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-0.00", "C1 " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + a period in the suffix - Backspace on the last digit clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="-0.05" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        numericInput: true,
+        digits: 2,
+        suffix: " USD."
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $.caret(testmask, 5);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "C2a " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + a period in the prefix - Backspace keeps the entered zeros",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        digits: 0,
+        prefix: "v.",
+        stripLeadingZeroes: false
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-005");
+        assert.equal(testmask.value, "-v.005", "typed " + testmask.value);
+        $.caret(testmask, 6);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-v.00", "C2b " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + digit in the suffix - Backspace next to it clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="-5 m2" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal", suffix: " m2" }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        assert.equal(testmask.value, "-52 m2", "masked " + testmask.value);
+        $.caret(testmask, 2);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "C3 " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + a hyphen in the suffix - Backspace keeps the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="0.05" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        numericInput: true,
+        digits: 2,
+        suffix: " pre-tax"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $.caret(testmask, 4);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "0.00 pre-tax", "D1 " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + parenthetical negation - Backspace on the last digit clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="-0.05" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        numericInput: true,
+        digits: 2,
+        negationSymbol: { front: "(", back: ")" }
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        assert.equal(testmask.value, "(0.05)", "masked " + testmask.value);
+        $.caret(testmask, 5);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "D2 " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // the sign can sit at the back only, and then it is the one that has to be
+  // recognised as the orphan
+  qunit.test(
+    "numeric + trailing-only negation - Backspace clears the orphan sign",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        negationSymbol: { front: "", back: "−" }
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("5-");
+        $.caret(testmask, 1);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // a negative value keeps its digits: the cleanup is for a lone sign, and the
+  // caret landing on the sign in the reversed buffer is not that
+  qunit.test(
+    "numeric - type -55 then Backspace keeps the remaining digit",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-55");
+        $.caret(testmask, 3);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "-5", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric - deleting the sign of -50 keeps the digits",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-50");
+        $.caret(testmask, 1);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "50", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + a two character negation symbol - Backspace on the digit clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        negationSymbol: { front: "--", back: "" }
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        const before = testmask.value;
+        $.caret(testmask, 3);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(before, "--5", "typed " + before);
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + jitMasking and a prefix - Backspace on the digit clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ alias: "decimal", jitMasking: true, prefix: "$ " }).mask(
+        testmask
+      );
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        const before = testmask.value;
+        $.caret(testmask, 4);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(before, "-$ 5", "typed " + before);
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + paired negation - deleting one half clears",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        negationSymbol: { front: "(", back: ")" }
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-50");
+        const before = testmask.value;
+        $.caret(testmask, 0);
+        $("#testmask").SendKey(keys.Delete);
+        setTimeout(function () {
+          assert.equal(before, "(50)", "typed " + before);
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + trailing-only negation - Backspace keeps the remaining digit",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        negationSymbol: { front: "", back: "−" }
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("55-");
+        assert.equal(testmask.value, "55−", "typed " + testmask.value);
+        $.caret(testmask, 2);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "5−", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + paired negation and a hyphen in the suffix - Backspace keeps the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        negationSymbol: { front: "(", back: ")" },
+        suffix: " pre-tax"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("55");
+        $.caret(testmask, 2);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "5 pre-tax", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + jitMasking, a prefix and a digit in the suffix - Backspace clears the orphan sign",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "decimal",
+        jitMasking: true,
+        prefix: "$ ",
+        suffix: " m2"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        $.caret(testmask, 4);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(testmask.value, "", "Result " + testmask.value);
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
 }
