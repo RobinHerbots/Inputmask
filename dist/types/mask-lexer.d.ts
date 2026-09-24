@@ -25,11 +25,7 @@ export type MaskTest = {
 export type Maskset = {
     mask: string;
     /**
-     * source of the regex mask
-     */
-    regexSource?: string;
-    /**
-     * compiled full-string regex for the regex mask (lazy)
+     * compiled full-string regex for the regex mask
      */
     wholeRegex?: RegExp | null | undefined;
     maskToken: import("./masktoken").MaskToken[];
@@ -66,8 +62,7 @@ export type Maskset = {
  *
  * @typedef {Object} Maskset
  * @property {string} mask
- * @property {string} [regexSource] source of the regex mask
- * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask (lazy)
+ * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
  * @property {import("./masktoken").MaskToken[]} maskToken
  * @property {any[]} validPositions
  * @property {string[] | undefined} _buffer

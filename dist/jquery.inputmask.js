@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.30
+ * Version: 5.1.0-beta.31
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -4766,19 +4766,6 @@ function isComplete(buffer) {
     maskset = this.maskset;
   if (typeof opts.isComplete === "function") return opts.isComplete(buffer, opts);
   if (opts.repeat === "*") return undefined;
-  if (maskset.regexSource !== undefined && maskset.wholeRegex === undefined) {
-    // compile the full-string regex once per instance
-    try {
-      maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$");
-    } catch (e) {
-      try {
-        maskset.wholeRegex = new RegExp("^(?:" + maskset.regexSource + ")$", "u");
-      } catch (e2) {
-        // broken regex => don't gate completeness
-        maskset.wholeRegex = null;
-      }
-    }
-  }
   if (maskset.wholeRegex) {
     // a regex mask is complete when its full-string regex matches the value
     // with placeholder-only positions omitted
@@ -6774,8 +6761,7 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  *
  * @typedef {Object} Maskset
  * @property {string} mask
- * @property {string} [regexSource] source of the regex mask
- * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask (lazy)
+ * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
  * @property {import("./masktoken").MaskToken[]} maskToken
  * @property {any[]} validPositions
  * @property {string[] | undefined} _buffer
@@ -6843,8 +6829,8 @@ function generateMaskSet(opts, nocache) {
     if (mask === null || mask === "") {
       regexMask = opts.regex !== null;
       if (regexMask) {
+        opts.regex = opts.regex.replace(/^(\^)(.*)(\$)$/, "$2");
         mask = opts.regex;
-        mask = mask.replace(/^(\^)(.*)(\$)$/, "$2");
       } else {
         regexMask = true;
         mask = ".*";
@@ -6870,7 +6856,6 @@ function generateMaskSet(opts, nocache) {
       /** @type {Maskset} */
       masksetDefinition = {
         mask,
-        regexSource: regexMask ? opts.regex : undefined,
         maskToken: analyseMask(mask, regexMask, opts),
         validPositions: [],
         _buffer: undefined,
@@ -6880,8 +6865,22 @@ function generateMaskSet(opts, nocache) {
         // excluded alternations
         metadata,
         maskLength: undefined,
-        jitOffset: {}
+        jitOffset: {},
+        wholeRegex: undefined
       };
+      if (regexMask) {
+        // compile the full-string regex once
+        try {
+          masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$", "u");
+        } catch (e) {
+          try {
+            masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$");
+          } catch (e2) {
+            // broken regex => don't gate completeness
+            masksetDefinition.wholeRegex = null;
+          }
+        }
+      }
       if (nocache !== true) {
         masksCache[maskdefKey] = masksetDefinition;
         masksetDefinition = inputmask_dependencyLib_jquery.extend(true, {}, masksCache[maskdefKey]);
