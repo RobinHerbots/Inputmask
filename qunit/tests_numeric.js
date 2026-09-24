@@ -4607,4 +4607,81 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  // Deleting a digit re-ran the alternation in generalise mode, which
+  // replays the surviving input into a fresh maskset. A static in the way
+  // made the replay lose track of where it had put the previous character,
+  // so the next one was inserted before it and crossed the radix point.
+  [
+    { label: "suffix", opts: {}, typed: "1.5", caret: 3, expected: "1.%" },
+    {
+      label: "jitMasking",
+      opts: { jitMasking: true },
+      typed: "0.5",
+      caret: 3,
+      expected: "0.%"
+    },
+    {
+      label: "jitMasking, two fraction digits",
+      opts: { jitMasking: true },
+      typed: "12.55",
+      caret: 5,
+      expected: "12.5%"
+    },
+    {
+      // digitsOptional false drops the alternation, jitMasking brings it back,
+      // and the replay then takes its own branch for the first input
+      label: "mandatory digits with jitMasking",
+      opts: { digits: 2, digitsOptional: false, jitMasking: true },
+      typed: "12.55",
+      caret: 5,
+      expected: "12.5%"
+    },
+    {
+      label: "prefix, no suffix",
+      opts: { prefix: "$ ", suffix: "" },
+      typed: "1.5",
+      caret: 5,
+      expected: "$ 1."
+    },
+    {
+      label: "groupSeparator",
+      opts: { groupSeparator: "," },
+      typed: "1234.5",
+      caret: 7,
+      expected: "1,234.%"
+    },
+    { label: "negative", opts: {}, typed: "-1.5", caret: 4, expected: "-1.%" }
+  ].forEach(function (tc) {
+    qunit.test(
+      "numeric - Backspace keeps the digits on their side of the radix (" +
+        tc.label +
+        ")",
+      function (assert) {
+        const done = assert.async(),
+          $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask(
+          Object.assign({ alias: "decimal", suffix: "%" }, tc.opts)
+        ).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          $("#testmask").Type(tc.typed);
+          $.caret(testmask, tc.caret);
+          $("#testmask").SendKey(keys.Backspace);
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              tc.expected,
+              "Result " + testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }
+    );
+  });
 }

@@ -2161,4 +2161,104 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+  // The replay in alternate() must not advance to the maskset's last valid
+  // position: prefillYear fills the two positions after the one it validated,
+  // so that position runs ahead of the input and the rest of the replay would
+  // be pushed into the time part.
+  qunit.test(
+    "datetime + prefillYear - replacing a day digit keeps the year and the time",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd/MM/yyyy HH:mm",
+        keepStatic: true,
+        prefillYear: true
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("01012001");
+        $.caret(testmask, 0, 1);
+        $("#testmask").Type("2");
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "21/01/2001 HH:mm",
+            "Result " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear - deleting the hours keeps the year",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd/MM/yyyy HH:mm",
+        keepStatic: true,
+        prefillYear: true
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("0101200101");
+        $.caret(testmask, 11, 13);
+        $("#testmask").SendKey(keys.Delete);
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "01/01/2001 HH:mm",
+            "Result " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+  // The correction branch reports the position after the field it corrected,
+  // which is not where the input was seated - following it would change what
+  // plain typing produces here.
+  qunit.test(
+    "datetime - typing a corrected day keeps the rest of the value",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd/MM/yyyy HH:mm",
+        keepStatic: true,
+        prefillYear: false
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $("#testmask").Type("4520 01");
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "30/05/2001 HH:mm",
+            "Result " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
 }
