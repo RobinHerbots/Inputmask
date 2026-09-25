@@ -22,6 +22,7 @@
 - typing over a fully-selected numeric value with digitsOptional no longer inserts into decimal slot #2893
 - deleting the month in a datetime mask re-adds a leading zero #2002
 - a partially typed date keeps the entered digits in the unmasked value (e.g. a half-typed year stays `20yy` instead of collapsing to the output-format token)
+- programmatic trigger() of a custom event object on a masked input no longer throws a TypeError on read-only DOM event properties
 
 ## [5.0.10 - 31/07/2026]
 

@@ -765,4 +765,49 @@ export default function (qunit, Inputmask) {
     assert.equal(target.negationSymbol.back, ")", "merged the new key");
     assert.equal(target.digits, 2, "left the rest alone");
   });
+
+  qunit.test(
+    "extend skips non-writable target properties instead of throwing",
+    function (assert) {
+      const $ = Inputmask.dependencyLib,
+        // a DOM event carries isTrusted as an own getter-only accessor; copying
+        // from one event onto another used to throw on `target.isTrusted = value`
+        source = new $.Event("keydown");
+      source.key = "a";
+      const target = new $.Event("keydown");
+      assert.ok(
+        (function () {
+          try {
+            $.extend(target, source);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        })(),
+        "extend between events does not throw"
+      );
+      assert.equal(target.key, "a", "writable props were copied");
+      assert.equal(target.isTrusted, false, "isTrusted was left untouched");
+
+      // end-to-end: the object form of trigger dispatches via extend
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("99-99").mask(testmask);
+      testmask.focus();
+      const keydown = new $.Event("keydown");
+      keydown.key = "Backspace";
+      assert.ok(
+        (function () {
+          try {
+            $(testmask).trigger(keydown);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        })(),
+        "object-form trigger does not throw"
+      );
+    }
+  );
 }
