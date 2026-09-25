@@ -6,6 +6,7 @@ import Inputmask from "../bundle";
 import "./prototypeExtensions.js";
 import simulator from "./simulator.js"; // inject globally for the simulator to detect inputeventonly
 import testsAlternations from "./tests_alternations";
+import testsAndroid from "./tests_android";
 import testsAttributes from "./tests_attributes";
 import testsBase from "./tests_base";
 import testsDate from "./tests_date";
@@ -44,6 +45,7 @@ simulator(jQuery, Inputmask);
 // load tests
 if (qunit) {
   testsAlternations(qunit, Inputmask);
+  testsAndroid(qunit, Inputmask);
   testsAttributes(qunit, Inputmask);
   testsBase(qunit, Inputmask);
   testsDate(qunit, Inputmask);
