@@ -115,9 +115,6 @@
     "url": "https://github.com/RobinHerbots/Inputmask/issues"
   },
   "homepage": "https://github.com/RobinHerbots/Inputmask",
-  "dependencies": {
-    "core-js": "3.50.0"
-  },
   "devDependencies": {
     "@babel/core": "^8.0.6",
     "@babel/eslint-parser": "^8.0.1",
@@ -127,6 +124,7 @@
     "@robinherbots/grunt-nuget": "^0.3.3",
     "babel-loader": "^10.1.1",
     "babel-plugin-polyfill-corejs3": "^1.0.0",
+    "core-js": "3.50.0",
     "eslint": "^10.7.0",
     "@eslint/js": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",

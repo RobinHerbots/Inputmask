@@ -55,7 +55,7 @@ const rules = {
           "polyfill-corejs3",
           {
             method: "usage-global",
-            version: require("./package.json").dependencies["core-js"]
+            version: require("./package.json").devDependencies["core-js"]
           }
         ]
       ],
