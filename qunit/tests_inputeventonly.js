@@ -294,4 +294,26 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+  // the input-event path replays Backspace as a synthetic keydown, after
+  // putting the buffer back into the input - so refusing the keydown leaves
+  // the value intact rather than half-deleted. #2846
+  qunit.test(
+    "numeric max=30 - Backspace on the sign of -50 is refused",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: -100,
+        max: 30,
+        digits: 0,
+        inputEventOnly: true
+      }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).input("-50");
+      $(testmask).input("50", 0, "deleteContentBackward");
+      assert.equal(testmask.value, "-50", "Result " + testmask.value);
+    }
+  );
 }
