@@ -196,4 +196,36 @@ export default function (qunit, Inputmask) {
       });
     }
   );
+  // Backspace on the sign through the input-event fallback: a keydown the
+  // mask cannot use, then an input event with the sign already gone from the
+  // native value, modelled on the keystroke above. The fallback replays it
+  // as a Backspace, which must be refused like a real one - otherwise "-50"
+  // with max 30 becomes "50", a value typing never lets in. #2846
+  qunit.test(
+    "numeric max=30 - Backspace on the sign of -50 through the fallback is refused",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { min: -100, max: 30, digits: 0 }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        ["-", "5", "0"].forEach(type(testmask));
+        const typed = testmask.value;
+        $.caret(testmask, 1);
+        testmask.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: "Unidentified",
+            bubbles: true,
+            cancelable: true
+          })
+        );
+        $(testmask).input("50", 0, "deleteContentBackward");
+        assert.equal(typed, "-50", "typed " + typed);
+        assert.equal(testmask.value, "-50", "Result " + testmask.value);
+        done();
+      }, 0);
+    }
+  );
 }
