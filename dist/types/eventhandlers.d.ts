@@ -1,7 +1,7 @@
 export namespace EventHandlers {
     function keyEvent(e: any, checkval: any, writeOut: any, strict: any, ndx: any): any;
     function keypressEvent(e: any, checkval: any, writeOut: any, strict: any, ndx: any): any;
-    function pasteEvent(e: any): Promise<void>;
+    function pasteEvent(e: any): void;
     function inputFallBackEvent(e: any): boolean;
     function setValueEvent(e: any, ...args: any[]): void;
     function focusEvent(e: any): void;

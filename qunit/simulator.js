@@ -237,7 +237,36 @@ export default function ($, Inputmask) {
       };
     }
 
+    const caretPos = $.caret(input),
+      im = input.inputmask,
+      rawValue = im ? im._valueGet(true) : input.value,
+      selectionBegin = caretPos.begin,
+      selectionEnd = caretPos.end;
+
     $input.trigger("paste");
+
+    // simulate the browser's default (non-prevented) paste action: replace the
+    // selection with the clipboard content, then fire the input event that a
+    // real paste of this kind triggers
+    const nativeValue =
+      rawValue.substr(0, selectionBegin) +
+      inputStr +
+      rawValue.substr(selectionEnd);
+    if (im) {
+      im._valueSet(nativeValue, true);
+    } else {
+      input.value = nativeValue;
+    }
+    $.caret(input, selectionBegin + inputStr.length);
+    input.dispatchEvent(
+      new InputEvent("input", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        inputType: "insertFromPaste",
+        data: inputStr
+      })
+    );
   };
 
   $.fn.input = function (inputStr, caretBegin, caretEnd, inputType) {

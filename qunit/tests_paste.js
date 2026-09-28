@@ -365,4 +365,37 @@ export default function (qunit, Inputmask) {
       done();
     }, 0);
   });
+
+  qunit.test(
+    "paste is not prevented - Lighthouse paste-preventing-inputs #2823",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("(999) 999-9999").mask(testmask);
+      testmask.focus();
+
+      let defaultPrevented;
+      testmask.addEventListener("paste", function (e) {
+        defaultPrevented = e.defaultPrevented;
+      });
+
+      $("#testmask").paste("1231231234");
+
+      setTimeout(function () {
+        assert.strictEqual(
+          defaultPrevented,
+          false,
+          "paste event is not preventDefaulted"
+        );
+        assert.equal(
+          testmask.value,
+          "(123) 123-1234",
+          "pasted value is still masked: " + testmask.value
+        );
+        done();
+      }, 0);
+    }
+  );
 }

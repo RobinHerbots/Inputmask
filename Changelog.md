@@ -29,6 +29,7 @@
 - options read from `data-inputmask` attributes are no longer dropped from `userOptions` (an explicitly given `insertMode` is now respected on the INSERT key) #2847
 - the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
 - `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
+- pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
 
 ### Tests
 
