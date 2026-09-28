@@ -309,6 +309,75 @@ export default function (qunit, Inputmask) {
     );
   });
 
+  qunit.test("min date as today (Date object) - #818", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask"),
+      today = new Date();
+    today.setHours(0, 0, 0, 0);
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      min: today // plain Date object
+    }).mask(testmask);
+
+    testmask.focus();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr =
+        pad(yesterday.getDate(), 2) +
+        pad(yesterday.getMonth() + 1, 2) +
+        yesterday.getFullYear(),
+      yesterdayExpected =
+        pad(yesterday.getDate(), 2) +
+        "/" +
+        pad(yesterday.getMonth() + 1, 2) +
+        "/" +
+        yesterday.getFullYear().toString().slice(0, 3) +
+        "y";
+    $("#testmask").val(yesterdayStr);
+    assert.equal(
+      testmask.value,
+      yesterdayExpected,
+      "yesterday's date should be rejected (shows partial with placeholder)"
+    );
+
+    const todayInputStr =
+        pad(today.getDate(), 2) +
+        pad(today.getMonth() + 1, 2) +
+        today.getFullYear(),
+      todayFormatted =
+        pad(today.getDate(), 2) +
+        "/" +
+        pad(today.getMonth() + 1, 2) +
+        "/" +
+        today.getFullYear();
+    $("#testmask").val(todayInputStr);
+    assert.equal(
+      testmask.value,
+      todayFormatted,
+      "today's date should be accepted"
+    );
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr =
+        pad(tomorrow.getDate(), 2) +
+        pad(tomorrow.getMonth() + 1, 2) +
+        tomorrow.getFullYear(),
+      tomorrowFormatted =
+        pad(tomorrow.getDate(), 2) +
+        "/" +
+        pad(tomorrow.getMonth() + 1, 2) +
+        "/" +
+        tomorrow.getFullYear();
+    $("#testmask").val(tomorrowStr);
+    assert.equal(
+      testmask.value,
+      tomorrowFormatted,
+      "tomorrow's date should be accepted"
+    );
+  });
+
   qunit.test("overtype fuzzy valid entry", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
