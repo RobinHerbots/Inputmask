@@ -28,6 +28,12 @@
 - a trailing dot in an email address is reported as incomplete on blur instead of complete #2897
 - options read from `data-inputmask` attributes are no longer dropped from `userOptions` (an explicitly given `insertMode` is now respected on the INSERT key) #2847
 - the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
+- `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
+
+### Tests
+
+- Add Node/SSR smoke test to validate pipeline
+- Add regression test for percentage select-all overwrite issue (#2893)
 
 ## [5.0.10 - 31/07/2026]
 
