@@ -114,6 +114,38 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "some._@_._", "Result " + testmask.value);
   });
 
+  qunit.test(
+    "email mask - trailing dot fires incomplete on blur #2897",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      let incompleteCalled = false;
+      Inputmask("email", {
+        onincomplete: function () {
+          incompleteCalled = true;
+        }
+      }).mask(testmask);
+
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("abc@def.gh.");
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(
+            testmask.inputmask.isComplete(),
+            false,
+            "Result " + testmask.inputmask.isComplete()
+          );
+          assert.equal(incompleteCalled, true, "onincomplete was not fired");
+          testmask.inputmask.remove();
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
   qunit.test("email mask - partial input 2", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

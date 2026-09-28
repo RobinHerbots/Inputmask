@@ -287,6 +287,26 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    '.inputmask("99999[-9999]", { greedy: false }); - type 12345- iscomplete? - #2897',
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("99999[-9999]", {
+        greedy: false
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("12345-");
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        false,
+        "Result " + testmask.inputmask.isComplete()
+      );
+    }
+  );
+
+  qunit.test(
     '.inputmask("99999[-9999]", { greedy: false }); type 123456 backspace blur',
     function (assert) {
       var $fixture = $("#qunit-fixture"),
