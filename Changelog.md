@@ -10,6 +10,8 @@
 
 ### Updates
 
+- new `insertModeToggle` option (default `true`) to switch off the INSERT key insert/overwrite toggle
+
 ### Fixed
 
 - native change event not fired when backspacing fractional part on numeric #2793
@@ -24,6 +26,8 @@
 - a partially typed date keeps the entered digits in the unmasked value (e.g. a half-typed year stays `20yy` instead of collapsing to the output-format token)
 - programmatic trigger() of a custom event object on a masked input no longer throws a TypeError on read-only DOM event properties
 - a trailing dot in an email address is reported as incomplete on blur instead of complete #2897
+- options read from `data-inputmask` attributes are no longer dropped from `userOptions` (an explicitly given `insertMode` is now respected on the INSERT key) #2847
+- the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
 
 ## [5.0.10 - 31/07/2026]
 

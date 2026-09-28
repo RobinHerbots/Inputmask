@@ -16,6 +16,7 @@ import testsEscape from "./tests_escape";
 import testsFormatvalidate from "./tests_formatvalidate";
 import testsInitialvalue from "./tests_initialvalue";
 import testsInputeventonly from "./tests_inputeventonly";
+import testsInsertmode from "./tests_insertmode";
 import testsIp from "./tests_ip";
 import testsJitmasking from "./tests_jitmasking";
 import testsJqueryInputmask from "./tests_jquery_inputmask";
@@ -55,6 +56,7 @@ if (qunit) {
   testsFormatvalidate(qunit, Inputmask);
   testsInitialvalue(qunit, Inputmask);
   testsInputeventonly(qunit, Inputmask);
+  testsInsertmode(qunit, Inputmask);
   testsIp(qunit, Inputmask);
   testsJitmasking(qunit, Inputmask);
   testsJqueryInputmask(qunit, jQuery, Inputmask);
