@@ -233,6 +233,82 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "01/01/1939", "Result " + testmask.value);
   });
 
+  qunit.test("min date as today (string format) - #818", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask"),
+      today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr =
+      pad(today.getDate(), 2) +
+      "/" +
+      pad(today.getMonth() + 1, 2) +
+      "/" +
+      today.getFullYear();
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      min: todayStr
+    }).mask(testmask);
+
+    testmask.focus();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr =
+        pad(yesterday.getDate(), 2) +
+        pad(yesterday.getMonth() + 1, 2) +
+        yesterday.getFullYear(),
+      // When date is before min, year shows 3 digits + 1 placeholder (e.g., "202y")
+      yesterdayExpected =
+        pad(yesterday.getDate(), 2) +
+        "/" +
+        pad(yesterday.getMonth() + 1, 2) +
+        "/" +
+        yesterday.getFullYear().toString().slice(0, 3) +
+        "y";
+    $("#testmask").val(yesterdayStr);
+    assert.equal(
+      testmask.value,
+      yesterdayExpected,
+      "yesterday's date should be rejected (shows partial with placeholder)"
+    );
+
+    const todayInputStr =
+        pad(today.getDate(), 2) +
+        pad(today.getMonth() + 1, 2) +
+        today.getFullYear(),
+      todayFormatted =
+        pad(today.getDate(), 2) +
+        "/" +
+        pad(today.getMonth() + 1, 2) +
+        "/" +
+        today.getFullYear();
+    $("#testmask").val(todayInputStr);
+    assert.equal(
+      testmask.value,
+      todayFormatted,
+      "today's date should be accepted"
+    );
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr =
+        pad(tomorrow.getDate(), 2) +
+        pad(tomorrow.getMonth() + 1, 2) +
+        tomorrow.getFullYear(),
+      tomorrowFormatted =
+        pad(tomorrow.getDate(), 2) +
+        "/" +
+        pad(tomorrow.getMonth() + 1, 2) +
+        "/" +
+        tomorrow.getFullYear();
+    $("#testmask").val(tomorrowStr);
+    assert.equal(
+      testmask.value,
+      tomorrowFormatted,
+      "tomorrow's date should be accepted"
+    );
+  });
+
   qunit.test("overtype fuzzy valid entry", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
@@ -1831,10 +1907,10 @@ export default function (qunit, Inputmask) {
     function (assert) {
       const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      const testmask = document.getElementById("testmask");
-      const im = Inputmask("datetime", {
-        inputFormat: "dd/MM/yyyy"
-      }).mask(testmask);
+      const testmask = document.getElementById("testmask"),
+        im = Inputmask("datetime", {
+          inputFormat: "dd/MM/yyyy"
+        }).mask(testmask);
 
       testmask.focus();
       $("#testmask").Type("01011999");
@@ -1866,10 +1942,10 @@ export default function (qunit, Inputmask) {
     function (assert) {
       const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      const testmask = document.getElementById("testmask");
-      const im = Inputmask("datetime", {
-        inputFormat: "dd/MM/yyyy"
-      }).mask(testmask);
+      const testmask = document.getElementById("testmask"),
+        im = Inputmask("datetime", {
+          inputFormat: "dd/MM/yyyy"
+        }).mask(testmask);
 
       testmask.focus();
       $("#testmask").Type("01012022");
@@ -2260,5 +2336,4 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
-
 }
