@@ -32,6 +32,7 @@ export type InputmaskOptions = {
     removeMaskOnSubmit?: boolean;
     clearMaskOnLostFocus?: boolean;
     insertMode?: boolean;
+    insertModeToggle?: boolean;
     insertModeVisual?: boolean;
     clearIncomplete?: boolean;
     alias?: string | null;
@@ -105,6 +106,7 @@ export type InputmaskOptions = {
  * @property {boolean} [removeMaskOnSubmit]
  * @property {boolean} [clearMaskOnLostFocus]
  * @property {boolean} [insertMode]
+ * @property {boolean} [insertModeToggle]
  * @property {boolean} [insertModeVisual]
  * @property {boolean} [clearIncomplete]
  * @property {string | null} [alias]

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.31
+ * Version: 5.1.0-beta.32
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -815,6 +815,8 @@ const datetimeAlias = {
     return initialValue;
   },
   insertMode: false,
+  insertModeToggle: false,
+  // insertMode is fixed for date/datetime - don't let the INSERT key flip it
   insertModeVisual: false,
   shiftPositions: false,
   keepStatic: false,

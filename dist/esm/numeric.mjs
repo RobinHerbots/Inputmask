@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.31
+ * Version: 5.1.0-beta.32
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -41,6 +41,11 @@ export const __webpack_esm_modules__ = {
 
 
 
+
+// resolved on every call so a definition extended at runtime is honoured
+function isDigit(chr) {
+  return new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u").test(chr);
+}
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
@@ -111,6 +116,26 @@ function findValid(symbol, maskset) {
     }
   }
   return ret;
+}
+
+// a negation placeholder, not a literal sign inside the prefix or suffix
+function hasNegationPart(maskset, def) {
+  return maskset.validPositions.some(vp => vp && vp.match.static !== true && vp.match.def === def);
+}
+function isNegated(maskset) {
+  return hasNegationPart(maskset, "+") || hasNegationPart(maskset, "-");
+}
+
+// does the value render the number the empty mask renders, or nothing at all.
+// jitMasking leaves the affixes out of the buffer until they are reached, so
+// when the wrapper cannot parse what is there, ask the mask instead: a digit
+// belonging to the prefix or suffix is not a number the user entered
+function holdsNoNumber(buffer, maskset, opts) {
+  const number = matchNumberInWrapper(buffer, opts);
+  if (number === null) {
+    return !maskset.validPositions.some(vp => vp && vp.match.static !== true && isDigit(vp.input));
+  }
+  return number === "" || number === matchNumberInWrapper(maskset._buffer, opts);
 }
 function parseMinMaxOptions(opts) {
   if (opts.parseMinMaxOptions === undefined) {
@@ -252,7 +277,7 @@ function decimalValidator(chrs, maskset, pos, strict, opts) {
 // Match the numeric body of the (reversed) buffer against the prefix/suffix
 // wrapper, returning the captured "number" group or null if the match fails.
 function matchNumberInWrapper(buffer, opts) {
-  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front) + "?" : "") + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.prefix) + ")(.*)(" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.suffix) + (opts.negationSymbol.back !== "" ? (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join(""));
+  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? "(?:" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front) + ")?" : "") + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.prefix) + ")(.*?)(" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.suffix) + (opts.negationSymbol.back !== "" ? "(?:" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + ")?" : "") + "$)").exec(buffer.slice().reverse().join(""));
   return match ? match[2] : null;
 }
 function checkForLeadingZeroes(buffer, opts) {
@@ -565,9 +590,7 @@ const numericAlias = {
     },
     onBeforeWrite: function (e, buffer, caretPos, opts) {
       const inputmask = this,
-        {
-          _buffer
-        } = inputmask.maskset;
+        maskset = inputmask.maskset;
       function stripBuffer(buffer, stripRadix) {
         if (opts.__financeInput !== false || stripRadix) {
           var position = buffer.indexOf(opts.radixPoint);
@@ -689,7 +712,13 @@ const numericAlias = {
           case "_checkval":
           case "keydown":
             if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI) {
-              if (buffer[e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front || buffer.length - _buffer.length === opts.negationSymbol.front.length + opts.negationSymbol.back.length && buffer.join("").indexOf(_buffer.join("")) >= 0) {
+              if (
+              // nothing but the sign is left, e.g. "-0" - clear it
+              isNegated(maskset) && holdsNoNumber(buffer, maskset, opts) ||
+              // half of a paired negation symbol is left behind - deleting
+              // "(" out of "(50)" cannot render as anything sensible - so
+              // clear the value, as it did before
+              opts.negationSymbol.front !== "" && opts.negationSymbol.back !== "" && hasNegationPart(maskset, "+") !== hasNegationPart(maskset, "-")) {
                 result = {
                   refreshFromBuffer: true,
                   buffer: [],

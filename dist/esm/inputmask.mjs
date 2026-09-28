@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.31
+ * Version: 5.1.0-beta.32
  */
 /******/ var __webpack_modules__ = ({
 
@@ -51,6 +51,31 @@ var global_window = __webpack_require__(266);
   }
 }
 ;// ./lib/dependencyLibs/extend.js
+function isWritable(target, name) {
+  let descriptor = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(target, name);
+  if (descriptor) {
+    if ("value" in descriptor) {
+      return descriptor.writable !== false;
+    }
+    // an accessor property is only writable when it carries a setter
+    return typeof descriptor.set === "function";
+  }
+
+  // no own property: an assignment only throws when a non-configurable accessor
+  // without a setter (or a non-writable data prop) blocks it on the prototype chain
+  let proto = Object.getPrototypeOf && Object.getPrototypeOf(target);
+  while (proto) {
+    descriptor = Object.getOwnPropertyDescriptor(proto, name);
+    if (descriptor) {
+      if ("value" in descriptor) {
+        return descriptor.writable !== false;
+      }
+      return typeof descriptor.set === "function" || descriptor.configurable;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return true;
+}
 function extend() {
   let options,
     name,
@@ -92,6 +117,12 @@ function extend() {
 
         // Prevent never-ending loop
         if (target === copy) {
+          continue;
+        }
+
+        // Never overwrite a non-writable target property (e.g. the read-only
+        // isTrusted accessor on DOM events): assigning to it would throw
+        if (!isWritable(target, name)) {
           continue;
         }
 
@@ -456,7 +487,9 @@ const EventHandlers = {
       // escape && undo && #762
       (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .checkVal */ .eP)(input, true, false, inputmask.undoValue.split(""));
       $input.trigger("click");
-    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Insert && !(e.shiftKey || e.ctrlKey) && inputmask.userOptions.insertMode === undefined) {
+    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Insert && !(e.shiftKey || e.ctrlKey) && opts.insertModeToggle === true &&
+    // an explicitly given insertMode wins over the INSERT key toggle
+    inputmask.userOptions.insertMode === undefined) {
       // insert
       if (!_validation__WEBPACK_IMPORTED_MODULE_5__/* .isSelection */ .X9.call(inputmask, pos)) {
         opts.insertMode = !opts.insertMode;
@@ -1256,6 +1289,7 @@ __webpack_require__.d(__webpack_exports__, {
  * @property {boolean} [removeMaskOnSubmit]
  * @property {boolean} [clearMaskOnLostFocus]
  * @property {boolean} [insertMode]
+ * @property {boolean} [insertModeToggle]
  * @property {boolean} [insertModeVisual]
  * @property {boolean} [clearIncomplete]
  * @property {string | null} [alias]
@@ -1327,6 +1361,8 @@ const defaults = {
   clearMaskOnLostFocus: true,
   insertMode: true,
   // insert the input or overwrite the input
+  insertModeToggle: true,
+  // allow the INSERT key to switch between insert- and overwrite-mode
   insertModeVisual: true,
   // show selected caret when insertmode = false
   clearIncomplete: false,
@@ -2483,7 +2519,11 @@ const inputmask_document = global_window/* default */.A.document,
  * @property {() => boolean} isComplete
  * @property {() => any} getmetadata
  * @property {(value?: string) => boolean} isValid
- * @property {(value: string, metadata?: boolean) => string | { value: string; metadata: any }} format
+ * @property {{
+ *   (value: string, metadata?: false): string;
+ *   (value: string, metadata: true): { value: string; metadata: any };
+ *   (value: string, metadata?: boolean): string | { value: string; metadata: any };
+ * }} format
  * @property {(value: string) => void} setValue
  */
 
@@ -2492,7 +2532,11 @@ const inputmask_document = global_window/* default */.A.document,
  *   extendDefaults: (options: InputmaskOptions) => void;
  *   extendDefinitions: (definition: Record<string, any>) => void;
  *   extendAliases: (alias: Record<string, InputmaskOptions>) => void;
- *   format: (value: string, options?: InputmaskOptions, metadata?: boolean) => string | { value: string; metadata: any };
+ *   format: {
+ *     (value: string, options?: InputmaskOptions, metadata?: false): string;
+ *     (value: string, options: InputmaskOptions | undefined, metadata: true): { value: string; metadata: any };
+ *     (value: string, options?: InputmaskOptions, metadata?: boolean): string | { value: string; metadata: any };
+ *   };
  *   unmask: (value: string, options?: InputmaskOptions) => string;
  *   isValid: (value: string, options?: InputmaskOptions) => boolean;
  *   remove: (elems: InputmaskElements) => void;
@@ -2562,8 +2606,13 @@ Inputmask.prototype = {
     }
     elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
     elems.forEach(function (el, ndx) {
-      const scopedOpts = inputmask_dependencyLib/* default */.A.extend(true, {}, that.opts);
-      if (importAttributeOptions(el, scopedOpts, inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions), that.dataAttribute)) {
+      const scopedOpts = inputmask_dependencyLib/* default */.A.extend(true, {}, that.opts),
+        // importAttributeOptions enriches this object with the options read
+        // from the data-attributes, so it has to be the one handed to the
+        // element scoped instance - otherwise those options are lost from
+        // userOptions (they only end up in opts) #2847
+        scopedUserOptions = inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions);
+      if (importAttributeOptions(el, scopedOpts, scopedUserOptions, that.dataAttribute)) {
         const maskset = generateMaskSet(scopedOpts, that.noMasksCache);
         if (maskset !== undefined) {
           if (el.inputmask !== undefined) {
@@ -2574,7 +2623,7 @@ Inputmask.prototype = {
           el.inputmask = new Inputmask(undefined, undefined, true);
           el.inputmask.opts = scopedOpts;
           el.inputmask.noMasksCache = that.noMasksCache;
-          el.inputmask.userOptions = inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions);
+          el.inputmask.userOptions = scopedUserOptions;
           // el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
           el.inputmask.el = el;
           el.inputmask.$el = (0,inputmask_dependencyLib/* default */.A)(el);
@@ -3074,10 +3123,17 @@ function determineLastRequiredPosition(returnDefinition) {
     ndxIntlzr = testPos.locator.slice();
     positions[pos] = $.extend(true, {}, testPos);
   }
-  const lvTestAlt = lvTest && lvTest.alternation !== undefined ? lvTest.locator[lvTest.alternation] : undefined;
+  const lvTestAlt = lvTest && lvTest.alternation !== undefined ? lvTest.locator[lvTest.alternation] : undefined,
+    // the optionality level of the last valid position
+    lvOptionality = lvTest !== undefined ? lvTest.match.optionality || 0 : 0;
   for (pos = bl - 1; pos > lvp; pos--) {
     testPos = positions[pos];
     if ((testPos.match.optionality || testPos.match.optionalQuantifier && testPos.match.newBlockMarker || lvTestAlt && (lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.static !== true || testPos.match.static === true && testPos.locator[lvTest.alternation] && _validation__WEBPACK_IMPORTED_MODULE_1__/* .checkAlternationMatch */ .Nl.call(inputmask, testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTests */ .eQ.call(inputmask, pos)[0].def !== "")) && buffer[pos] === _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos, testPos.match)) {
+      // only optional positions in a deeper optional block than the last valid
+      // position can be trimmed ~ an optional block that is entered is required
+      if (testPos.match.optionality - lvOptionality < 1) {
+        break;
+      }
       bl--;
       if (testPos.match.optionality) {
         // find the last position that is not optional ~ isoptional and newblockmarker == "master"
@@ -3104,7 +3160,8 @@ function determineLastRequiredPosition(returnDefinition) {
   }
   return returnDefinition ? {
     l: bl,
-    def: positions[bl] ? positions[bl].match : undefined
+    def: positions[bl] ? positions[bl].match : undefined,
+    lvOptionality
   } : bl;
 }
 
@@ -4183,6 +4240,17 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
           // }
           break;
         }
+        // With numericInput, isValid can seat the input past the position we
+        // offered - the first position is static when there is a suffix, and
+        // there is the radix dance - so continue from the position it reports
+        // rather than from the guess, or the next input is inserted in front
+        // of this one instead of after it. Without it the offered position
+        // stands, because the reported one is not always where the input was
+        // seated: a datetime correction reports the position after the field
+        // it corrected.
+        if (opts.numericInput && isValidRslt.pos !== undefined) {
+          nextPos = isValidRslt.pos;
+        }
         if (i === resultPos) {
           returnRslt = isValidRslt;
         }
@@ -4372,7 +4440,10 @@ function isComplete(buffer) {
     complete = true;
     for (let i = 0; i <= aml; i++) {
       const test = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTestTemplate */ .t.call(inputmask, i).match;
-      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
+      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false ||
+      // an optional position in the same optional block as the last valid
+      // position is required ~ the optional block is entered
+      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
         complete = false;
         break;
       }

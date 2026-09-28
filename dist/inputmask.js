@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.31
+ * Version: 5.1.0-beta.32
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -3085,6 +3085,31 @@ var es_iterator_constructor = __webpack_require__(8111);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.for-each.js
 var es_iterator_for_each = __webpack_require__(7588);
 ;// ./lib/dependencyLibs/extend.js
+function isWritable(target, name) {
+  let descriptor = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(target, name);
+  if (descriptor) {
+    if ("value" in descriptor) {
+      return descriptor.writable !== false;
+    }
+    // an accessor property is only writable when it carries a setter
+    return typeof descriptor.set === "function";
+  }
+
+  // no own property: an assignment only throws when a non-configurable accessor
+  // without a setter (or a non-writable data prop) blocks it on the prototype chain
+  let proto = Object.getPrototypeOf && Object.getPrototypeOf(target);
+  while (proto) {
+    descriptor = Object.getOwnPropertyDescriptor(proto, name);
+    if (descriptor) {
+      if ("value" in descriptor) {
+        return descriptor.writable !== false;
+      }
+      return typeof descriptor.set === "function" || descriptor.configurable;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return true;
+}
 function extend() {
   let options,
     name,
@@ -3126,6 +3151,12 @@ function extend() {
 
         // Prevent never-ending loop
         if (target === copy) {
+          continue;
+        }
+
+        // Never overwrite a non-writable target property (e.g. the read-only
+        // isTrusted accessor on DOM events): assigning to it would throw
+        if (!isWritable(target, name)) {
           continue;
         }
 
@@ -3457,6 +3488,7 @@ function registerDefinitions() {
  * @property {boolean} [removeMaskOnSubmit]
  * @property {boolean} [clearMaskOnLostFocus]
  * @property {boolean} [insertMode]
+ * @property {boolean} [insertModeToggle]
  * @property {boolean} [insertModeVisual]
  * @property {boolean} [clearIncomplete]
  * @property {string | null} [alias]
@@ -3528,6 +3560,8 @@ const defaults = {
   clearMaskOnLostFocus: true,
   insertMode: true,
   // insert the input or overwrite the input
+  insertModeToggle: true,
+  // allow the INSERT key to switch between insert- and overwrite-mode
   insertModeVisual: true,
   // show selected caret when insertmode = false
   clearIncomplete: false,
@@ -4561,6 +4595,17 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
           // }
           break;
         }
+        // With numericInput, isValid can seat the input past the position we
+        // offered - the first position is static when there is a suffix, and
+        // there is the radix dance - so continue from the position it reports
+        // rather than from the guess, or the next input is inserted in front
+        // of this one instead of after it. Without it the offered position
+        // stands, because the reported one is not always where the input was
+        // seated: a datetime correction reports the position after the field
+        // it corrected.
+        if (opts.numericInput && isValidRslt.pos !== undefined) {
+          nextPos = isValidRslt.pos;
+        }
         if (i === resultPos) {
           returnRslt = isValidRslt;
         }
@@ -4750,7 +4795,10 @@ function isComplete(buffer) {
     complete = true;
     for (let i = 0; i <= aml; i++) {
       const test = getTestTemplate.call(inputmask, i).match;
-      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== getPlaceholder.call(inputmask, i, test)) {
+      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false ||
+      // an optional position in the same optional block as the last valid
+      // position is required ~ the optional block is entered
+      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== getPlaceholder.call(inputmask, i, test)) {
         complete = false;
         break;
       }
@@ -5306,10 +5354,17 @@ function determineLastRequiredPosition(returnDefinition) {
     ndxIntlzr = testPos.locator.slice();
     positions[pos] = $.extend(true, {}, testPos);
   }
-  const lvTestAlt = lvTest && lvTest.alternation !== undefined ? lvTest.locator[lvTest.alternation] : undefined;
+  const lvTestAlt = lvTest && lvTest.alternation !== undefined ? lvTest.locator[lvTest.alternation] : undefined,
+    // the optionality level of the last valid position
+    lvOptionality = lvTest !== undefined ? lvTest.match.optionality || 0 : 0;
   for (pos = bl - 1; pos > lvp; pos--) {
     testPos = positions[pos];
     if ((testPos.match.optionality || testPos.match.optionalQuantifier && testPos.match.newBlockMarker || lvTestAlt && (lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.static !== true || testPos.match.static === true && testPos.locator[lvTest.alternation] && checkAlternationMatch.call(inputmask, testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests.call(inputmask, pos)[0].def !== "")) && buffer[pos] === getPlaceholder.call(inputmask, pos, testPos.match)) {
+      // only optional positions in a deeper optional block than the last valid
+      // position can be trimmed ~ an optional block that is entered is required
+      if (testPos.match.optionality - lvOptionality < 1) {
+        break;
+      }
       bl--;
       if (testPos.match.optionality) {
         // find the last position that is not optional ~ isoptional and newblockmarker == "master"
@@ -5336,7 +5391,8 @@ function determineLastRequiredPosition(returnDefinition) {
   }
   return returnDefinition ? {
     l: bl,
-    def: positions[bl] ? positions[bl].match : undefined
+    def: positions[bl] ? positions[bl].match : undefined,
+    lvOptionality
   } : bl;
 }
 
@@ -5588,7 +5644,9 @@ const EventHandlers = {
       // escape && undo && #762
       checkVal(input, true, false, inputmask.undoValue.split(""));
       $input.trigger("click");
-    } else if (c === keys.Insert && !(e.shiftKey || e.ctrlKey) && inputmask.userOptions.insertMode === undefined) {
+    } else if (c === keys.Insert && !(e.shiftKey || e.ctrlKey) && opts.insertModeToggle === true &&
+    // an explicitly given insertMode wins over the INSERT key toggle
+    inputmask.userOptions.insertMode === undefined) {
       // insert
       if (!isSelection.call(inputmask, pos)) {
         opts.insertMode = !opts.insertMode;
@@ -7374,7 +7432,11 @@ const inputmask_document = global_window.document,
  * @property {() => boolean} isComplete
  * @property {() => any} getmetadata
  * @property {(value?: string) => boolean} isValid
- * @property {(value: string, metadata?: boolean) => string | { value: string; metadata: any }} format
+ * @property {{
+ *   (value: string, metadata?: false): string;
+ *   (value: string, metadata: true): { value: string; metadata: any };
+ *   (value: string, metadata?: boolean): string | { value: string; metadata: any };
+ * }} format
  * @property {(value: string) => void} setValue
  */
 
@@ -7383,7 +7445,11 @@ const inputmask_document = global_window.document,
  *   extendDefaults: (options: InputmaskOptions) => void;
  *   extendDefinitions: (definition: Record<string, any>) => void;
  *   extendAliases: (alias: Record<string, InputmaskOptions>) => void;
- *   format: (value: string, options?: InputmaskOptions, metadata?: boolean) => string | { value: string; metadata: any };
+ *   format: {
+ *     (value: string, options?: InputmaskOptions, metadata?: false): string;
+ *     (value: string, options: InputmaskOptions | undefined, metadata: true): { value: string; metadata: any };
+ *     (value: string, options?: InputmaskOptions, metadata?: boolean): string | { value: string; metadata: any };
+ *   };
  *   unmask: (value: string, options?: InputmaskOptions) => string;
  *   isValid: (value: string, options?: InputmaskOptions) => boolean;
  *   remove: (elems: InputmaskElements) => void;
@@ -7453,8 +7519,13 @@ Inputmask.prototype = {
     }
     elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
     elems.forEach(function (el, ndx) {
-      const scopedOpts = inputmask_dependencyLib.extend(true, {}, that.opts);
-      if (importAttributeOptions(el, scopedOpts, inputmask_dependencyLib.extend(true, {}, that.userOptions), that.dataAttribute)) {
+      const scopedOpts = inputmask_dependencyLib.extend(true, {}, that.opts),
+        // importAttributeOptions enriches this object with the options read
+        // from the data-attributes, so it has to be the one handed to the
+        // element scoped instance - otherwise those options are lost from
+        // userOptions (they only end up in opts) #2847
+        scopedUserOptions = inputmask_dependencyLib.extend(true, {}, that.userOptions);
+      if (importAttributeOptions(el, scopedOpts, scopedUserOptions, that.dataAttribute)) {
         const maskset = generateMaskSet(scopedOpts, that.noMasksCache);
         if (maskset !== undefined) {
           if (el.inputmask !== undefined) {
@@ -7465,7 +7536,7 @@ Inputmask.prototype = {
           el.inputmask = new Inputmask(undefined, undefined, true);
           el.inputmask.opts = scopedOpts;
           el.inputmask.noMasksCache = that.noMasksCache;
-          el.inputmask.userOptions = inputmask_dependencyLib.extend(true, {}, that.userOptions);
+          el.inputmask.userOptions = scopedUserOptions;
           // el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
           el.inputmask.el = el;
           el.inputmask.$el = inputmask_dependencyLib(el);
@@ -8785,6 +8856,8 @@ const datetimeAlias = {
     return initialValue;
   },
   insertMode: false,
+  insertModeToggle: false,
+  // insertMode is fixed for date/datetime - don't let the INSERT key flip it
   insertModeVisual: false,
   shiftPositions: false,
   keepStatic: false,
@@ -8820,6 +8893,11 @@ var es_iterator_some = __webpack_require__(3579);
 
 
 
+
+// resolved on every call so a definition extended at runtime is honoured
+function isDigit(chr) {
+  return new RegExp(definitions["9"].validator, "u").test(chr);
+}
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
@@ -8890,6 +8968,26 @@ function findValid(symbol, maskset) {
     }
   }
   return ret;
+}
+
+// a negation placeholder, not a literal sign inside the prefix or suffix
+function hasNegationPart(maskset, def) {
+  return maskset.validPositions.some(vp => vp && vp.match.static !== true && vp.match.def === def);
+}
+function isNegated(maskset) {
+  return hasNegationPart(maskset, "+") || hasNegationPart(maskset, "-");
+}
+
+// does the value render the number the empty mask renders, or nothing at all.
+// jitMasking leaves the affixes out of the buffer until they are reached, so
+// when the wrapper cannot parse what is there, ask the mask instead: a digit
+// belonging to the prefix or suffix is not a number the user entered
+function holdsNoNumber(buffer, maskset, opts) {
+  const number = matchNumberInWrapper(buffer, opts);
+  if (number === null) {
+    return !maskset.validPositions.some(vp => vp && vp.match.static !== true && isDigit(vp.input));
+  }
+  return number === "" || number === matchNumberInWrapper(maskset._buffer, opts);
 }
 function parseMinMaxOptions(opts) {
   if (opts.parseMinMaxOptions === undefined) {
@@ -9031,7 +9129,7 @@ function decimalValidator(chrs, maskset, pos, strict, opts) {
 // Match the numeric body of the (reversed) buffer against the prefix/suffix
 // wrapper, returning the captured "number" group or null if the match fails.
 function matchNumberInWrapper(buffer, opts) {
-  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? escapeRegex(opts.negationSymbol.front) + "?" : "") + escapeRegex(opts.prefix) + ")(.*)(" + escapeRegex(opts.suffix) + (opts.negationSymbol.back !== "" ? escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join(""));
+  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? "(?:" + escapeRegex(opts.negationSymbol.front) + ")?" : "") + escapeRegex(opts.prefix) + ")(.*?)(" + escapeRegex(opts.suffix) + (opts.negationSymbol.back !== "" ? "(?:" + escapeRegex(opts.negationSymbol.back) + ")?" : "") + "$)").exec(buffer.slice().reverse().join(""));
   return match ? match[2] : null;
 }
 function checkForLeadingZeroes(buffer, opts) {
@@ -9344,9 +9442,7 @@ const numericAlias = {
     },
     onBeforeWrite: function (e, buffer, caretPos, opts) {
       const inputmask = this,
-        {
-          _buffer
-        } = inputmask.maskset;
+        maskset = inputmask.maskset;
       function stripBuffer(buffer, stripRadix) {
         if (opts.__financeInput !== false || stripRadix) {
           var position = buffer.indexOf(opts.radixPoint);
@@ -9468,7 +9564,13 @@ const numericAlias = {
           case "_checkval":
           case "keydown":
             if (e.key === keys.Delete || e.key === keys.Backspace || e.key === keys.BACKSPACE_SAFARI) {
-              if (buffer[e.key === keys.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front || buffer.length - _buffer.length === opts.negationSymbol.front.length + opts.negationSymbol.back.length && buffer.join("").indexOf(_buffer.join("")) >= 0) {
+              if (
+              // nothing but the sign is left, e.g. "-0" - clear it
+              isNegated(maskset) && holdsNoNumber(buffer, maskset, opts) ||
+              // half of a paired negation symbol is left behind - deleting
+              // "(" out of "(50)" cannot render as anything sensible - so
+              // clear the value, as it did before
+              opts.negationSymbol.front !== "" && opts.negationSymbol.back !== "" && hasNegationPart(maskset, "+") !== hasNegationPart(maskset, "-")) {
                 result = {
                   refreshFromBuffer: true,
                   buffer: [],

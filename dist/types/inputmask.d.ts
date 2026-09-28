@@ -12,9 +12,16 @@ export type InputmaskInstance = {
     isComplete: () => boolean;
     getmetadata: () => any;
     isValid: (value?: string) => boolean;
-    format: (value: string, metadata?: boolean) => string | {
-        value: string;
-        metadata: any;
+    format: {
+        (value: string, metadata?: false): string;
+        (value: string, metadata: true): {
+            value: string;
+            metadata: any;
+        };
+        (value: string, metadata?: boolean): string | {
+            value: string;
+            metadata: any;
+        };
     };
     setValue: (value: string) => void;
 };
@@ -22,9 +29,16 @@ export type InputmaskStatic = ((alias?: string | InputmaskOptions, options?: Inp
     extendDefaults: (options: InputmaskOptions) => void;
     extendDefinitions: (definition: Record<string, any>) => void;
     extendAliases: (alias: Record<string, InputmaskOptions>) => void;
-    format: (value: string, options?: InputmaskOptions, metadata?: boolean) => string | {
-        value: string;
-        metadata: any;
+    format: {
+        (value: string, options?: InputmaskOptions, metadata?: false): string;
+        (value: string, options: InputmaskOptions | undefined, metadata: true): {
+            value: string;
+            metadata: any;
+        };
+        (value: string, options?: InputmaskOptions, metadata?: boolean): string | {
+            value: string;
+            metadata: any;
+        };
     };
     unmask: (value: string, options?: InputmaskOptions) => string;
     isValid: (value: string, options?: InputmaskOptions) => boolean;
