@@ -127,14 +127,28 @@ module.exports = function (grunt) {
   // tag by then. These tasks stream npm's own output and check the
   // authentication before anything is tagged or published.
   //
-  // Credentials come from ~/.npmrc, refreshed with "grunt npmlogin", which
-  // opens a browser (npm login defaults to --auth-type=web). Everything runs
-  // with stdio: "inherit" so npm inherits the terminal and can ask for a
-  // two factor challenge itself: npm is retiring TOTP in favour of WebAuthn
-  // security keys, which can only be answered interactively, and while a
-  // TOTP based account can still pass an npm_config_otp one time password.
-  const npmRegistry = "https://registry.npmjs.org",
+  // The check is not tied to the classic access tokens npm has revoked. npm
+  // login now hands out a two hour session token, a long lived granular
+  // access token is the other option, and "npm whoami" validates either one
+  // just the same, so it keeps doing its job: catching a dead credential while
+  // there is still nothing tagged. The one place it cannot pass is trusted
+  // publishing, where npm exchanges the CI provider's OIDC token at publish
+  // time and there is no credential in ~/.npmrc to present, hence the
+  // warn instead of fatal under CI.
+  //
+  // Everything runs with stdio: "inherit" so npm inherits the terminal and can
+  // ask for a two factor challenge itself. That challenge is enforced on top
+  // of a valid session: 2FA runs over WebAuthn security keys now that npm is
+  // retiring TOTP, which only works interactively, while a TOTP based account
+  // can still pass an npm_config_otp one time password.
+  const isCI = process.env.CI === "true" || process.env.CI === "1",
+    npmRegistry = "https://registry.npmjs.org",
     gitRemote = "origin";
+
+  const npmAuthHint =
+    'run "grunt npmlogin" to refresh it, npm login opens a browser and stores a ' +
+    "two hour session token in ~/.npmrc, and publishing on top of that asks " +
+    "for a 2FA challenge, a security key";
 
   function run(cmd) {
     execSync(cmd, { stdio: "inherit" });
@@ -153,7 +167,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask("npmlogin", "Log in to npm in a browser", function () {
     grunt.log.ok(
-      "npm login opens a browser and stores the token in ~/.npmrc - run this from an interactive terminal"
+      "npm login opens a browser and stores a two hour session token in ~/.npmrc - run this from an interactive terminal"
     );
     run(`npm login --registry ${npmRegistry}`);
   });
@@ -167,8 +181,14 @@ module.exports = function (grunt) {
         .toString()
         .trim();
     } catch {
+      if (isCI) {
+        grunt.log.warn(
+          `npm could not authenticate against ${npmRegistry} up front, carrying on because trusted publishing exchanges an OIDC token at publish time - ${npmAuthHint}`
+        );
+        return;
+      }
       grunt.fail.fatal(
-        `npm could not authenticate against ${npmRegistry} (no valid token, or offline) - run "grunt npmlogin" to refresh it`
+        `npm could not authenticate against ${npmRegistry} - ${npmAuthHint}`
       );
     }
     grunt.log.ok("npm authenticated as " + user);
