@@ -297,7 +297,7 @@ export default function (qunit, Inputmask) {
 
   // the sign is taken off through the input-event path, which replays
   // Backspace as a synthetic keydown: the value crosses max, so
-  // SetMinMaxOnOverflow has to set the boundary there and then #2846
+  // setMinMaxOnOverflow has to set the boundary there and then #2846
   qunit.test(
     "numeric min=-100 max=30 SMOO=true - Backspace on the sign of -50 sets max",
     function (assert) {
@@ -309,7 +309,7 @@ export default function (qunit, Inputmask) {
         min: -100,
         max: 30,
         digits: 0,
-        SetMinMaxOnOverflow: true,
+        setMinMaxOnOverflow: true,
         inputEventOnly: true
       }).mask(testmask);
 
