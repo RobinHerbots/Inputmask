@@ -1,7 +1,10 @@
 build/
+nuspecs/bin/
+nuspecs/obj/
+.env
+!.env-example
 test.html
 jquery-1.10.2.js
-dist/jQuery.InputMask.*.nupkg
 node_modules/
 bower_components/
 npm-debug.log

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Packaging shell for the NuGet packages. The packages carry no .NET assembly,
+    only the built javascript, so the metadata stays in the nuspecs and this
+    project only drives "dotnet pack" so both packages can be built
+    cross-platform. Pack the other package with:
+      dotnet pack nuspecs/Pack.csproj -p:NuspecFile=jquery.inputmask.nuspec
+    Nuspec <file src> paths are resolved relative to the nuspec's own directory,
+    so ..\dist\**\* is the repository dist folder. grunt nugetpack does this for
+    both packages.
+  -->
+
+  <PropertyGroup>
+    <!-- required for the project to be valid, nothing from it is packed -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <!-- a package with no .dll is not a library -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NuspecFile Condition="'$(NuspecFile)' == ''">Inputmask.nuspec</NuspecFile>
+    <NuspecProperties>version=$(Version)</NuspecProperties>
+  </PropertyGroup>
+
+</Project>

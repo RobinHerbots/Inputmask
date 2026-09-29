@@ -23,40 +23,6 @@ module.exports = function (grunt) {
         add: false
       }
     },
-    nugetpack: {
-      dist: {
-        src: (function () {
-          return "nuspecs/Inputmask.nuspec";
-        })(),
-        dest: "build/",
-        options: {
-          version: "<%= pkg.version %>"
-        }
-      },
-      dist2: {
-        src: (function () {
-          return "nuspecs/jquery.inputmask.nuspec";
-        })(),
-        dest: "build/",
-        options: {
-          version: "<%= pkg.version %>"
-        }
-      }
-    },
-    nugetpush: {
-      dist: {
-        src: "build/InputMask.<%= pkg.version %>.nupkg",
-        options: {
-          source: "https://www.nuget.org"
-        }
-      },
-      dist2: {
-        src: "build/jquery.inputMask.<%= pkg.version %>.nupkg",
-        options: {
-          source: "https://www.nuget.org"
-        }
-      }
-    },
     karma: {
       options: {
         configFile: "karma.conf.js"
@@ -113,6 +79,52 @@ module.exports = function (grunt) {
       );
     grunt.file.write("README.md", updated);
     grunt.log.ok("README.md copyright year updated to " + year);
+  });
+
+  // The NuGet packages are built with the dotnet SDK, so packaging works on any
+  // platform and no longer depends on the legacy Windows-only nuget.exe.  The
+  // metadata stays in the nuspecs, nuspecs/Pack.csproj only drives "dotnet
+  // pack" for both of them.
+  const nugetPackages = ["Inputmask.nuspec", "jquery.inputmask.nuspec"],
+    nugetSource =
+      process.env.NUGET_SOURCE || "https://api.nuget.org/v3/index.json",
+    nugetApiKey = process.env.NUGET_API_KEY;
+
+  grunt.registerTask("nugetpack", function () {
+    const version = grunt.config("pkg").version;
+    nugetPackages.forEach(function (nuspec) {
+      grunt.log.ok("Packing " + nuspec);
+      execSync(
+        `dotnet pack nuspecs/Pack.csproj -c Release -p:Version=${version} -p:NuspecFile=${nuspec} -o build`,
+        { stdio: "inherit" }
+      );
+    });
+  });
+
+  grunt.registerTask("nugetpush", function () {
+    if (!nugetApiKey) {
+      grunt.fail.fatal(
+        "NUGET_API_KEY is not set - create an api key on nuget.org and expose it as NUGET_API_KEY"
+      );
+    }
+    const version = grunt.config("pkg").version,
+      // the package id decides the file name, so match on the version instead
+      // of hardcoding the ids
+      packages = grunt.file
+        .expand("build/*.nupkg")
+        .filter((nupkg) => nupkg.endsWith("." + version + ".nupkg"));
+    if (packages.length !== nugetPackages.length) {
+      grunt.fail.fatal(
+        `expected ${nugetPackages.length} package(s) for version ${version} in build/, found ${packages.length} - run "grunt nugetpack" first`
+      );
+    }
+    packages.forEach(function (nupkg) {
+      grunt.log.ok("Pushing " + nupkg);
+      execSync(
+        `dotnet nuget push "${nupkg}" --source ${nugetSource} --api-key ${nugetApiKey} --skip-duplicate`,
+        { stdio: "inherit" }
+      );
+    });
   });
 
   grunt.registerTask("publish", ["release", "nugetpack", "nugetpush"]);

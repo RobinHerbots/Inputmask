@@ -12,6 +12,7 @@
 
 - new `insertModeToggle` option (default `true`) to switch off the INSERT key insert/overwrite toggle
 - `SetMaxOnOverflow` is renamed to `SetMinMaxOnOverflow`, it sets `min` as well as `max` (breaking)
+- the NuGet packages work again on modern .NET and are built with the dotnet SDK instead of the Windows-only nuget.exe
 
 ### Fixed
 
