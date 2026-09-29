@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.32
+ * Version: 5.1.0-beta.33
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -5752,47 +5752,55 @@ const EventHandlers = {
       }
     }
   },
-  pasteEvent: async function (e) {
-    function handlePaste(inputmask, input, inputValue, pastedValue, onBeforePaste) {
-      let caretPos = caret.call(inputmask, input, undefined, undefined, true),
-        valueBeforeCaret = inputValue.substr(0, caretPos.begin),
-        valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
-      if (valueBeforeCaret == (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-      if (valueAfterCaret == (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
-      pastedValue = valueBeforeCaret + pastedValue + valueAfterCaret;
-      if (inputmask.isRTL && opts.numericInput !== true) {
-        pastedValue = pastedValue.split("");
-        for (const c of getBufferTemplate.call(inputmask)) {
-          if (pastedValue[0] === c) pastedValue.shift();
-        }
-        pastedValue = pastedValue.reverse().join("");
-      }
-      let pasteValue = pastedValue;
-      if (typeof onBeforePaste === "function") {
-        pasteValue = onBeforePaste.call(inputmask, pasteValue, opts);
-        if (pasteValue === false) {
-          return false;
-        }
-        if (!pasteValue) {
-          pasteValue = inputValue;
-        }
-      }
-      checkVal(input, true, false, pasteValue.toString().split(""), e);
-    }
+  pasteEvent: function (e) {
     const input = this,
       inputmask = this.inputmask,
       opts = inputmask.opts;
     let inputValue = inputmask._valueGet(true),
       pastedValue;
-    inputmask.skipInputEvent = true;
     if (e.clipboardData && e.clipboardData.getData) {
       pastedValue = e.clipboardData.getData("text/plain");
     } else if (global_window.clipboardData && global_window.clipboardData.getData) {
       // IE
       pastedValue = global_window.clipboardData.getData("Text");
     }
-    handlePaste(inputmask, input, inputValue, pastedValue, opts.onBeforePaste);
-    e.preventDefault();
+    if (pastedValue === undefined || pastedValue === "") {
+      // nothing to interpolate, let the browser handle the paste
+      inputmask.pasteValue = undefined;
+      return;
+    }
+
+    // Compute the value the paste should produce, but do not preventDefault the
+    // paste event.  Letting the native paste land and normalizing on the
+    // follow-up input event keeps masked inputs from tripping the Lighthouse /
+    // PageSpeed "preventing users from pasting into input fields" audit (#2823)
+    // and keeps password-manager fills working.  The browser fires an input
+    // event with inputType "insertFromPaste" right after a non-prevented paste.
+    let caretPos = caret.call(inputmask, input, undefined, undefined, true),
+      valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+      valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
+    if (valueBeforeCaret == (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+    if (valueAfterCaret == (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
+    let pasteValue = valueBeforeCaret + pastedValue + valueAfterCaret;
+    if (inputmask.isRTL && opts.numericInput !== true) {
+      pasteValue = pasteValue.split("");
+      for (const c of getBufferTemplate.call(inputmask)) {
+        if (pasteValue[0] === c) pasteValue.shift();
+      }
+      pasteValue = pasteValue.reverse().join("");
+    }
+    if (typeof opts.onBeforePaste === "function") {
+      pasteValue = opts.onBeforePaste.call(inputmask, pasteValue, opts);
+      if (pasteValue === false) {
+        inputmask.pasteValue = false;
+        inputmask.pasteInputValue = inputValue;
+        return;
+      }
+      if (!pasteValue) {
+        pasteValue = inputValue;
+      }
+    }
+    inputmask.pasteValue = pasteValue;
   },
   inputFallBackEvent: function (e) {
     // fallback when keypress is not triggered
@@ -5800,6 +5808,21 @@ const EventHandlers = {
       opts = inputmask.opts,
       $ = inputmask.dependencyLib,
       charPlaceholder = "\x1F";
+    if (e.inputType === "insertFromPaste" && inputmask.pasteValue !== undefined) {
+      // apply the paste computed in pasteEvent, the native (unprevented) paste
+      // already landed and this normalizes it to the mask
+      const pasteValue = inputmask.pasteValue,
+        pasteInputValue = inputmask.pasteInputValue;
+      inputmask.pasteValue = undefined;
+      inputmask.pasteInputValue = undefined;
+      if (pasteValue === false) {
+        // onBeforePaste rejected the paste -> restore the previous value
+        applyInputValue(this, pasteInputValue);
+      } else {
+        checkVal(this, true, false, pasteValue.toString().split(""), e);
+      }
+      return false;
+    }
 
     // console.log(e.inputType);
 
@@ -8582,6 +8605,8 @@ function date_analyseMask(mask, format, opts) {
     return new DateObject(mask, format, opts, inputmask);
   } else if (mask && typeof mask === "object" && Object.prototype.hasOwnProperty.call(mask, "date")) {
     return mask;
+  } else if (mask instanceof Date) {
+    return new DateObject(importDate(mask, opts), format, opts, inputmask);
   }
   return undefined;
 }
@@ -8935,6 +8960,13 @@ function unmaskAsNumber(str, opts) {
     unmaskAsNumber: true
   }));
 }
+
+// onUnMask's text form, whatever the unmaskAsNumber option says
+function unmaskAsString(str, opts) {
+  return opts.onUnMask(str, undefined, inputmask_dependencyLib.extend({}, opts, {
+    unmaskAsNumber: false
+  }));
+}
 function boundaryBuffer(bound, opts) {
   // 5.x: the boundary keeps opts.digits only when they are not optional
   // (alignDigits pads when !opts.digitsOptional); with digitsOptional the
@@ -9168,7 +9200,7 @@ const numericAlias = {
     // minimum value
     max: null,
     // maximum value
-    SetMaxOnOverflow: false,
+    SetMinMaxOnOverflow: false,
     step: 1,
     inputType: "text",
     // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
@@ -9226,17 +9258,23 @@ const numericAlias = {
         const checkMax = isNegative !== false && opts.max !== null,
           checkMin = isNegative === false && opts.min !== null;
         // Reject typing "-" against a non-negative min — alignDigits would
-        // pad the orphan sign to "-0". SetMaxOnOverflow=true has its own
+        // pad the orphan sign to "-0". SetMinMaxOnOverflow=true has its own
         // boundary refresh in postValidation.
-        if (!opts.SetMaxOnOverflow && checkMin && opts.min >= 0) return false;
-        // Reject sign flips that would push the buffer out of range.
-        // postValidation's range check doesn't fire after the validator's
-        // `{remove: ...}` return (toggle-off path), so overflow on that
-        // path must be caught here.
+        if (!opts.SetMinMaxOnOverflow && checkMin && opts.min >= 0) return false;
+        // A sign flip out of range: SetMinMaxOnOverflow puts the boundary it
+        // crossed in the field, as an overflowing keystroke does, otherwise
+        // the keystroke is refused. postValidation's range check doesn't fire
+        // after the validator's `{remove: ...}` return (toggle-off path), so
+        // the flip has to be caught here. #2846
         if ((checkMax || checkMin) && this.maskset.validPositions.length > 0) {
           const absVal = Math.abs(unmaskAsNumber(buffer.slice().reverse().join(""), opts));
-          if (checkMax && absVal > opts.max) return false;
-          if (checkMin && -absVal < opts.min) return false;
+          if (checkMax && absVal > opts.max || checkMin && -absVal < opts.min) {
+            if (!opts.SetMinMaxOnOverflow) return false;
+            return {
+              refreshFromBuffer: true,
+              buffer: boundaryBuffer(checkMax ? opts.max : opts.min, opts)
+            };
+          }
         }
         return isNegative !== false ? {
           remove: isNegative,
@@ -9344,13 +9382,13 @@ const numericAlias = {
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
         unmasked < 0)) {
-          return unmasked < 0 && opts.SetMaxOnOverflow ? {
+          return unmasked < 0 && opts.SetMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.min, opts)
           } : false;
         }
         if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
-          return opts.SetMaxOnOverflow ? {
+          return opts.SetMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.max, opts)
           } : false;
@@ -9607,6 +9645,22 @@ const numericAlias = {
                 }
               }
             }
+        }
+      }
+
+      // Taking the sign off a negative value is that value crossing max.
+      // SetMinMaxOnOverflow sets the boundary there and then, as it does for
+      // an overflowing keystroke, instead of leaving the value to be clamped
+      // on blur. Only the pure flip counts - the sign and nothing else,
+      // compared as text, not as a number: deleting digits is ordinary
+      // editing. #2846
+      if (e && opts.SetMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === keys.Delete || e.key === keys.Backspace || e.key === keys.BACKSPACE_SAFARI))) {
+        const after = buffer.slice().reverse().join("");
+        if (unmaskAsNumber(after, opts) > opts.max && unmaskAsString(inputmask._valueGet(true), opts) === opts.negationSymbol.front + unmaskAsString(after, opts) + opts.negationSymbol.back) {
+          return {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.max, opts)
+          };
         }
       }
       return result;

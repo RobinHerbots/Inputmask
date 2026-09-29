@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.32
+ * Version: 5.1.0-beta.33
  */
 /******/ var __webpack_modules__ = ({
 
@@ -595,47 +595,55 @@ const EventHandlers = {
       }
     }
   },
-  pasteEvent: async function (e) {
-    function handlePaste(inputmask, input, inputValue, pastedValue, onBeforePaste) {
-      let caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true),
-        valueBeforeCaret = inputValue.substr(0, caretPos.begin),
-        valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
-      if (valueBeforeCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-      if (valueAfterCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
-      pastedValue = valueBeforeCaret + pastedValue + valueAfterCaret;
-      if (inputmask.isRTL && opts.numericInput !== true) {
-        pastedValue = pastedValue.split("");
-        for (const c of _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)) {
-          if (pastedValue[0] === c) pastedValue.shift();
-        }
-        pastedValue = pastedValue.reverse().join("");
-      }
-      let pasteValue = pastedValue;
-      if (typeof onBeforePaste === "function") {
-        pasteValue = onBeforePaste.call(inputmask, pasteValue, opts);
-        if (pasteValue === false) {
-          return false;
-        }
-        if (!pasteValue) {
-          pasteValue = inputValue;
-        }
-      }
-      (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .checkVal */ .eP)(input, true, false, pasteValue.toString().split(""), e);
-    }
+  pasteEvent: function (e) {
     const input = this,
       inputmask = this.inputmask,
       opts = inputmask.opts;
     let inputValue = inputmask._valueGet(true),
       pastedValue;
-    inputmask.skipInputEvent = true;
     if (e.clipboardData && e.clipboardData.getData) {
       pastedValue = e.clipboardData.getData("text/plain");
     } else if (_global_window__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.clipboardData && _global_window__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.clipboardData.getData) {
       // IE
       pastedValue = _global_window__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.clipboardData.getData("Text");
     }
-    handlePaste(inputmask, input, inputValue, pastedValue, opts.onBeforePaste);
-    e.preventDefault();
+    if (pastedValue === undefined || pastedValue === "") {
+      // nothing to interpolate, let the browser handle the paste
+      inputmask.pasteValue = undefined;
+      return;
+    }
+
+    // Compute the value the paste should produce, but do not preventDefault the
+    // paste event.  Letting the native paste land and normalizing on the
+    // follow-up input event keeps masked inputs from tripping the Lighthouse /
+    // PageSpeed "preventing users from pasting into input fields" audit (#2823)
+    // and keeps password-manager fills working.  The browser fires an input
+    // event with inputType "insertFromPaste" right after a non-prevented paste.
+    let caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true),
+      valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+      valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
+    if (valueBeforeCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+    if (valueAfterCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
+    let pasteValue = valueBeforeCaret + pastedValue + valueAfterCaret;
+    if (inputmask.isRTL && opts.numericInput !== true) {
+      pasteValue = pasteValue.split("");
+      for (const c of _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)) {
+        if (pasteValue[0] === c) pasteValue.shift();
+      }
+      pasteValue = pasteValue.reverse().join("");
+    }
+    if (typeof opts.onBeforePaste === "function") {
+      pasteValue = opts.onBeforePaste.call(inputmask, pasteValue, opts);
+      if (pasteValue === false) {
+        inputmask.pasteValue = false;
+        inputmask.pasteInputValue = inputValue;
+        return;
+      }
+      if (!pasteValue) {
+        pasteValue = inputValue;
+      }
+    }
+    inputmask.pasteValue = pasteValue;
   },
   inputFallBackEvent: function (e) {
     // fallback when keypress is not triggered
@@ -643,6 +651,21 @@ const EventHandlers = {
       opts = inputmask.opts,
       $ = inputmask.dependencyLib,
       charPlaceholder = "\x1F";
+    if (e.inputType === "insertFromPaste" && inputmask.pasteValue !== undefined) {
+      // apply the paste computed in pasteEvent, the native (unprevented) paste
+      // already landed and this normalizes it to the mask
+      const pasteValue = inputmask.pasteValue,
+        pasteInputValue = inputmask.pasteInputValue;
+      inputmask.pasteValue = undefined;
+      inputmask.pasteInputValue = undefined;
+      if (pasteValue === false) {
+        // onBeforePaste rejected the paste -> restore the previous value
+        (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .applyInputValue */ .gc)(this, pasteInputValue);
+      } else {
+        (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .checkVal */ .eP)(this, true, false, pasteValue.toString().split(""), e);
+      }
+      return false;
+    }
 
     // console.log(e.inputType);
 

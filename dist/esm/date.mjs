@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.32
+ * Version: 5.1.0-beta.33
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -541,6 +541,8 @@ function analyseMask(mask, format, opts) {
     return new DateObject(mask, format, opts, inputmask);
   } else if (mask && typeof mask === "object" && Object.prototype.hasOwnProperty.call(mask, "date")) {
     return mask;
+  } else if (mask instanceof Date) {
+    return new DateObject(importDate(mask, opts), format, opts, inputmask);
   }
   return undefined;
 }

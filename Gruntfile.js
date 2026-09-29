@@ -1,3 +1,4 @@
+// eslint-disable-next-line import-x/order
 const { execSync } = require("child_process"),
   webpackConfig = require("./webpack.config");
 

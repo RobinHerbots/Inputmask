@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.32
+ * Version: 5.1.0-beta.33
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -81,6 +81,13 @@ function alignDigits(buffer, digits, opts, force) {
 function unmaskAsNumber(str, opts) {
   return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend({}, opts, {
     unmaskAsNumber: true
+  }));
+}
+
+// onUnMask's text form, whatever the unmaskAsNumber option says
+function unmaskAsString(str, opts) {
+  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend({}, opts, {
+    unmaskAsNumber: false
   }));
 }
 function boundaryBuffer(bound, opts) {
@@ -316,7 +323,7 @@ const numericAlias = {
     // minimum value
     max: null,
     // maximum value
-    SetMaxOnOverflow: false,
+    SetMinMaxOnOverflow: false,
     step: 1,
     inputType: "text",
     // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
@@ -374,17 +381,23 @@ const numericAlias = {
         const checkMax = isNegative !== false && opts.max !== null,
           checkMin = isNegative === false && opts.min !== null;
         // Reject typing "-" against a non-negative min — alignDigits would
-        // pad the orphan sign to "-0". SetMaxOnOverflow=true has its own
+        // pad the orphan sign to "-0". SetMinMaxOnOverflow=true has its own
         // boundary refresh in postValidation.
-        if (!opts.SetMaxOnOverflow && checkMin && opts.min >= 0) return false;
-        // Reject sign flips that would push the buffer out of range.
-        // postValidation's range check doesn't fire after the validator's
-        // `{remove: ...}` return (toggle-off path), so overflow on that
-        // path must be caught here.
+        if (!opts.SetMinMaxOnOverflow && checkMin && opts.min >= 0) return false;
+        // A sign flip out of range: SetMinMaxOnOverflow puts the boundary it
+        // crossed in the field, as an overflowing keystroke does, otherwise
+        // the keystroke is refused. postValidation's range check doesn't fire
+        // after the validator's `{remove: ...}` return (toggle-off path), so
+        // the flip has to be caught here. #2846
         if ((checkMax || checkMin) && this.maskset.validPositions.length > 0) {
           const absVal = Math.abs(unmaskAsNumber(buffer.slice().reverse().join(""), opts));
-          if (checkMax && absVal > opts.max) return false;
-          if (checkMin && -absVal < opts.min) return false;
+          if (checkMax && absVal > opts.max || checkMin && -absVal < opts.min) {
+            if (!opts.SetMinMaxOnOverflow) return false;
+            return {
+              refreshFromBuffer: true,
+              buffer: boundaryBuffer(checkMax ? opts.max : opts.min, opts)
+            };
+          }
         }
         return isNegative !== false ? {
           remove: isNegative,
@@ -492,13 +505,13 @@ const numericAlias = {
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
         unmasked < 0)) {
-          return unmasked < 0 && opts.SetMaxOnOverflow ? {
+          return unmasked < 0 && opts.SetMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.min, opts)
           } : false;
         }
         if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
-          return opts.SetMaxOnOverflow ? {
+          return opts.SetMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.max, opts)
           } : false;
@@ -755,6 +768,22 @@ const numericAlias = {
                 }
               }
             }
+        }
+      }
+
+      // Taking the sign off a negative value is that value crossing max.
+      // SetMinMaxOnOverflow sets the boundary there and then, as it does for
+      // an overflowing keystroke, instead of leaving the value to be clamped
+      // on blur. Only the pure flip counts - the sign and nothing else,
+      // compared as text, not as a number: deleting digits is ordinary
+      // editing. #2846
+      if (e && opts.SetMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI))) {
+        const after = buffer.slice().reverse().join("");
+        if (unmaskAsNumber(after, opts) > opts.max && unmaskAsString(inputmask._valueGet(true), opts) === opts.negationSymbol.front + unmaskAsString(after, opts) + opts.negationSymbol.back) {
+          return {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.max, opts)
+          };
         }
       }
       return result;
