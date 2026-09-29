@@ -111,7 +111,7 @@ Default: undefined
 Maximum value  
 Default: undefined
 
-### SetMinMaxOnOverflow
+### setMinMaxOnOverflow
 
 Set the boundary the value crossed when it goes out of range: `max` when the value goes over it, `min` when it goes under. The boundary is put in the field right away, both for an overflowing keystroke and for a sign removal (Backspace, Delete or cut on the `-` of a negative value) - a deletion can only cross `max`.
 
