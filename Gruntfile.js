@@ -2,6 +2,17 @@
 const { execSync } = require("child_process"),
   webpackConfig = require("./webpack.config");
 
+// npm and nuget.org take their credentials from the environment, and .env is
+// where they are kept locally, so read it when it is there. loadEnvFile is a
+// builtin so this costs no dependency, and it leaves variables that are
+// already in the environment alone, so an exported variable still wins over
+// the file. Needs node 20.12, which the toolchain already requires.
+try {
+  process.loadEnvFile(__dirname + "/.env");
+} catch {
+  // no .env, the credentials have to come from the environment itself
+}
+
 module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
