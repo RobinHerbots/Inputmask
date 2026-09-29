@@ -11,6 +11,7 @@
 ### Updates
 
 - new `insertModeToggle` option (default `true`) to switch off the INSERT key insert/overwrite toggle
+- `SetMaxOnOverflow` is renamed to `SetMinMaxOnOverflow`, it sets `min` as well as `max` (breaking)
 
 ### Fixed
 
@@ -19,6 +20,7 @@
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
 - correct deletion of the digit immediately before the radix point on currency/numeric
 - radix point is kept when typing a negative value with min/max #2846
+- removing the sign of a negative value past max sets max with `SetMinMaxOnOverflow` instead of leaving the value to be clamped on blur #2846
 - deleted digits right of the radix point can be typed again on numeric #2801
 - caret focus lands on the radix point when setting a grouped initial value #2850
 - typing over a fully-selected numeric value with digitsOptional no longer inserts into decimal slot #2893
@@ -29,6 +31,7 @@
 - options read from `data-inputmask` attributes are no longer dropped from `userOptions` (an explicitly given `insertMode` is now respected on the INSERT key) #2847
 - the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
 - `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
+- pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
 
 ### Tests
 

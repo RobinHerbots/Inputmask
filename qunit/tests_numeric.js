@@ -3174,7 +3174,7 @@ export default function (qunit, Inputmask) {
         min: -100,
         max: 30,
         digits: 3,
-        SetMaxOnOverflow: true
+        SetMinMaxOnOverflow: true
       },
       type: "-77777",
       expected: "-100"
@@ -3252,7 +3252,7 @@ export default function (qunit, Inputmask) {
       label:
         "decimal allowMinus min=-999 SMOO=true - Type '-1000' clamps to min #951",
       alias: "decimal",
-      opts: { min: -999, digits: 0, SetMaxOnOverflow: true },
+      opts: { min: -999, digits: 0, SetMinMaxOnOverflow: true },
       type: "-1000",
       expected: "-999"
     },
@@ -3263,7 +3263,7 @@ export default function (qunit, Inputmask) {
         min: -100,
         max: 30,
         digits: 0,
-        SetMaxOnOverflow: true
+        SetMinMaxOnOverflow: true
       },
       type: "-777",
       expected: "-100"
@@ -3276,7 +3276,7 @@ export default function (qunit, Inputmask) {
         min: -100,
         max: 30,
         digits: 0,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       type: "-777",
       expected: "-77"
@@ -3297,7 +3297,7 @@ export default function (qunit, Inputmask) {
         min: -10,
         max: -1,
         digits: 0,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       type: "-50",
       expected: "-5"
@@ -3310,7 +3310,7 @@ export default function (qunit, Inputmask) {
         min: -10,
         max: -1,
         digits: 0,
-        SetMaxOnOverflow: true
+        SetMinMaxOnOverflow: true
       },
       type: "-50",
       expected: "-10"
@@ -3323,7 +3323,7 @@ export default function (qunit, Inputmask) {
         min: 0,
         max: 100,
         digits: 0,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       type: "-5",
       expected: "5"
@@ -3335,7 +3335,7 @@ export default function (qunit, Inputmask) {
         min: 0,
         max: 100,
         digits: 0,
-        SetMaxOnOverflow: true
+        SetMinMaxOnOverflow: true
       },
       type: "-5",
       expected: "0"
@@ -3355,7 +3355,7 @@ export default function (qunit, Inputmask) {
         min: -100,
         max: 30,
         digits: 3,
-        SetMaxOnOverflow: true
+        SetMinMaxOnOverflow: true
       },
       type: "-100.5",
       expected: "-100"
@@ -3431,6 +3431,40 @@ export default function (qunit, Inputmask) {
       opts: { max: 0 },
       type: "-0-",
       expected: "0"
+    },
+    // a sign flip out of range: SetMinMaxOnOverflow puts the boundary it
+    // crossed in the field, as an overflowing keystroke does #2846
+    {
+      label:
+        "numeric min=-100 max=30 default - toggle '-' off '-50' is refused #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "-50-",
+      expected: "-50"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 SMOO=true - toggle '-' off '-50' sets max #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0, SetMinMaxOnOverflow: true },
+      type: "-50-",
+      expected: "30"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 SMOO=true - toggle '-' off '-20' stays in range #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0, SetMinMaxOnOverflow: true },
+      type: "-20-",
+      expected: "20"
+    },
+    {
+      label:
+        "numeric min=-30 max=100 SMOO=true - toggle '-' onto '50' sets min #2846",
+      alias: "numeric",
+      opts: { min: -30, max: 100, digits: 0, SetMinMaxOnOverflow: true },
+      type: "50-",
+      expected: "-30"
     }
   ].forEach(function (tc) {
     qunit.test(tc.label, function (assert) {
@@ -3766,7 +3800,7 @@ export default function (qunit, Inputmask) {
       label:
         "integer min=-999 max=999 SMOO=false - setvalue('10000') clamps to max #2846",
       alias: "integer",
-      opts: { min: -999, max: 999, SetMaxOnOverflow: false },
+      opts: { min: -999, max: 999, SetMinMaxOnOverflow: false },
       value: "10000",
       expected: "999"
     },
@@ -3774,7 +3808,7 @@ export default function (qunit, Inputmask) {
       label:
         "integer min=0 max=50 SMOO=false - setvalue('99') clamps to max #2846",
       alias: "integer",
-      opts: { min: 0, max: 50, SetMaxOnOverflow: false },
+      opts: { min: 0, max: 50, SetMinMaxOnOverflow: false },
       value: "99",
       expected: "50"
     },
@@ -3782,7 +3816,7 @@ export default function (qunit, Inputmask) {
       label:
         "integer min=0 max=500 SMOO=false - setvalue('123456') clamps to max #2846",
       alias: "integer",
-      opts: { min: 0, max: 500, SetMaxOnOverflow: false },
+      opts: { min: 0, max: 500, SetMinMaxOnOverflow: false },
       value: "123456",
       expected: "500"
     },
@@ -3790,7 +3824,7 @@ export default function (qunit, Inputmask) {
       label:
         "numeric max=30.5 digits=1 SMOO=false - setvalue('99.9') clamps to max #2846",
       alias: "numeric",
-      opts: { max: 30.5, digits: 1, SetMaxOnOverflow: false },
+      opts: { max: 30.5, digits: 1, SetMinMaxOnOverflow: false },
       value: "99.9",
       expected: "30.5"
     },
@@ -3814,7 +3848,7 @@ export default function (qunit, Inputmask) {
       label:
         "integer min=-999 max=999 SMOO=false - setvalue('-10000') clamps to min #2846",
       alias: "integer",
-      opts: { min: -999, max: 999, SetMaxOnOverflow: false },
+      opts: { min: -999, max: 999, SetMinMaxOnOverflow: false },
       value: "-10000",
       expected: "-999"
     },
@@ -3825,7 +3859,7 @@ export default function (qunit, Inputmask) {
       label:
         "integer min=10 max=999 SMOO=false - setvalue('5') clamps to min #2846",
       alias: "integer",
-      opts: { min: 10, max: 999, SetMaxOnOverflow: false },
+      opts: { min: 10, max: 999, SetMinMaxOnOverflow: false },
       value: "5",
       expected: "10"
     },
@@ -3842,7 +3876,7 @@ export default function (qunit, Inputmask) {
     {
       label: "integer max=999 SMOO=true - setvalue('5000') clamps to max",
       alias: "integer",
-      opts: { min: 0, max: 999, SetMaxOnOverflow: true },
+      opts: { min: 0, max: 999, SetMinMaxOnOverflow: true },
       value: "5000",
       expected: "999"
     },
@@ -3862,7 +3896,7 @@ export default function (qunit, Inputmask) {
         digits: 2,
         min: 0,
         max: 1000,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       value: "12345",
       expected: "$1,000"
@@ -3882,7 +3916,7 @@ export default function (qunit, Inputmask) {
         // radix ("$1,000.00", not "$1,000"). integers-only output is covered
         // by the "12345" row above.
         max: 1000,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       value: "$5,000.00",
       expected: "$1,000.00"
@@ -3902,7 +3936,7 @@ export default function (qunit, Inputmask) {
         digitsOptional: false,
         min: 0,
         max: 1000,
-        SetMaxOnOverflow: false
+        SetMinMaxOnOverflow: false
       },
       value: "$5,000.00",
       expected: "$1,000.00"
@@ -4672,6 +4706,89 @@ export default function (qunit, Inputmask) {
           $("#testmask").Type(tc.typed);
           $.caret(testmask, tc.caret);
           $("#testmask").SendKey(keys.Backspace);
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              tc.expected,
+              "Result " + testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }
+    );
+  });
+
+  // Taking the sign off a negative value is that value crossing max, and
+  // SetMinMaxOnOverflow sets the boundary there and then, as it does for an
+  // overflowing keystroke, instead of leaving the value to be clamped on blur.
+  // Only the pure flip counts - the sign and nothing else - so deleting a
+  // digit stays ordinary editing. #2846
+  [
+    {
+      label: "Backspace on the sign",
+      typed: "-50",
+      key: "Backspace",
+      caret: 1,
+      expected: "30"
+    },
+    {
+      label: "Delete on the sign",
+      typed: "-50",
+      key: "Delete",
+      caret: 0,
+      expected: "30"
+    },
+    {
+      label: "Backspace, caret after the prefix",
+      typed: "-50",
+      key: "Backspace",
+      caret: 3,
+      opts: { prefix: "$ " },
+      expected: "$ 30"
+    },
+    {
+      label: "in range, no boundary",
+      typed: "-20",
+      key: "Backspace",
+      caret: 1,
+      expected: "20"
+    },
+    {
+      label: "a digit, not the sign",
+      typed: "-50",
+      key: "Backspace",
+      caret: 3,
+      expected: "-5"
+    }
+  ].forEach(function (tc) {
+    qunit.test(
+      "numeric min=-100 max=30 SMOO=true - removing the sign sets max (" +
+        tc.label +
+        ")",
+      function (assert) {
+        const done = assert.async(),
+          $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask(
+          "numeric",
+          Object.assign(
+            {
+              min: -100,
+              max: 30,
+              digits: 0,
+              SetMinMaxOnOverflow: true
+            },
+            tc.opts
+          )
+        ).mask(testmask);
+
+        testmask.focus();
+        setTimeout(function () {
+          $("#testmask").Type(tc.typed);
+          $.caret(testmask, tc.caret);
+          $("#testmask").SendKey(keys[tc.key]);
           setTimeout(function () {
             assert.equal(
               testmask.value,
