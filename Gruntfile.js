@@ -16,13 +16,6 @@ module.exports = function (grunt) {
         prereleaseName: "beta"
       }
     },
-    release: {
-      options: {
-        bump: false,
-        commit: false,
-        add: false
-      }
-    },
     karma: {
       options: {
         configFile: "karma.conf.js"
@@ -127,10 +120,104 @@ module.exports = function (grunt) {
     });
   });
 
-  grunt.registerTask("publish", ["release", "nugetpack", "nugetpush"]);
+  // grunt-release (last published 2022) shelled out to "npm publish" through
+  // shell.exec with silent: true, so an expired npm token only surfaced as
+  // "Failed when executing: `npm publish`", and it had already created the git
+  // tag by then. These tasks stream npm's own output and check the
+  // authentication before anything is tagged or published.
+  //
+  // Credentials come from ~/.npmrc, refreshed with "grunt npmlogin", which
+  // opens a browser (npm login defaults to --auth-type=web). Everything runs
+  // with stdio: "inherit" so npm inherits the terminal and can ask for a
+  // two factor challenge itself: npm is retiring TOTP in favour of WebAuthn
+  // security keys, which can only be answered interactively, and while a
+  // TOTP based account can still pass an npm_config_otp one time password.
+  const npmRegistry = "https://registry.npmjs.org",
+    gitRemote = "origin";
+
+  function run(cmd) {
+    execSync(cmd, { stdio: "inherit" });
+  }
+
+  function gitTagExists(tag) {
+    try {
+      execSync(`git rev-parse -q --verify refs/tags/${tag}`, {
+        stdio: "ignore"
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  grunt.registerTask("npmlogin", "Log in to npm in a browser", function () {
+    grunt.log.ok(
+      "npm login opens a browser and stores the token in ~/.npmrc - run this from an interactive terminal"
+    );
+    run(`npm login --registry ${npmRegistry}`);
+  });
+
+  grunt.registerTask("npmauth", "Check the npm authentication", function () {
+    let user;
+    try {
+      user = execSync(`npm whoami --registry ${npmRegistry}`, {
+        stdio: ["ignore", "pipe", "inherit"]
+      })
+        .toString()
+        .trim();
+    } catch {
+      grunt.fail.fatal(
+        `npm could not authenticate against ${npmRegistry} (no valid token, or offline) - run "grunt npmlogin" to refresh it`
+      );
+    }
+    grunt.log.ok("npm authenticated as " + user);
+  });
+
+  grunt.registerTask(
+    "gitrelease",
+    "Tag the package.json version and push it",
+    function () {
+      const version = grunt.config("pkg").version;
+      if (gitTagExists(version)) {
+        // keeps a re-run after a failed npm publish working
+        grunt.log.ok("git tag " + version + " already exists, keeping it");
+      } else {
+        run(`git tag ${version} -m "version ${version}"`);
+      }
+      run(`git push ${gitRemote} HEAD`);
+      run(`git push ${gitRemote} ${version}`);
+    }
+  );
+
+  grunt.registerTask(
+    "npmpublish",
+    "Publish to the npm registry",
+    function (tag) {
+      run(`npm publish${tag ? " --tag " + tag : ""}`);
+    }
+  );
+
+  grunt.registerTask("publish", [
+    "npmauth",
+    "gitrelease",
+    "npmpublish",
+    "nugetpack",
+    "nugetpush"
+  ]);
+  // a prerelease (x.y.z-beta.n) goes to npm under the next tag and to NuGet as a
+  // prerelease version, where consumers have to opt in for it
   grunt.registerTask("publishnext", function () {
-    grunt.config("release.options.npmtag", "next");
-    grunt.task.run("release");
+    const version = grunt.config("pkg").version;
+    if (!version.includes("-")) {
+      grunt.fail.fatal(
+        `publishnext needs a prerelease version, ${version} is a stable one - use "grunt publish"`
+      );
+    }
+    grunt.task.run("npmauth");
+    grunt.task.run("gitrelease");
+    grunt.task.run("npmpublish:next");
+    grunt.task.run("nugetpack");
+    grunt.task.run("nugetpush");
   });
   grunt.registerTask("types", function () {
     execSync("npm run types", { stdio: "inherit" });

@@ -140,7 +140,6 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-eslint": "^26.0.0",
     "grunt-karma": "^4.0.2",
-    "grunt-release": "^0.14.0",
     "grunt-webpack": "^8.0.0",
     "jquery": "^3.7.1",
     "karma": "^6.4.4",
