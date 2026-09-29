@@ -258,15 +258,23 @@ export default function ($, Inputmask) {
       input.value = nativeValue;
     }
     $.caret(input, selectionBegin + inputStr.length);
-    input.dispatchEvent(
-      new InputEvent("input", {
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-        inputType: "insertFromPaste",
-        data: inputStr
-      })
-    );
+    const evt = new InputEvent("input", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      inputType: "insertFromPaste",
+      data: inputStr
+    });
+    // WebKit ignores inputType in the InputEvent init dictionary
+    // (https://bugs.webkit.org/show_bug.cgi?id=170416), so on Safari it stays
+    // "" on synthetic events and inputFallBackEvent would not recognize the
+    // paste. Patch the read-only property on the event.
+    if (evt.inputType !== "insertFromPaste") {
+      Object.defineProperty(evt, "inputType", {
+        value: "insertFromPaste"
+      });
+    }
+    input.dispatchEvent(evt);
   };
 
   $.fn.input = function (inputStr, caretBegin, caretEnd, inputType) {
