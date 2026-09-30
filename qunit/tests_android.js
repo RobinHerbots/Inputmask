@@ -196,4 +196,54 @@ export default function (qunit, Inputmask) {
       });
     }
   );
+
+  // Taking the sign off "-50" through the input-event fallback: a keydown the
+  // mask cannot use, then an input event with the sign already gone from the
+  // native value, modelled on the keystroke above. The fallback replays it as a
+  // Backspace, which is the same sign flip as a real Backspace, so
+  // setMinMaxOnOverflow has to reach it as well - off the deletion goes
+  // through and blur clamps to max, on max is put in the field at once.
+  [false, true].forEach(function (setMinMax) {
+    qunit.test(
+      "numeric max=30 - Backspace on the sign of -50 through the fallback, option " +
+        setMinMax,
+      function (assert) {
+        const done = assert.async(),
+          $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask("numeric", {
+          min: -100,
+          max: 30,
+          digits: 0,
+          setMinMaxOnOverflow: setMinMax
+        }).mask(testmask);
+        testmask.focus();
+        setTimeout(function () {
+          ["-", "5", "0"].forEach(type(testmask));
+          const typed = testmask.value;
+          $.caret(testmask, 1);
+          testmask.dispatchEvent(
+            new KeyboardEvent("keydown", {
+              key: "Unidentified",
+              bubbles: true,
+              cancelable: true
+            })
+          );
+          $(testmask).input("50", 0, "deleteContentBackward");
+          assert.equal(typed, "-50", "typed " + typed);
+          assert.equal(
+            testmask.value,
+            setMinMax ? "30" : "50",
+            "Result " + testmask.value
+          );
+          $("#testmask").trigger("blur");
+          setTimeout(function () {
+            assert.equal(testmask.value, "30", "after blur " + testmask.value);
+            done();
+          }, 0);
+        }, 0);
+      }
+    );
+  });
 }

@@ -2133,6 +2133,54 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "100", "Result " + testmask.value);
   });
 
+  // The block that makes #1351 work shipped in beta.25 without a test of its
+  // own. Deleting in the integer part has to take the digit out and repad the
+  // fraction, otherwise the fixed digit count is silently lost, and the caret
+  // has to stay in the integer part instead of falling into the fraction.
+  qunit.test(
+    "currency + delete in the integer part repads the fraction",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        max: "99999999.99",
+        alias: "currency",
+        prefix: "",
+        autoUnmask: true
+      }).mask(testmask);
+
+      // the engine removes the digit for Backspace but not for a Delete in
+      // the integer part, so the Delete case is the one that needs the
+      // repad - without it "12.34" cannot lose its leading digit
+      $(testmask).Type("12.34");
+      $.caret(testmask, 0);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(testmask.value, "0.34", "Result " + testmask.value);
+
+      // and the radix dance: Backspace in the integer part leaves the caret
+      // on the integer digit next to the radix point, not in the fraction
+      const $fixture2 = $("#qunit-fixture");
+      $fixture2.append('<input type="text" id="testmask2" />');
+      const testmask2 = document.getElementById("testmask2");
+      Inputmask({
+        max: "99999999.99",
+        alias: "currency",
+        prefix: "",
+        autoUnmask: true
+      }).mask(testmask2);
+      $(testmask2).Type("12.34");
+      $.caret(testmask2, 2);
+      $("#testmask2").SendKey(keys.Backspace);
+      assert.equal(testmask2.value, "0.34", "Result " + testmask2.value);
+      assert.deepEqual(
+        $.caret(testmask2),
+        { begin: 1, end: 1 },
+        "caret stays left of the radix point"
+      );
+    }
+  );
+
   qunit.test("Currency digits and delete #1351 - kousenlsn", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
@@ -4800,5 +4848,597 @@ export default function (qunit, Inputmask) {
         }, 0);
       }
     );
+  });
+
+  // Ported from the tests of #2904. Their expectations encoded the refusal
+  // that PR proposed; here the deletion goes through with the option off and
+  // clamps on blur, and the option puts the crossed boundary in the field at
+  // once, as it does for an overflowing keystroke. So each case carries the
+  // value shown straight after the deletion (afterAct) and the value the field
+  // ends up at (expected) - those differ with the option off, and the helper
+  // asserts both.
+  function signDeletionTest(name, opts, tc) {
+    qunit.test(name, function (assert) {
+      const done = assert.async();
+      $("#qunit-fixture").append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", opts).mask(testmask);
+
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type(tc.typed);
+        if (tc.shown !== undefined) {
+          assert.equal(
+            testmask.value,
+            tc.shown,
+            "starting value " + testmask.value
+          );
+        }
+        const seen = tc.act(testmask);
+        setTimeout(function () {
+          const immediate =
+            tc.afterAct === undefined ? tc.expected : tc.afterAct;
+          if (Array.isArray(immediate)) {
+            assert.deepEqual(seen, immediate, "Result " + seen.join(" > "));
+          } else {
+            assert.equal(testmask.value, immediate, "Result " + testmask.value);
+          }
+          if (tc.caretWithin) {
+            // a deletion collapses the selection onto it
+            const pos = $.caret(testmask);
+            assert.ok(
+              pos.begin === pos.end &&
+                pos.begin >= tc.caretWithin[0] &&
+                pos.begin <= tc.caretWithin[1],
+              "Caret " + pos.begin + "-" + pos.end
+            );
+          }
+          if (!tc.blur) {
+            done();
+            return;
+          }
+          $("#testmask").trigger("blur");
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              tc.expected,
+              "after blur " + testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }, 0);
+    });
+  }
+
+  function press(key, begin, end) {
+    return function (el) {
+      $.caret(el, begin, end === undefined ? begin : end);
+      $(el).SendKey(keys[key]);
+    };
+  }
+
+  function typeOver(chars, begin, end) {
+    return function (el) {
+      $.caret(el, begin, end);
+      $(el).Type(chars);
+    };
+  }
+
+  // headless Chrome refuses clipboard writes; cutEvent only needs its
+  // synchronous writeText call to succeed
+  function cut(begin, end) {
+    return function (el) {
+      const clipboard = Object.getOwnPropertyDescriptor(
+        window.navigator,
+        "clipboard"
+      );
+      Object.defineProperty(window.navigator, "clipboard", {
+        configurable: true,
+        value: { writeText: function () {} }
+      });
+      $.caret(el, begin, end);
+      try {
+        $(el).trigger("cut");
+      } finally {
+        if (clipboard) {
+          Object.defineProperty(window.navigator, "clipboard", clipboard);
+        } else {
+          delete window.navigator.clipboard;
+        }
+      }
+    };
+  }
+
+  // a sign flip out of range, in both modes. Off, the digits the user left
+  // stay and blur clamps them to the boundary; on, the boundary is what the
+  // field shows straight away.
+  function signFlipCases(label, baseOpts, cases) {
+    cases.forEach(function (tc) {
+      const opts = Object.assign({}, baseOpts, tc.opts);
+      signDeletionTest(
+        "numeric - removing the sign past max, option off (" + label + ")",
+        Object.assign({ setMinMaxOnOverflow: false }, opts),
+        Object.assign({ blur: true }, tc, {
+          afterAct: tc.unsigned,
+          expected: tc.boundary
+        })
+      );
+      signDeletionTest(
+        "numeric - removing the sign past max, option on (" + label + ")",
+        Object.assign({ setMinMaxOnOverflow: true }, opts),
+        Object.assign({}, tc, {
+          afterAct: tc.boundary,
+          expected: tc.boundary
+        })
+      );
+    });
+  }
+
+  const signMax30 = { min: -100, max: 30, digits: 0 };
+
+  signFlipCases("max 30", signMax30, [
+    {
+      label: "Backspace",
+      typed: "-50",
+      act: press("Backspace", 1),
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "Delete",
+      typed: "-50",
+      act: press("Delete", 0),
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "cut the sign",
+      typed: "-50",
+      act: cut(0, 1),
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "Ctrl+Backspace on the sign",
+      typed: "-50",
+      act: function (el) {
+        $.caret(el, 1);
+        $(el).SendKey(keys.Backspace, keys.Control);
+      },
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "a selected sign, Backspace",
+      typed: "-50",
+      act: press("Backspace", 0, 1),
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "a selected sign, Delete",
+      typed: "-50",
+      act: press("Delete", 0, 1),
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "prefix",
+      typed: "-50",
+      act: press("Backspace", 1),
+      opts: { prefix: "$ " },
+      unsigned: "$ 50",
+      boundary: "$ 30"
+    },
+    {
+      // Backspace skips the static prefix and reaches the sign from here
+      label: "prefix, caret after it",
+      typed: "-50",
+      act: press("Backspace", 3),
+      opts: { prefix: "$ " },
+      unsigned: "$ 50",
+      boundary: "$ 30"
+    },
+    {
+      label: "prefix, sign and prefix selected, Backspace",
+      typed: "-50",
+      act: press("Backspace", 0, 3),
+      opts: { prefix: "$ " },
+      unsigned: "$ 50",
+      boundary: "$ 30"
+    },
+    {
+      label: "prefix, sign and prefix selected, Delete",
+      typed: "-50",
+      act: press("Delete", 0, 3),
+      opts: { prefix: "$ " },
+      unsigned: "$ 50",
+      boundary: "$ 30"
+    }
+  ]);
+
+  // in range the sign simply goes, no boundary either way
+  signDeletionTest(
+    "numeric - removing the sign within range - Backspace",
+    Object.assign({ setMinMaxOnOverflow: false }, signMax30),
+    { typed: "-20", act: press("Backspace", 1), expected: "20", blur: true }
+  );
+  signDeletionTest(
+    "numeric - removing the sign within range, option on - Backspace",
+    Object.assign({ setMinMaxOnOverflow: true }, signMax30),
+    { typed: "-20", act: press("Backspace", 1), expected: "20", blur: true }
+  );
+
+  // no max, nothing to cross
+  signDeletionTest(
+    "numeric - no max - removing the sign of -50",
+    { min: -100, max: null, digits: 0, setMinMaxOnOverflow: false },
+    { typed: "-50", act: press("Backspace", 1), expected: "50", blur: true }
+  );
+
+  // a typed "-" is a sign flip too, and the option reaches it the same way it
+  // reaches a deletion: off, the flip out of range is refused and the value
+  // stands; on, the boundary it crossed goes in the field. Both directions -
+  // to positive past max, to negative past min. #2904 expected the flip to be
+  // refused in either mode, which is the refusal this supersedes.
+  [
+    {
+      label: "-50 to 50, max 30",
+      typed: "-50",
+      opts: { min: -100, max: 30 },
+      boundary: "30"
+    },
+    {
+      label: "50 to -50, min -30",
+      typed: "50",
+      opts: { min: -30, max: 100 },
+      boundary: "-30"
+    }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric - typing - out of range (" +
+          tc.label +
+          ", setMinMaxOnOverflow " +
+          setMinMax +
+          ")",
+        Object.assign({ digits: 0, setMinMaxOnOverflow: setMinMax }, tc.opts),
+        {
+          typed: tc.typed,
+          act: typeOver("-", 0, 0),
+          afterAct: setMinMax ? tc.boundary : tc.typed,
+          expected: setMinMax ? tc.boundary : tc.typed,
+          blur: true
+        }
+      );
+    });
+  });
+
+  // deleting a digit is ordinary editing, and so is taking the sign together
+  // with a digit - neither is a flip, so the option does not come into it
+  [
+    {
+      label: "a digit, not the sign",
+      act: press("Backspace", 3, 3),
+      expected: "-5"
+    },
+    {
+      label: "the sign and a digit",
+      act: press("Delete", 0, 2),
+      expected: "0"
+    },
+    {
+      // half a paired sign still clears the value, max or not
+      label: "parenthetical negation",
+      act: press("Backspace", 1, 1),
+      expected: "",
+      opts: { negationSymbol: { front: "(", back: ")" } }
+    }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric max=30 - deleting part of -50, option " +
+          setMinMax +
+          " (" +
+          tc.label +
+          ")",
+        Object.assign({ setMinMaxOnOverflow: setMinMax }, signMax30, tc.opts),
+        Object.assign({ typed: "-50" }, tc)
+      );
+    });
+  });
+
+  // a lone sign holds no number to push past max - it can still be cleared
+  signDeletionTest(
+    "numeric max=-1 - Backspace on a lone sign clears it",
+    { min: -100, max: -1, digits: 0, setMinMaxOnOverflow: false },
+    { typed: "-", act: press("Backspace", 0, 1), expected: "" }
+  );
+
+  // replacing a selection by typing is keyboard validation already: off, a
+  // digit past max is refused; on, it puts the boundary in, as any overflowing
+  // keystroke does. A digit within max goes through either way.
+  [
+    {
+      label: "the sign and a digit with a digit past max",
+      act: typeOver("9", 0, 2),
+      expected: "-50",
+      boundary: "30"
+    },
+    {
+      label: "the sign and a digit with a digit within max",
+      act: typeOver("2", 0, 2),
+      expected: "20"
+    },
+    { label: "a digit, sign kept", act: typeOver("9", 1, 2), expected: "-90" }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric max=30 - replacing a selection by typing, option " +
+          setMinMax +
+          " (" +
+          tc.label +
+          ")",
+        Object.assign({ setMinMaxOnOverflow: setMinMax }, signMax30),
+        Object.assign(
+          { typed: "-50" },
+          tc,
+          tc.boundary ? { afterAct: setMinMax ? tc.boundary : tc.expected } : {}
+        )
+      );
+    });
+  });
+
+  // with a negative max clearing the whole value leaves no number at all -
+  // that is not a value above max, so it goes through
+  ["Backspace", "Delete", "cut"].forEach(function (how) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric max=-1 - clearing -50 with " +
+          how +
+          ", option " +
+          setMinMax +
+          " empties the field",
+        { min: -100, max: -1, digits: 0, setMinMaxOnOverflow: setMinMax },
+        {
+          typed: "-50",
+          act: how === "cut" ? cut(0, 3) : press(how, 0, 3),
+          expected: ""
+        }
+      );
+    });
+  });
+
+  // the value the user is left with keeps its exact digits - nothing is
+  // rounded past 2^53, written in exponent notation, or stripped of its
+  // separators. The boundary lands on max, so the digits only survive the
+  // deletion itself, not the clamp.
+  [
+    {
+      label: "beyond 2^53",
+      typed: "-9007199254740993",
+      opts: {},
+      unsigned: "9007199254740993",
+      boundary: "30"
+    },
+    {
+      label: "a tiny fraction",
+      typed: "-0.0000001",
+      opts: { max: 0, digits: 7 },
+      unsigned: "0.0000001",
+      boundary: "0"
+    },
+    {
+      label: "group separators",
+      typed: "-1234",
+      opts: { max: 1000, groupSeparator: "," },
+      shown: "-1,234",
+      unsigned: "1,234",
+      boundary: "1,000"
+    }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric - deleting the sign keeps the exact number, option " +
+          setMinMax +
+          " (" +
+          tc.label +
+          ")",
+        Object.assign(
+          { min: null, max: 30, digits: 0, setMinMaxOnOverflow: setMinMax },
+          tc.opts
+        ),
+        {
+          typed: tc.typed,
+          shown: tc.shown,
+          act: press("Delete", 0),
+          afterAct: setMinMax ? tc.boundary : tc.unsigned,
+          expected: setMinMax ? tc.boundary : tc.unsigned
+        }
+      );
+    });
+  });
+
+  // an affix with a digit and a two character symbol are carried over as they
+  // were rather than retyped, and the value is not parsed out of the shown
+  // text: an unmaskAsNumber option, or a prefix that is also the radix, make
+  // no difference to what the deletion leaves behind
+  [
+    {
+      label: "prefix with a digit",
+      opts: { prefix: "v2 " },
+      unsigned: "v2 50",
+      boundary: "v2 30"
+    },
+    {
+      label: "suffix with a digit",
+      opts: { suffix: " m2" },
+      unsigned: "50 m2",
+      boundary: "30 m2"
+    },
+    {
+      label: "two character negation symbol",
+      opts: { negationSymbol: { front: "--", back: "" } },
+      unsigned: "50",
+      boundary: "30"
+    },
+    {
+      label: "unmaskAsNumber, a tiny fraction",
+      opts: { min: null, max: 0, digits: 7, unmaskAsNumber: true },
+      typed: "-0.0000001",
+      unsigned: "0.0000001",
+      boundary: "0"
+    },
+    {
+      label: "unmaskAsNumber, beyond 2^53",
+      opts: { min: null, max: 30, unmaskAsNumber: true },
+      typed: "-9007199254740993",
+      unsigned: "9007199254740993",
+      boundary: "30"
+    }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric - deleting the sign, option " +
+          setMinMax +
+          " (" +
+          tc.label +
+          ")",
+        Object.assign(
+          { min: -100, max: 30, digits: 0, setMinMaxOnOverflow: setMinMax },
+          tc.opts
+        ),
+        {
+          typed: tc.typed === undefined ? "-50" : tc.typed,
+          act: press("Delete", 0),
+          afterAct: setMinMax ? tc.boundary : tc.unsigned,
+          expected: setMinMax ? tc.boundary : tc.unsigned
+        }
+      );
+    });
+  });
+
+  // deleting digits moves a negative value towards zero, past a negative max
+  // on the way - ordinary editing, which typing passes through as well
+  [
+    {
+      label: "digits of -1000, max -50",
+      opts: { min: -1000, max: -50, setMinMaxOnOverflow: true },
+      typed: "-1000",
+      expected: ["-100", "-10", "-1"]
+    },
+    {
+      label: "digits of -1000, max -50, no setMinMaxOnOverflow",
+      opts: { min: -1000, max: -50, setMinMaxOnOverflow: false },
+      typed: "-1000",
+      expected: ["-100", "-10", "-1"]
+    },
+    {
+      label: "digits of 1000, min 50",
+      opts: { min: 50, max: 1000, setMinMaxOnOverflow: true },
+      typed: "1000",
+      expected: ["100", "10", "1"]
+    }
+  ].forEach(function (tc) {
+    signDeletionTest(
+      "numeric - Backspace keeps deleting digits (" + tc.label + ")",
+      Object.assign({ digits: 0 }, tc.opts),
+      {
+        typed: tc.typed,
+        act: function (el) {
+          $.caret(el, el.value.length);
+          return tc.expected.map(function () {
+            $(el).SendKey(keys.Backspace);
+            return el.value;
+          });
+        },
+        expected: tc.expected
+      }
+    );
+  });
+
+  // with a negative max the flip is refused too, like typing "-" - off it goes
+  // through and clamps on blur, on the negative boundary is set at once.
+  // Taking the sign together with a digit is not a flip and goes through.
+  [
+    { label: "Backspace on the sign", act: press("Backspace", 1, 1) },
+    { label: "Delete on the sign", act: press("Delete", 0, 1) }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric max=-1 - removing the sign of -50, option " +
+          setMinMax +
+          " (" +
+          tc.label +
+          ")",
+        { max: -1, digits: 0, setMinMaxOnOverflow: setMinMax },
+        {
+          typed: "-50",
+          act: tc.act,
+          // off, the digits the user is left with are shown until blur
+          // clamps them to the negative boundary
+          afterAct: setMinMax ? "-1" : "50",
+          expected: "-1",
+          blur: !setMinMax
+        }
+      );
+    });
+  });
+  [false, true].forEach(function (setMinMax) {
+    signDeletionTest(
+      "numeric max=-1 - the sign and a digit selected, option " +
+        setMinMax +
+        " - is not a flip",
+      { max: -1, digits: 0, setMinMaxOnOverflow: setMinMax },
+      { typed: "-50", act: press("Delete", 0, 2), expected: "0" }
+    );
+  });
+
+  // jitMasking builds the mask as the value is written, so the affixes and the
+  // mandatory digits may not be rendered yet when the boundary lands. #2904
+  [
+    {
+      label: "prefix not yet shown",
+      opts: { max: 1000, jitMasking: true, prefix: "$ ", groupSeparator: " " },
+      typed: "-1234",
+      shown: "-1 234",
+      // the prefix is not rendered yet and stays out, the mask catches up
+      unsigned: "1 234",
+      boundary: "1 000"
+    },
+    {
+      label: "mandatory digits not yet shown",
+      opts: {
+        min: -100,
+        max: 30,
+        digits: 2,
+        digitsOptional: false,
+        jitMasking: true,
+        prefix: "$ "
+      },
+      typed: "-50",
+      shown: "-$ 50",
+      unsigned: "$ 50",
+      boundary: "$ 30.00"
+    }
+  ].forEach(function (tc) {
+    [false, true].forEach(function (setMinMax) {
+      signDeletionTest(
+        "numeric - Delete before the sign, option " +
+          setMinMax +
+          " (jitMasking, " +
+          tc.label +
+          ")",
+        Object.assign({ digits: 0, setMinMaxOnOverflow: setMinMax }, tc.opts),
+        {
+          typed: tc.typed,
+          shown: tc.shown,
+          act: press("Delete", 0),
+          afterAct: setMinMax ? tc.boundary : tc.unsigned,
+          expected: setMinMax ? tc.boundary : tc.unsigned
+        }
+      );
+    });
   });
 }
