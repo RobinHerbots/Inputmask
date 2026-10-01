@@ -728,4 +728,62 @@ qunit.test("#2535 lookahead ^(0|(?!0+$)[\\dA-Z]+)$", function (assert) {
       "01 isComplete " + testmask.inputmask.isComplete()
     );
   });
+
+  qunit.test(
+    "validateOnly ~ textarea filters invalid characters without throwing on long content (#2567)",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<textarea id="testmask"></textarea>');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ regex: "[^<>]*", validateOnly: true }).mask(testmask);
+
+      testmask.focus();
+
+      // build a long string (> 500 chars) sprinkled with disallowed characters
+      let garbage = "";
+      for (let i = 0; i < 600; i++) {
+        garbage += i % 10 === 0 ? "<" : i % 17 === 0 ? ">" : "a";
+      }
+
+      assert.ok(
+        (function () {
+          $("#testmask").paste(garbage);
+          return true;
+        })(),
+        "pasting a long value doesn't throw"
+      );
+      window.clipboardData = undefined; // reset the simulator's clipboard stub
+
+      assert.equal(
+        testmask.value,
+        garbage.replace(/[<>]/g, ""),
+        "disallowed characters are stripped from the long pasted value"
+      );
+      assert.equal(
+        testmask.value.length > 500,
+        true,
+        "the resulting value exceeds the default _maxTestPos"
+      );
+    }
+  );
+
+  qunit.test(
+    "validateOnly ~ textarea keeps typing filtered",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<textarea id="testmask"></textarea>');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        regex: "[^<>]*",
+        validateOnly: true
+      }).mask(testmask);
+
+      testmask.focus();
+      testmask.value = "ab<cd>ef";
+      testmask.setSelectionRange(testmask.value.length, testmask.value.length);
+      testmask.dispatchEvent(new Event("input", { bubbles: true }));
+
+      assert.equal(testmask.value, "abcdef", "Result " + testmask.value);
+    }
+  );
 }
