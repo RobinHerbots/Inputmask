@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.33
+ * Version: 5.1.0-beta.34
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -180,7 +180,7 @@ function genMask(opts) {
   }
 
   // enforce placeholder to single
-  if (opts.placeholder.length > 1) {
+  if (opts.placeholder !== undefined && opts.placeholder.length > 1) {
     opts.placeholder = opts.placeholder.charAt(0);
   }
   // only allow radixfocus when placeholder = 0
@@ -323,7 +323,7 @@ const numericAlias = {
     // minimum value
     max: null,
     // maximum value
-    SetMinMaxOnOverflow: false,
+    setMinMaxOnOverflow: false,
     step: 1,
     inputType: "text",
     // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
@@ -381,10 +381,10 @@ const numericAlias = {
         const checkMax = isNegative !== false && opts.max !== null,
           checkMin = isNegative === false && opts.min !== null;
         // Reject typing "-" against a non-negative min — alignDigits would
-        // pad the orphan sign to "-0". SetMinMaxOnOverflow=true has its own
+        // pad the orphan sign to "-0". setMinMaxOnOverflow=true has its own
         // boundary refresh in postValidation.
-        if (!opts.SetMinMaxOnOverflow && checkMin && opts.min >= 0) return false;
-        // A sign flip out of range: SetMinMaxOnOverflow puts the boundary it
+        if (!opts.setMinMaxOnOverflow && checkMin && opts.min >= 0) return false;
+        // A sign flip out of range: setMinMaxOnOverflow puts the boundary it
         // crossed in the field, as an overflowing keystroke does, otherwise
         // the keystroke is refused. postValidation's range check doesn't fire
         // after the validator's `{remove: ...}` return (toggle-off path), so
@@ -392,7 +392,7 @@ const numericAlias = {
         if ((checkMax || checkMin) && this.maskset.validPositions.length > 0) {
           const absVal = Math.abs(unmaskAsNumber(buffer.slice().reverse().join(""), opts));
           if (checkMax && absVal > opts.max || checkMin && -absVal < opts.min) {
-            if (!opts.SetMinMaxOnOverflow) return false;
+            if (!opts.setMinMaxOnOverflow) return false;
             return {
               refreshFromBuffer: true,
               buffer: boundaryBuffer(checkMax ? opts.max : opts.min, opts)
@@ -505,13 +505,13 @@ const numericAlias = {
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
         unmasked < 0)) {
-          return unmasked < 0 && opts.SetMinMaxOnOverflow ? {
+          return unmasked < 0 && opts.setMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.min, opts)
           } : false;
         }
         if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
-          return opts.SetMinMaxOnOverflow ? {
+          return opts.setMinMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: boundaryBuffer(opts.max, opts)
           } : false;
@@ -526,8 +526,9 @@ const numericAlias = {
       let processValue = maskedValue.replace(opts.prefix, "");
       processValue = processValue.replace(opts.suffix, "");
       processValue = processValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
-      if (opts.placeholder.charAt(0) !== "") {
-        processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
+      const placeholderChar = opts.placeholder !== undefined ? opts.placeholder.charAt(0) : "";
+      if (placeholderChar !== "") {
+        processValue = processValue.replace(new RegExp(placeholderChar, "g"), "0");
       }
       if (opts.unmaskAsNumber) {
         if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$.call(this, opts.radixPoint), ".");
@@ -757,13 +758,44 @@ const numericAlias = {
                   if (reAlign) result = checkAlignment(buffer, result, opts);
                 } else {
                   result = result || {};
+                  // the radix dance: after a deletion in the integer part,
+                  // park the caret on the integer digit next to the radix
+                  // point instead of leaving it in the fraction, so repeated
+                  // Deletes keep eating the integer part
                   result.caret = radixNdx + 1;
-                  if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1])) {
-                    let bffr = buffer.slice().reverse();
-                    bffr.splice(bffr.length - caret.begin, 1);
-                    bffr = alignDigits(bffr, opts.digits, opts);
+                  // Deleting a digit left of the radix point on a fixed-digits
+                  // mask has to drop the digit and repad the fraction, the
+                  // same job checkAlignment does for the fraction above. It
+                  // cannot do it here: the engine removes the digit for
+                  // Backspace but not for a Delete in the integer part, so
+                  // nothing else takes the digit out and the fraction is left
+                  // short - currency "0.23" never reaches "0.00" (#1351).
+                  //
+                  // The deletion site is buffer[caret.begin - 1], which the
+                  // first two conditions already checked. The last two ask
+                  // whether a digit was really deleted there, because an
+                  // earlier pass can have rebuilt the whole buffer - taking
+                  // the sign off sends the value over max, so it is clamped to
+                  // the boundary - while the native value still holds the text
+                  // from before. The caret then points into a layout that no
+                  // longer exists and the splice takes a digit out of the
+                  // boundary that was just written: "$ 30.00" loses the 0 of
+                  // 30. #2904
+                  //
+                  // Neither of the two tells on its own. Comparing lengths
+                  // catches the rebuild, but a clamp that keeps the rendered
+                  // length slips through - the native value is stale in the
+                  // currency case too, there just at equal length. Reading the
+                  // character under the caret catches a caret that landed on
+                  // the radix point, but a digit sitting there does not prove
+                  // anything was deleted from it. So both have to agree.
+                  // translatePosition cannot bridge the gap either, it derives
+                  // the mask position from that same stale native value.
+                  if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1]) && inputmask._valueGet().length === buffer.length && /\d/.test(buffer.slice().reverse()[caret.begin] || "")) {
+                    const spliced = buffer.slice();
+                    spliced.splice(caret.begin - 1, 1);
                     result.refreshFromBuffer = true;
-                    result.buffer = bffr.reverse();
+                    result.buffer = alignDigits(spliced.reverse(), opts.digits, opts).reverse();
                   }
                 }
               }
@@ -772,12 +804,12 @@ const numericAlias = {
       }
 
       // Taking the sign off a negative value is that value crossing max.
-      // SetMinMaxOnOverflow sets the boundary there and then, as it does for
+      // setMinMaxOnOverflow sets the boundary there and then, as it does for
       // an overflowing keystroke, instead of leaving the value to be clamped
       // on blur. Only the pure flip counts - the sign and nothing else,
       // compared as text, not as a number: deleting digits is ordinary
       // editing. #2846
-      if (e && opts.SetMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI))) {
+      if (e && opts.setMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI))) {
         const after = buffer.slice().reverse().join("");
         if (unmaskAsNumber(after, opts) > opts.max && unmaskAsString(inputmask._valueGet(true), opts) === opts.negationSymbol.front + unmaskAsString(after, opts) + opts.negationSymbol.back) {
           return {

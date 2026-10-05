@@ -15,7 +15,7 @@ export type FromAlternate = boolean | number | undefined;
  */
 export type InputmaskOptions = {
     _maxTestPos?: number;
-    placeholder?: string;
+    placeholder?: string | Record<number, string>;
     optionalmarker?: string[] | [string, string];
     quantifiermarker?: string[] | [string, string];
     groupmarker?: string[] | [string, string];
@@ -89,7 +89,7 @@ export type InputmaskOptions = {
  *
  * @typedef {Object} InputmaskOptions
  * @property {number} [_maxTestPos]
- * @property {string} [placeholder]
+ * @property {string | Record<number, string>} [placeholder]
  * @property {string[] | [string, string]} [optionalmarker]
  * @property {string[] | [string, string]} [quantifiermarker]
  * @property {string[] | [string, string]} [groupmarker]

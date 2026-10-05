@@ -3,24 +3,30 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.33
+ * Version: 5.1.0-beta.34
  */
 /******/ var __webpack_modules__ = ({
 
 /***/ 472
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+// Placeholder of the prototype definitions below. A regex mask has no
+// definition to inherit it from, so the lexer falls back to this one.
+const DEFAULT_PLACEHOLDER = "_";
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   9: {
     validator: "\\p{N}",
-    definitionSymbol: "*"
+    definitionSymbol: "*",
+    placeholder: "_"
   },
   a: {
     validator: "\\p{L}",
-    definitionSymbol: "*"
+    definitionSymbol: "*",
+    placeholder: "_"
   },
   "*": {
-    validator: "[\\p{L}\\p{N}]"
+    validator: "[\\p{L}\\p{N}]",
+    placeholder: "_"
   }
 });
 /* harmony export */ __webpack_require__.d(__webpack_exports__, [
@@ -1295,7 +1301,7 @@ __webpack_require__.d(__webpack_exports__, {
  *
  * @typedef {Object} InputmaskOptions
  * @property {number} [_maxTestPos]
- * @property {string} [placeholder]
+ * @property {string | Record<number, string>} [placeholder]
  * @property {string[] | [string, string]} [optionalmarker]
  * @property {string[] | [string, string]} [quantifiermarker]
  * @property {string[] | [string, string]} [groupmarker]
@@ -1357,7 +1363,9 @@ __webpack_require__.d(__webpack_exports__, {
 /** @type {InputmaskOptions} */
 const defaults = {
   _maxTestPos: 500,
-  placeholder: "_",
+  // No placeholder default ~ each definition carries its own (see
+  // definitions.js), so an option-less mask renders from the definition and a
+  // user placeholder only applies where one was asked for.
   optionalmarker: ["[", "]"],
   quantifiermarker: ["{", "}"],
   groupmarker: ["(", ")"],
@@ -1906,6 +1914,23 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  */
 
 /**
+ * Whether the placeholder option is a per-position placeholder map (supplied by
+ * an alias, see the datetime alias) rather than a plain string.
+ *
+ * A map is indexed per position, so it counts as "supplied" even when empty,
+ * and the generated testdefinitions differ.
+ *
+ * A null placeholder counts as "no map" ~ typeof null === "object" would
+ * otherwise classify it as a map and index into null.
+ *
+ * @param {import("./defaults").InputmaskOptions} opts
+ * @returns {boolean}
+ */
+function isPlaceholderMap(opts) {
+  return typeof opts.placeholder === "object" && opts.placeholder !== null;
+}
+
+/**
  * @param {import("./defaults").InputmaskOptions} opts
  * @param {boolean} nocache
  * @returns {Maskset}
@@ -1980,8 +2005,9 @@ function generateMaskSet(opts, nocache) {
       // keepstatic modifies the output from the testdefinitions ~ so differentiate in the maskcache
       maskdefKey = "ks_" + opts.keepStatic + maskdefKey;
     }
-    if (typeof opts.placeholder === "object") {
-      // placeholder object modifies the output from the testdefinitions ~ so differentiate in the maskcache
+    if (opts.placeholder !== undefined) {
+      // the placeholder is baked into the testdefinitions (see
+      // resolvePlaceholder) ~ so differentiate in the maskcache
       maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
     }
     if (masksCache[maskdefKey] === undefined || nocache === true) {
@@ -2081,6 +2107,43 @@ function analyseMask(mask, regexMask, opts) {
     closeRegexGroup = false;
 
   // test definition => {fn: RegExp/function, static: true/false optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
+
+  /**
+   * Resolve the placeholder of a test at the current top-level token index.
+   *
+   * Precedence is a placeholder map first, then a placeholder that a registered
+   * definition asked for, then a string placeholder, then the prototype
+   * placeholder of the definition.
+   *
+   * Only a registered definition (opts.definitions) outranks the global string.
+   * An alias registers a placeholder per definition on purpose ~ numeric puts
+   * the radixPoint and the groupSeparator on their own definitions, and letting
+   * the global placeholder win would render a numeric mask as a row of digits. A
+   * prototype definition is only the last resort, so that {mask: "999",
+   * placeholder: "0"} still renders zeroes rather than underscores.
+   *
+   * A map is indexed per position, so a missing entry falls through. A string is
+   * cycled over the token index ~ for a mask without groups or quantifiers the
+   * token index is the buffer position, so a format-shaped placeholder lines up
+   * ("99/99/9999" <- "dd/MM/yyyy"); for grouped masks every token inside a group
+   * shares the group index, which is why multi-char strings are discouraged in
+   * favour of a map.
+   *
+   * @param {string | undefined} [definitionPlaceholder] placeholder of the definition the test is built from
+   * @param {boolean} [registered] the definition came from opts.definitions rather than the prototypes
+   * @returns {string | undefined}
+   */
+  function resolvePlaceholder(definitionPlaceholder, registered) {
+    if (isPlaceholderMap(opts)) {
+      return opts.placeholder[currentToken.matches.length] ?? definitionPlaceholder;
+    } else if (registered && definitionPlaceholder !== undefined) {
+      return definitionPlaceholder;
+    } else if (typeof opts.placeholder === "string") {
+      return opts.placeholder.length > 1 ? opts.placeholder.charAt(currentToken.matches.length % opts.placeholder.length) : opts.placeholder;
+    }
+    return definitionPlaceholder;
+  }
+
   /**
    * @param {import("./masktoken").MaskToken} mtoken
    * @param {string} element
@@ -2088,9 +2151,6 @@ function analyseMask(mask, regexMask, opts) {
    */
   function insertTestDefinition(mtoken, element, position) {
     position = position !== undefined ? position : mtoken.matches.length;
-    // console.log(element, position, currentToken.matches.length);
-    // if (typeof opts.placeholder === "string")
-    // 	console.log(opts.placeholder.charAt(currentToken.matches.length % opts.placeholder.length));
     let prevMatch = mtoken.matches[position - 1],
       flag = opts.casing ? "i" : "";
     if (regexMask) {
@@ -2103,14 +2163,19 @@ function analyseMask(mask, regexMask, opts) {
           newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element,
           casing: null,
           def: element,
-          placeholder: typeof opts.placeholder === "object" ? opts.placeholder[currentToken.matches.length] : undefined,
+          // a regex mask has no definition to inherit a placeholder from, so it
+          // gets the prototype one baked in
+          placeholder: resolvePlaceholder((/* inlined export .DEFAULT_PLACEHOLDER */"_")),
           nativeDef: element
         });
       } else {
         if (escaped) element = element[element.length - 1];
         element.split("").forEach(function (lmnt) {
           prevMatch = mtoken.matches[position - 1];
-          mtoken.matches.splice(position++, 0, createStaticTest(lmnt, prevMatch, flag, opts.staticDefinitionSymbol !== undefined ? lmnt : typeof opts.placeholder === "object" ? opts.placeholder[currentToken.matches.length] : undefined));
+          mtoken.matches.splice(position++, 0, createStaticTest(lmnt, prevMatch, flag,
+          // a static displays its own character, so it outranks a string
+          // placeholder ~ a map still wins over it
+          resolvePlaceholder(lmnt, true)));
         });
       }
       escaped = false;
@@ -2129,13 +2194,16 @@ function analyseMask(mask, regexMask, opts) {
           newBlockMarker: prevMatch === undefined || maskdef.optional ? "master" : prevMatch.def !== (maskdef.definitionSymbol || element),
           casing: maskdef.casing,
           def: maskdef.definitionSymbol || element,
-          placeholder: maskdef.placeholder,
+          placeholder: resolvePlaceholder(maskdef.placeholder, !!(opts.definitions && opts.definitions[element])),
           displayChar: maskdef.displayChar,
           nativeDef: element,
           generated: maskdef.generated
         });
       } else {
-        mtoken.matches.splice(position++, 0, createStaticTest(element, prevMatch, flag, opts.staticDefinitionSymbol !== undefined ? element : undefined));
+        mtoken.matches.splice(position++, 0, createStaticTest(element, prevMatch, flag,
+        // a static displays its own character, so it outranks a string
+        // placeholder ~ a map still wins over it
+        resolvePlaceholder(element, true)));
         escaped = false;
       }
     }
@@ -3412,7 +3480,7 @@ function getLocator(tst, align) {
   let locator = (tst.alternation != undefined ? tst.mloc[`${getDecisionTaker(tst)}:${tst.alternation}`] || tst.locator : tst.locator).join("");
   if (locator !== "") {
     locator = locator.split(":")[0]; // strip off alternation marker
-    while (locator.length < align) locator += "0";
+    if (align > locator.length) locator = locator.padEnd(align, "0");
   }
   return locator;
 }
@@ -3431,8 +3499,22 @@ function getPlaceholder(pos, test, returnPL) {
     opts = this.opts,
     maskset = this.maskset;
   test = test || getTest.call(inputmask, pos).match;
+
+  // A test that carries no placeholder of its own (a regex mask, a static
+  // alternation) still has to render something, and the prototype definitions
+  // only cover definition masks.
+  const phStr = typeof opts.placeholder === "string" ? opts.placeholder : (/* inlined export .DEFAULT_PLACEHOLDER */"_"),
+    isPhMap = typeof opts.placeholder === "object";
   if (test.placeholder !== undefined || returnPL === true) {
     if (test.placeholder !== "" && test.static === true && test.generated !== true) {
+      // Several static alternatives can share one position, and then none of
+      // them is the character to show ~ the placeholder stands in for all of
+      // them. The lexer gives every static its own character as placeholder, so
+      // this cannot be read off the placeholder being absent.
+      if (!isPhMap && returnPL !== true && pos > -1 && maskset.validPositions[pos] === undefined) {
+        const ph = staticAlternationPlaceholder.call(inputmask, pos, phStr);
+        if (ph !== undefined) return ph;
+      }
       // static and not dynamically generated ~ does not occur in regex mask ~ numeric alias def is not a valid entry
       const lvp = _positioning__WEBPACK_IMPORTED_MODULE_1__/* .getLastValidPosition */ .SE.call(inputmask, pos),
         nextPos = _positioning__WEBPACK_IMPORTED_MODULE_1__/* .seekNext */ .u4.call(inputmask, lvp);
@@ -3441,27 +3523,43 @@ function getPlaceholder(pos, test, returnPL) {
       return typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
     }
   } else if (test.static === true) {
-    if (pos > -1 && maskset.validPositions[pos] === undefined) {
-      let tests = getTests.call(inputmask, pos),
-        staticAlternations = [],
-        prevTest;
-      if (typeof opts.placeholder === "string" && tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0)) {
-        for (let i = 0; i < tests.length; i++) {
-          if (tests[i].match.def !== "" && tests[i].match.optionality !== true && tests[i].match.optionalQuantifier !== true && (tests[i].match.static === true || prevTest === undefined || tests[i].match.fn.test(prevTest.match.def, maskset, pos, true, opts) !== false)) {
-            staticAlternations.push(tests[i]);
-            if (tests[i].match.static === true) prevTest = tests[i];
-            if (staticAlternations.length > 1) {
-              if (/[0-9a-zA-Z]/.test(staticAlternations[0].match.def)) {
-                return opts.placeholder.charAt(pos % opts.placeholder.length);
-              }
-            }
-          }
-        }
-      }
-    }
     return test.def;
   }
-  return typeof opts.placeholder === "object" ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
+  return isPhMap ? test.def : phStr.charAt(pos % phStr.length);
+}
+
+/**
+ * The placeholder to show for a position that several static alternatives
+ * share, or undefined when they do not share it.
+ *
+ * @this {Inputmask}
+ * @param {number} pos
+ * @param {string} phStr
+ * @returns {string | undefined}
+ */
+function staticAlternationPlaceholder(pos, phStr) {
+  const inputmask = this,
+    opts = inputmask.opts,
+    maskset = inputmask.maskset;
+  const tests = getTests.call(inputmask, pos);
+  if (tests.length < 2 + (tests[tests.length - 1].match.def === "" ? 1 : 0)) {
+    return undefined;
+  }
+  let prevTest,
+    staticAlternations = 0,
+    firstStaticDef;
+  for (let i = 0; i < tests.length; i++) {
+    const tstMatch = tests[i].match;
+    if (tstMatch.def !== "" && tstMatch.optionality !== true && tstMatch.optionalQuantifier !== true && (tstMatch.static === true || prevTest === undefined || tstMatch.fn.test(prevTest.match.def, maskset, pos, true, opts) !== false)) {
+      if (staticAlternations === 0) firstStaticDef = tstMatch.def;
+      staticAlternations++;
+      if (tstMatch.static === true) prevTest = tests[i];
+      if (staticAlternations > 1 && /[0-9a-zA-Z]/.test(firstStaticDef)) {
+        return phStr.charAt(pos % phStr.length);
+      }
+    }
+  }
+  return undefined;
 }
 
 // tobe put on prototype?
@@ -3530,8 +3628,16 @@ function determineTestTemplate(pos, tests) {
     opts = inputmask.opts,
     optionalityLevel = determineOptionalityLevel(pos, tests);
   pos = pos > 0 ? pos - 1 : 0;
-  const longestLocator = Math.max(...tests.map(tst => tst.locator === undefined ? 0 : tst.locator.length)),
-    prevTest = getTest.call(inputmask, pos),
+  // longest locator length ~ Math.max of an empty list when there are no tests
+  let longestLocator = -Infinity,
+    choices = 0;
+  for (let ndx = 0; ndx < tests.length; ndx++) {
+    const tst = tests[ndx],
+      locatorLength = tst.locator === undefined ? 0 : tst.locator.length;
+    if (locatorLength > longestLocator) longestLocator = locatorLength;
+    if (tst.unMatchedAlternationStopped !== true) choices++;
+  }
+  const prevTest = getTest.call(inputmask, pos),
     prevLocator = getLocator(prevTest, longestLocator);
   let lenghtOffset = 0,
     tstLocator,
@@ -3547,7 +3653,7 @@ function determineTestTemplate(pos, tests) {
     const distance = Number(tstLocator) - Number(prevLocator); // find the closest match to the previous one
     // console.log("distance", distance, tstLocator, prevLocator);
 
-    if (tst.unMatchedAlternationStopped !== true || tests.filter(tst => tst.unMatchedAlternationStopped !== true).length <= 1) {
+    if (tst.unMatchedAlternationStopped !== true || choices <= 1) {
       // only skip when there are choices outside the alternation
       if (closest === undefined || tstLocator !== "" && distance < closest || bestMatch && !opts.greedy && bestMatch.match.optionality && bestMatch.match.optionality - optionalityLevel > 0 && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || tst.match.optionality - optionalityLevel < 1 || !tst.match.newBlockMarker) || bestMatch && !opts.greedy && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier) {
         closest = distance;
@@ -3949,10 +4055,11 @@ function getTests(pos, ndxIntlzr, tstPs) {
         }
       }
       function handleQuantifier() {
-        const qt = match;
+        const qt = match,
+          // the tokengroup is fixed over the whole quantifierloop
+          tokenGroup = maskToken.matches[maskToken.matches.indexOf(qt) - 1];
         let breakloop = false;
         for (let qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && testPos <= pos; qndx++) {
-          const tokenGroup = maskToken.matches[maskToken.matches.indexOf(qt) - 1];
           match = handleMatch(tokenGroup, [qndx].concat(loopNdx), tokenGroup); // set the tokenGroup as quantifierRecurse marker
           if (match) {
             matches.forEach(function (mtch, ndx) {
@@ -4033,15 +4140,14 @@ function getTests(pos, ndxIntlzr, tstPs) {
     }
   }
   function IsMatchOf(tokenGroup, match) {
-    let isMatch = tokenGroup.matches.indexOf(match) != -1;
-    if (!isMatch) {
-      tokenGroup.matches.forEach((mtch, ndx) => {
-        if (mtch.matches !== undefined && !isMatch) {
-          isMatch = IsMatchOf(mtch, match);
-        }
-      });
+    const mtchs = tokenGroup.matches;
+    if (mtchs.indexOf(match) !== -1) return true;
+    for (let ndx = 0; ndx < mtchs.length; ndx++) {
+      if (mtchs[ndx].matches !== undefined && IsMatchOf(mtchs[ndx], match)) {
+        return true;
+      }
     }
-    return isMatch;
+    return false;
   }
   function mergeLocators(pos, tests) {
     let locator = [];
@@ -4146,10 +4252,11 @@ function getTests(pos, ndxIntlzr, tstPs) {
 /* harmony export */   m5: () => (/* binding */ refreshFromBuffer)
 /* harmony export */ });
 /* unused harmony exports alternate, revalidateMask */
-/* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(47);
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(539);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(895);
+/* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(47);
+/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(32);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(539);
+/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(895);
+
 
 
 
@@ -4175,7 +4282,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     i,
     validPos,
     decisionPos,
-    lAltPos = rAltPos !== undefined ? rAltPos : _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask),
+    lAltPos = rAltPos !== undefined ? rAltPos : _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask),
     nextPos,
     input,
     begin,
@@ -4191,12 +4298,12 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
   if (lAltPos === -1 && rAltPos === undefined) {
     // do not recurse when already passed the beginning
     lastAlt = 0;
-    prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, lastAlt);
+    prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, lastAlt);
     alternation = prevAltPos.alternation;
   } else {
     // find last modified alternation
     for (; lAltPos >= 0; lAltPos--) {
-      altPos = lAltPos === 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, 0) : maskset.validPositions[lAltPos];
+      altPos = lAltPos === 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, 0) : maskset.validPositions[lAltPos];
       if (altPos && altPos.alternation !== undefined) {
         if (lAltPos <= (maskPos || 0) && prevAltPos && prevAltPos.locator[altPos.alternation] !== altPos.locator[altPos.alternation]) {
           break;
@@ -4212,11 +4319,11 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     maskset.excludes[decisionPos] = maskset.excludes[decisionPos] || [];
     // generalize
     if (maskPos !== true) {
-      maskset.excludes[decisionPos].push((0,_validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getDecisionTaker */ .gb)(prevAltPos) + ":" + prevAltPos.alternation);
+      maskset.excludes[decisionPos].push((0,_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getDecisionTaker */ .gb)(prevAltPos) + ":" + prevAltPos.alternation);
     }
     const validInputs = [];
     let resultPos = -1;
-    for (i = decisionPos; decisionPos < _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) {
+    for (i = decisionPos; decisionPos < _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) {
       if (resultPos === -1 && maskPos <= i && c !== undefined) {
         validInputs.push(c);
         resultPos = validInputs.length - 1;
@@ -4235,25 +4342,25 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     while (maskset.excludes[decisionPos] !== undefined && maskset.excludes[decisionPos].length < 10) {
       // maskset.tests[decisionPos] = undefined; //clear decisionPos
       maskset.tests = {}; // clear all
-      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, true); // clear getbuffer
+      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true); // clear getbuffer
       isValidRslt = true;
       nextPos = decisionPos - 1;
-      const targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getMaskTemplate */ .XR.call(inputmask, true, 0);
+      const targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getMaskTemplate */ .XR.call(inputmask, true, 0);
       for (i = 0; i < validInputs.length; i++) {
         input = validInputs[i];
         if (targetTemplate[nextPos + 1] === input && opts.numericInput !== true) {
           nextPos++;
         } else if (nextPos === -1 && i === 0 && opts.digitsOptional === false) {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
             begin: nextPos,
             end: nextPos
           }, false, opts.positionCaretOnClick).begin;
 
           // console.log("nextPos " + nextPos);
         } else if (i === 0 || returnRslt.caretPos !== undefined || opts.insertMode === false) {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, nextPos);
+          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, nextPos);
         } else {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, nextPos, true) + 1;
+          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, nextPos, true) + 1;
         }
 
         // nextPos = translatePosition.call(inputmask, nextPos);
@@ -4285,21 +4392,21 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         }
       }
       if (!isValidRslt) {
-        _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask);
-        prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
+        _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask);
+        prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
         // reset & revert
         maskset.validPositions = $.extend(true, [], validPsClone);
         maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
         returnRslt = false;
         if (maskset.excludes[decisionPos]) {
           if (prevAltPos.alternation != undefined) {
-            const decisionTaker = (0,_validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getDecisionTaker */ .gb)(prevAltPos);
+            const decisionTaker = (0,_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getDecisionTaker */ .gb)(prevAltPos);
             if (maskset.excludes[decisionPos].indexOf(decisionTaker + ":" + prevAltPos.alternation) !== -1) {
               returnRslt = alternate.call(inputmask, maskPos, c, strict, fromIsValid, decisionPos - 1, selection);
               break;
             }
             maskset.excludes[decisionPos].push(decisionTaker + ":" + prevAltPos.alternation);
-            for (i = decisionPos; i < _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) maskset.validPositions.splice(decisionPos);
+            for (i = decisionPos; i < _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) maskset.validPositions.splice(decisionPos);
           } else delete maskset.excludes[decisionPos];
         } else {
           // latest alternation
@@ -4334,7 +4441,7 @@ function casing(elem, test, pos) {
       break;
     case "title":
       var posBefore = maskset.validPositions[pos - 1];
-      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keyCode */ .tS.Space)) {
+      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keyCode */ .tS.Space)) {
         elem = elem.toLocaleUpperCase();
       } else {
         elem = elem.toLocaleLowerCase();
@@ -4386,10 +4493,10 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
     maskset = this.maskset,
     opts = this.opts;
   if (opts.numericInput || inputmask.isRTL) {
-    if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace) {
-      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete;
-    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete) {
-      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace;
+    if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace) {
+      c = _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete;
+    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete) {
+      c = _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace;
     }
     if (inputmask.isRTL) {
       const pend = pos.end;
@@ -4397,40 +4504,40 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       pos.begin = pend;
     }
   }
-  if (opts.numericInput && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace && pos.begin === 0 && pos.end === 0 && _positioning__WEBPACK_IMPORTED_MODULE_2__/* .isMask */ .$b.call(inputmask, 0, true, true)) {
+  if (opts.numericInput && c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace && pos.begin === 0 && pos.end === 0 && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, 0, true, true)) {
     pos.end = 1;
   }
-  const lvp = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
-  if (pos.end >= _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask).length && lvp >= pos.end) {
+  const lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
+  if (pos.end >= _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).length && lvp >= pos.end) {
     // handle numeric negate symbol offset, due to  dynamic jit masking
     pos.end = lvp + 1;
   }
-  if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace) {
+  if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace) {
     if (pos.end - pos.begin < 1) {
-      pos.begin = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekPrevious */ .Ef.call(inputmask, pos.begin);
+      pos.begin = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, pos.begin);
     }
-  } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete) {
+  } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete) {
     if (pos.begin === pos.end) {
-      pos.end = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .isMask */ .$b.call(inputmask, pos.end, true, true) ? pos.end + 1 : _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, pos.end) + 1;
+      pos.end = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, pos.end, true, true) ? pos.end + 1 : _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, pos.end) + 1;
     }
   }
   let offset;
   if ((offset = revalidateMask.call(inputmask, pos)) !== false) {
-    if (strict !== true && opts.keepStatic !== false || opts.regex !== null && _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, pos.begin).match.def.indexOf("|") !== -1) {
+    if (strict !== true && opts.keepStatic !== false || opts.regex !== null && _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, pos.begin).match.def.indexOf("|") !== -1) {
       // TODO NEEDS BETTER CHECK WHEN TO ALTERNATE  ~ opts regex isn"t good enough
       alternate.call(inputmask, true);
     }
-    if (_positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask) === -1) {
+    if (_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1) {
       // full clear: reset the tests cache so dynamic mask definitions
       // (numeric radix/negation) don't leave a stale residue in the template #2890
-      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, false);
+      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
     }
     if (strict !== true) {
-      pos.begin = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
-      maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+      pos.begin = c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
+      maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
         begin: pos.begin,
         end: pos.begin
-      }, false, opts.insertMode === false && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace ? "none" : undefined).begin;
+      }, false, opts.insertMode === false && c === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace ? "none" : undefined).begin;
     }
   }
 }
@@ -4446,7 +4553,10 @@ function isComplete(buffer) {
   if (maskset.wholeRegex) {
     // a regex mask is complete when its full-string regex matches the value
     // with placeholder-only positions omitted
-    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, i, _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTestTemplate */ .t.call(inputmask, i).match);
+    // A regex mask carries the prototype placeholder on its dynamic tests, but a
+    // static one has none ~ getPlaceholder hands back its own definition there,
+    // which is not what an untouched position shows.
+    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : typeof opts.placeholder === "object" ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, i).match) : (/* inlined export .DEFAULT_PLACEHOLDER */"_");
     let filledValue = "";
     for (let i = 0; i < buffer.length; i++) {
       if (maskset.validPositions[i] !== undefined || buffer[i] !== phChar(i)) {
@@ -4456,17 +4566,17 @@ function isComplete(buffer) {
     return maskset.wholeRegex.test(filledValue);
   }
   let complete = false,
-    lrp = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
+    lrp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
     aml = lrp.l; // seekPrevious.call(inputmask, lrp.l);
 
   if (lrp.def === undefined || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
     complete = true;
     for (let i = 0; i <= aml; i++) {
-      const test = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTestTemplate */ .t.call(inputmask, i).match;
+      const test = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, i).match;
       if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false ||
       // an optional position in the same optional block as the last valid
       // position is required ~ the optional block is entered
-      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
+      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
         complete = false;
         break;
       }
@@ -4537,11 +4647,11 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   }
   function _isValid(position, c, strict) {
     let rslt = false;
-    _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTests */ .eQ.call(inputmask, position).every(function (tst, ndx) {
+    _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, position).every(function (tst, ndx) {
       const test = tst.match;
       // make sure the buffer is set and correct
-      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true);
-      if (test.jit && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekPrevious */ .Ef.call(inputmask, position)] === undefined) {
+      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true);
+      if (test.jit && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, position)] === undefined) {
         // ignore if jit is not desirable
         rslt = false;
       } else {
@@ -4556,7 +4666,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
         } else {
           rslt = test.fn != null ? test.fn.test(c, maskset, position, strict, opts, isSelection.call(inputmask, pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" // non mask
           ? {
-            c: _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def,
+            c: _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def,
             pos: position
           } : false;
         }
@@ -4564,7 +4674,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       if (rslt !== false) {
         let elem = rslt.c !== undefined ? rslt.c : c,
           validatedPos = position;
-        elem = elem === opts.skipOptionalPartCharacter && test.static === true ? _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def : elem;
+        elem = elem === opts.skipOptionalPartCharacter && test.static === true ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def : elem;
         rslt = processCommandObject(rslt);
         if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) {
           // their is a position offset
@@ -4596,7 +4706,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     }
   }
   if (typeof opts.preValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
+    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
     result = processCommandObject(result);
   }
   if (result === true) {
@@ -4606,13 +4716,13 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       const currentPosValid = maskset.validPositions[maskPos];
       if (currentPosValid && currentPosValid.match.static === true && (currentPosValid.match.def === c || c === opts.skipOptionalPartCharacter)) {
         result = {
-          caret: _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, maskPos)
+          caret: _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)
         };
       } else {
-        if (opts.insertMode || maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined || pos.end > maskPos) {
+        if (opts.insertMode || maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined || pos.end > maskPos) {
           // does the input match on a further position?
           let skip = false;
-          if (maskset.jitOffset[maskPos] && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined) {
+          if (maskset.jitOffset[maskPos] && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined) {
             result = isValid.call(inputmask, maskPos + maskset.jitOffset[maskPos], c, true, true);
             if (result !== false) {
               if (fromAlternate !== true && typeof fromAlternate !== "number") result.caret = maskPos;
@@ -4622,8 +4732,8 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           if (pos.end > maskPos) {
             maskset.validPositions[maskPos] = undefined;
           }
-          if (!skip && !_positioning__WEBPACK_IMPORTED_MODULE_2__/* .isMask */ .$b.call(inputmask, maskPos, opts.keepStatic && maskPos === 0)) {
-            for (let nPos = maskPos + 1, snPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, maskPos, false, maskPos !== 0); nPos <= snPos; nPos++) {
+          if (!skip && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, maskPos, opts.keepStatic && maskPos === 0)) {
+            for (let nPos = maskPos + 1, snPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos, false, maskPos !== 0); nPos <= snPos; nPos++) {
               // if (!isMask(nPos, true)) {
               // 	continue;
               // }
@@ -4654,7 +4764,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           result = alternate.call(inputmask, true) || result;
         }
         // alternate by adding extra input in between
-        else if (opts.numericInput !== true && maskset.tests[maskPos] && maskset.tests[maskPos].length > 1 && _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) > maskPos) {
+        else if (opts.numericInput !== true && maskset.tests[maskPos] && maskset.tests[maskPos].length > 1 && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) > maskPos) {
           // console.log("alternate 2");
           result = alternate.call(inputmask, true) || result;
         }
@@ -4666,7 +4776,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       };
     }
     if (typeof opts.postValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
+      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
       if (postResult !== undefined) {
         result = postResult === true ? result : postResult;
       }
@@ -4676,7 +4786,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     result.pos = maskPos;
   }
   if (result === false || validateOnly === true) {
-    _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, true);
+    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
     maskset.validPositions = $.extend(true, [], positionsClone); // revert validation changes
   } else {
     trackbackPositions.call(inputmask, undefined, maskPos, true);
@@ -4684,9 +4794,9 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   let endResult = processCommandObject(result);
   // console.log("returned result " + JSON.stringify(endResult));
   if (inputmask.maxLength !== undefined) {
-    const buffer = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask);
+    const buffer = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask);
     if (buffer.length > inputmask.maxLength && !fromIsValid) {
-      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, true);
+      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
       maskset.validPositions = $.extend(true, [], positionsClone); // revert validation changes
       endResult = false;
     }
@@ -4699,7 +4809,7 @@ function positionCanMatchDefinition(pos, testDefinition, opts) {
   const inputmask = this,
     maskset = this.maskset;
   let valid = false,
-    tests = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTests */ .eQ.call(inputmask, pos);
+    tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, pos);
   for (let tndx = 0; tndx < tests.length; tndx++) {
     if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] && (!opts.shiftPositions || !testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef || opts.regex && !tests[tndx].match.static && tests[tndx].match.fn.test(testDefinition.input, maskset, pos, false, opts))) {
       valid = true;
@@ -4730,10 +4840,10 @@ function refreshFromBuffer(start, end, buffer) {
     bffr = inputmask.isRTL ? buffer.slice().reverse() : buffer;
   opts.skipOptionalPartCharacter = "";
   if (start === true) {
-    _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, false);
+    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
     start = 0;
     end = buffer.length;
-    p = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+    p = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
       begin: 0,
       end: 0
     }, false).begin;
@@ -4747,7 +4857,7 @@ function refreshFromBuffer(start, end, buffer) {
   for (i = start; i < end; i++) {
     keypress.key = bffr[i].toString();
     inputmask.ignorable = false; // make sure ignorable is ignored ;-)
-    const valResult = _eventhandlers__WEBPACK_IMPORTED_MODULE_0__/* .EventHandlers */ .C.keypressEvent.call(inputmask, keypress, true, false, false, p);
+    const valResult = _eventhandlers__WEBPACK_IMPORTED_MODULE_1__/* .EventHandlers */ .C.keypressEvent.call(inputmask, keypress, true, false, false, p);
     if (valResult !== false && valResult !== undefined) {
       p = valResult.forwardPosition;
     }
@@ -4770,16 +4880,16 @@ function trackbackPositions(originalPos, newPos, fillOnly) {
     }
   }
   for (let ps = originalPos; ps < newPos; ps++) {
-    if (maskset.validPositions[ps] === undefined && !_positioning__WEBPACK_IMPORTED_MODULE_2__/* .isMask */ .$b.call(inputmask, ps, false)) {
-      const vp = ps == 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, ps) : maskset.validPositions[ps - 1];
+    if (maskset.validPositions[ps] === undefined && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ps, false)) {
+      const vp = ps == 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, ps) : maskset.validPositions[ps - 1];
       if (vp) {
-        const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTests */ .eQ.call(inputmask, ps).slice();
+        const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, ps).slice();
         if (tests[tests.length - 1].match.def === "") tests.pop();
-        var bestMatch = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .determineTestTemplate */ .WW.call(inputmask, ps, tests),
+        var bestMatch = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .determineTestTemplate */ .WW.call(inputmask, ps, tests),
           np;
         if (bestMatch && (bestMatch.match.jit !== true || bestMatch.match.newBlockMarker === "master" && (np = maskset.validPositions[ps + 1]) && np.match.optionalQuantifier === true)) {
           bestMatch = $.extend({}, bestMatch, {
-            input: _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, ps, bestMatch.match, true) || bestMatch.match.def
+            input: _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, ps, bestMatch.match, true) || bestMatch.match.def
           });
           bestMatch.generatedInput = true;
           revalidateMask.call(inputmask, ps, bestMatch, true);
@@ -4823,7 +4933,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
   if (fromIsValid === undefined && (begin !== end || opts.insertMode && maskset.validPositions[validatedPos] !== undefined || validTest === undefined || validTest.match.optionalQuantifier || validTest.match.optionality)) {
     // reposition & revalidate others
     let positionsClone = $.extend(true, [], maskset.validPositions),
-      lvp = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true),
+      lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true),
       i;
     maskset.p = begin; // needed for alternated position after overtype selection
 
@@ -4863,11 +4973,11 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
         begin,
         end
       }))) {
-        while (test = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, posMatch), test.match.def !== "") {
+        while (test = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch), test.match.def !== "") {
           // loop needed to match further positions
           if ((canMatch = positionCanMatchDefinition.call(inputmask, posMatch, t, opts)) !== false || t.match.def === "+") {
             // validated match //we still need some hackery for the + validator (numeric alias)
-            if (t.match.def === "+") _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true);
+            if (t.match.def === "+") _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true);
             const result = isValid.call(inputmask, posMatch, t.input, true,
             // t.match.def !== "+",
             true // t.match.def !== "+"
@@ -4882,12 +4992,12 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
             if (validTest === undefined && t.match.static && i === pos.begin) offset++;
             break;
           }
-          if (!valid && _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask), posMatch > maskset.maskLength) {
+          if (!valid && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), posMatch > maskset.maskLength) {
             break;
           }
           posMatch++;
         }
-        if (_validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, posMatch).match.def == "") {
+        if (_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch).match.def == "") {
           valid = false;
         }
         // restore position
@@ -4897,13 +5007,13 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
     }
     if (!valid) {
       maskset.validPositions = $.extend(true, [], positionsClone);
-      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, true);
+      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
       return false;
     }
-  } else if (validTest && _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, validatedPos).match.cd === validTest.match.cd) {
+  } else if (validTest && _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, validatedPos).match.cd === validTest.match.cd) {
     maskset.validPositions[validatedPos] = $.extend(true, {}, validTest);
   }
-  _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, true);
+  _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
   return offset;
 }
 

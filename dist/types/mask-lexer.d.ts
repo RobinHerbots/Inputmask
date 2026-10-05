@@ -42,38 +42,6 @@ export type Maskset = {
     jitOffset: Record<number, number>;
 };
 /**
- * A single test definition of the mask.
- *
- * @typedef {Object} MaskTest
- * @property {RegExp | { test: (char: string) => boolean } | null} fn
- * @property {boolean} static
- * @property {boolean} optionality
- * @property {boolean} [defOptionality] indicator for an optional from the definition
- * @property {"master" | boolean} newBlockMarker
- * @property {"upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string)} [casing]
- * @property {string} def
- * @property {string} [placeholder]
- * @property {string} [displayChar]
- * @property {string} nativeDef
- * @property {boolean} [generated]
- */
-/**
- * The generated maskset for a mask.
- *
- * @typedef {Object} Maskset
- * @property {string} mask
- * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
- * @property {import("./masktoken").MaskToken[]} maskToken
- * @property {any[]} validPositions
- * @property {string[] | undefined} _buffer
- * @property {string[] | undefined} buffer
- * @property {Record<number, any>} tests
- * @property {Record<number, any[]>} excludes excluded alternations
- * @property {any} metadata
- * @property {number | undefined} maskLength
- * @property {Record<number, number>} jitOffset
- */
-/**
  * @param {import("./defaults").InputmaskOptions} opts
  * @param {boolean} nocache
  * @returns {Maskset}
