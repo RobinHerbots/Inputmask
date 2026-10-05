@@ -20,6 +20,7 @@
 
 - a placeholder map only covered the positions it listed and rendered the mask symbols for the rest, `{mask: "999", placeholder: {0: "a"}}` rendered `a**`
 - `placeholder: null` rendered the mask symbols instead of the default placeholder, `{mask: "999", placeholder: null}` rendered `***`
+- a placeholder map with a gap on a custom definition that declares no placeholder of its own rendered the mask symbol, `{mask: "w", definitions: {w: {validator: "[0-9]"}}, placeholder: {}}` rendered `w`
 - native change event not fired when backspacing fractional part on numeric #2793
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890

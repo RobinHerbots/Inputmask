@@ -810,4 +810,46 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+
+  qunit.test(
+    "placeholder map with custom definition without placeholder falls back to default placeholder",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        mask: "ww",
+        definitions: {
+          w: { validator: "[0-9]" }
+        },
+        placeholder: { 0: "a" }
+      }).mask(testmask);
+      assert.equal(
+        testmask.inputmask.getemptymask(),
+        "a_",
+        "Result " + testmask.inputmask.getemptymask()
+      );
+    }
+  );
+
+  qunit.test(
+    "empty placeholder map with custom definition without placeholder renders default placeholder",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        mask: "w",
+        definitions: {
+          w: { validator: "[0-9]" }
+        },
+        placeholder: {}
+      }).mask(testmask);
+      assert.equal(
+        testmask.inputmask.getemptymask(),
+        "_",
+        "Result " + testmask.inputmask.getemptymask()
+      );
+    }
+  );
 }
