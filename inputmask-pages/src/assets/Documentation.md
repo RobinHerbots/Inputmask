@@ -796,11 +796,24 @@ $(document).ready(function () {
 });
 ```
 
-or a multi-char placeholder
+or a multi-char placeholder. A multi-char placeholder is mapped onto the mask
+tokens by index, so it only lines up for a mask without groups or quantifiers:
 
 ```javascript
 $(document).ready(function () {
   $("#date").inputmask("99/99/9999", { placeholder: "dd/MM/yyyy" });
+});
+```
+
+For anything else, pass a placeholder map with one entry per mask position. A map
+is looked up per position, so a missing entry falls back to the placeholder of
+the definition:
+
+```javascript
+$(document).ready(function () {
+  $("#date").inputmask("(999) 999-9999", {
+    placeholder: { 0: "(", 1: "a", 2: "b", 3: "c", 4: ")", 5: "d", 6: "e", 7: "f" }
+  });
 });
 ```
 

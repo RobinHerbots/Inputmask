@@ -13,9 +13,13 @@
 - new `insertModeToggle` option (default `true`) to switch off the INSERT key insert/overwrite toggle
 - `SetMaxOnOverflow` is renamed to `setMinMaxOnOverflow`, it sets `min` as well as `max` (breaking)
 - the NuGet packages work again on modern .NET and are built with the dotnet SDK instead of the Windows-only nuget.exe
+- the `placeholder` option is resolved per position: a placeholder map first, then the placeholder of the mask definition, then the string option, then the default of the prototype definitions
+- a multi-char `placeholder` string is mapped onto the mask tokens by index, so it lines up with an ungrouped mask only. Use a placeholder map for a mask with groups or quantifiers
 
 ### Fixed
 
+- a placeholder map only covered the positions it listed and rendered the mask symbols for the rest, `{mask: "999", placeholder: {0: "a"}}` rendered `a**`
+- `placeholder: null` rendered the mask symbols instead of the default placeholder, `{mask: "999", placeholder: null}` rendered `***`
 - native change event not fired when backspacing fractional part on numeric #2793
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
