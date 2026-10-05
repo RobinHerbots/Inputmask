@@ -3819,32 +3819,32 @@ function getPlaceholder(pos, test, returnPL) {
     maskset = this.maskset;
   test = test || getTest.call(inputmask, pos).match;
 
-  // A test that carries no placeholder of its own (a regex mask, a static
-  // alternation) still has to render something, and the prototype definitions
-  // only cover definition masks.
+  // Only for the alternation placeholder below: a baked placeholder indexes by
+  // token, while that one answers a display position.
   const phStr = typeof opts.placeholder === "string" ? opts.placeholder : (/* inlined export .DEFAULT_PLACEHOLDER */"_"),
     isPhMap = typeof opts.placeholder === "object";
-  if (test.placeholder !== undefined || returnPL === true) {
-    if (test.placeholder !== "" && test.static === true && test.generated !== true) {
-      // Several static alternatives can share one position, and then none of
-      // them is the character to show ~ the placeholder stands in for all of
-      // them. The lexer gives every static its own character as placeholder, so
-      // this cannot be read off the placeholder being absent.
-      if (!isPhMap && returnPL !== true && pos > -1 && maskset.validPositions[pos] === undefined) {
-        const ph = staticAlternationPlaceholder.call(inputmask, pos, phStr);
-        if (ph !== undefined) return ph;
-      }
-      // static and not dynamically generated ~ does not occur in regex mask ~ numeric alias def is not a valid entry
-      const lvp = getLastValidPosition.call(inputmask, pos),
-        nextPos = seekNext.call(inputmask, lvp);
-      return (returnPL ? pos <= nextPos : pos < nextPos) ? casing.call(inputmask, opts.staticDefinitionSymbol && test.static ? test.nativeDef : test.def, test, pos) : typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
-    } else {
-      return typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
+
+  // The lexer resolves the placeholder of every test when it builds it, so this
+  // only has to decide what a baked placeholder cannot say ~ whether the static's
+  // own character still stands, or the placeholder has to take over.
+
+  // static and not dynamically generated ~ does not occur in regex mask ~ numeric alias def is not a valid entry
+  if (test.placeholder !== "" && test.static === true && test.generated !== true) {
+    // Several static alternatives can share one position, and then none of
+    // them is the character to show ~ the placeholder stands in for all of
+    // them. The lexer gives every static its own character as placeholder, so
+    // this cannot be read off the placeholder being absent.
+    if (!isPhMap && returnPL !== true && pos > -1 && maskset.validPositions[pos] === undefined) {
+      const ph = staticAlternationPlaceholder.call(inputmask, pos, phStr);
+      if (ph !== undefined) return ph;
     }
-  } else if (test.static === true) {
-    return test.def;
+    const lvp = getLastValidPosition.call(inputmask, pos),
+      nextPos = seekNext.call(inputmask, lvp);
+    if (returnPL ? pos <= nextPos : pos < nextPos) {
+      return casing.call(inputmask, opts.staticDefinitionSymbol && test.static ? test.nativeDef : test.def, test, pos);
+    }
   }
-  return isPhMap ? test.def : phStr.charAt(pos % phStr.length);
+  return typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
 }
 
 /**
@@ -3859,8 +3859,8 @@ function getPlaceholder(pos, test, returnPL) {
 function staticAlternationPlaceholder(pos, phStr) {
   const inputmask = this,
     opts = inputmask.opts,
-    maskset = inputmask.maskset;
-  const tests = getTests.call(inputmask, pos);
+    maskset = inputmask.maskset,
+    tests = getTests.call(inputmask, pos);
   if (tests.length < 2 + (tests[tests.length - 1].match.def === "" ? 1 : 0)) {
     return undefined;
   }
@@ -7119,19 +7119,24 @@ function analyseMask(mask, regexMask, opts) {
    * shares the group index, which is why multi-char strings are discouraged in
    * favour of a map.
    *
+   * Always returns a string. That is what lets getPlaceholder read the
+   * placeholder off the test instead of re-deriving it, and it is why a
+   * definition without one of its own ends up on the prototype placeholder ~ an
+   * empty position still has to render something.
+   *
    * @param {string | undefined} [definitionPlaceholder] placeholder of the definition the test is built from
    * @param {boolean} [registered] the definition came from opts.definitions rather than the prototypes
-   * @returns {string | undefined}
+   * @returns {string}
    */
   function resolvePlaceholder(definitionPlaceholder, registered) {
     if (isPlaceholderMap(opts)) {
-      return opts.placeholder[currentToken.matches.length] ?? definitionPlaceholder;
+      return opts.placeholder[currentToken.matches.length] ?? definitionPlaceholder ?? (/* inlined export .DEFAULT_PLACEHOLDER */"_");
     } else if (registered && definitionPlaceholder !== undefined) {
       return definitionPlaceholder;
     } else if (typeof opts.placeholder === "string") {
       return opts.placeholder.length > 1 ? opts.placeholder.charAt(currentToken.matches.length % opts.placeholder.length) : opts.placeholder;
     }
-    return definitionPlaceholder;
+    return definitionPlaceholder ?? (/* inlined export .DEFAULT_PLACEHOLDER */"_");
   }
 
   /**
@@ -7203,7 +7208,7 @@ function analyseMask(mask, regexMask, opts) {
    * @param {string} element
    * @param {MaskTest | import("./masktoken").MaskToken | undefined} prevMatch
    * @param {string} flag
-   * @param {string | undefined} placeholder
+   * @param {string} placeholder always defined, resolvePlaceholder fills the gap
    * @returns {MaskTest}
    */
   function createStaticTest(element, prevMatch, flag, placeholder) {
