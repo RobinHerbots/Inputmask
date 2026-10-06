@@ -38,6 +38,7 @@
 - the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
 - `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
 - pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
+- clicking in or behind the suffix of a numeric value without a radix point keeps the caret out of the suffix and lands it at the end of the digits
 
 ### Tests
 

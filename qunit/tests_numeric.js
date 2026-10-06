@@ -5441,4 +5441,142 @@ export default function (qunit, Inputmask) {
       );
     });
   });
+
+  qunit.module("Numeric.Extensions - caret on click with suffix");
+
+  qunit.test(
+    "numeric + suffix ' EUR' - click inside the digits keeps the caret at the click position when there is no radixpoint",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="1234 EUR" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { suffix: " EUR" }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $.caret(testmask, 0);
+        $("#testmask").trigger("click");
+        // clickEvent is deferred by EventRuler (setTimeout 0)
+        setTimeout(function () {
+          assert.equal(testmask.value, "1234 EUR", "Value " + testmask.value);
+          assert.equal(
+            $.caret(testmask).begin,
+            0,
+            "Caret " + $.caret(testmask).begin
+          );
+          done();
+        }, 10);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + suffix ' EUR' - click from behind the suffix puts the caret at the end of the digits",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="1234 EUR" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { suffix: " EUR" }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $.caret(testmask, 8);
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          assert.equal(testmask.value, "1234 EUR", "Value " + testmask.value);
+          assert.equal(
+            $.caret(testmask).begin,
+            4,
+            "Caret " + $.caret(testmask).begin
+          );
+          done();
+        }, 10);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + suffix ' EUR' - click on an empty field puts the caret at the end of the digits",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { suffix: " EUR" }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          assert.equal(
+            $.caret(testmask).begin,
+            1,
+            "Caret " + $.caret(testmask).begin
+          );
+          done();
+        }, 100);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + suffix ' EUR' - click inside the digits keeps the caret at the click position when there is a radixpoint",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append(
+        '<input type="text" id="testmask" value="1234.56 EUR" />'
+      );
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { suffix: " EUR" }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $.caret(testmask, 0);
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "1234.56 EUR",
+            "Value " + testmask.value
+          );
+          assert.equal(
+            $.caret(testmask).begin,
+            0,
+            "Caret " + $.caret(testmask).begin
+          );
+          done();
+        }, 10);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric + suffix ' EUR' - click from behind the suffix puts the caret at the end of the digits when there is a radixpoint",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append(
+        '<input type="text" id="testmask" value="1234.56 EUR" />'
+      );
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { suffix: " EUR" }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $.caret(testmask, 8);
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "1234.56 EUR",
+            "Value " + testmask.value
+          );
+          assert.equal(
+            $.caret(testmask).begin,
+            7,
+            "Caret " + $.caret(testmask).begin
+          );
+          done();
+        }, 10);
+      }, 0);
+    }
+  );
 }
