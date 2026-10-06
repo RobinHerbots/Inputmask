@@ -5535,6 +5535,17 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
           const radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
           selectedCaret.end = selectedCaret.begin = opts.numericInput ? seekNext.call(inputmask, radixPos) : radixPos;
           break;
+        } else if (inputmask.clicked > 0 &&
+        // only react to a click, not to checkVal /
+        // key handling which also come through here
+        inputmask.isRTL // the buffer coordinates below assume a reversed
+        ) {
+          const buffer = getBuffer.call(inputmask).join(""),
+            suffixReversed = opts.suffix.split("").reverse().join(""),
+            suffixPos = buffer.indexOf(suffixReversed),
+            newClickPosition = suffixPos + opts.suffix.length;
+          if (newClickPosition > selectedCaret.begin) selectedCaret.end = selectedCaret.begin = newClickPosition;
+          break;
         }
       // fallback to lvp
       // eslint-disable-next-line no-fallthrough
