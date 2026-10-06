@@ -15,6 +15,7 @@ export const __webpack_esm_modules__ = {
 /* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
 /* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
 
+// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 const document = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.document;
 

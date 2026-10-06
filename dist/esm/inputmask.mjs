@@ -569,11 +569,11 @@ const EventHandlers = {
     } else if (c) {
       // special treat the decimal separator
       // if ((k === 44 || k === 46) && e.location === 3 && opts.radixPoint !== "") k = opts.radixPoint.charCodeAt(0);
-      let pos = checkval ? {
-          begin: ndx,
-          end: ndx
-        } : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input),
-        forwardPosition;
+      const pos = checkval ? {
+        begin: ndx,
+        end: ndx
+      } : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input);
+      let forwardPosition;
 
       // allow for character substitution
       if (!checkval) c = opts.substitutes[c] || c;
@@ -604,9 +604,9 @@ const EventHandlers = {
   pasteEvent: function (e) {
     const input = this,
       inputmask = this.inputmask,
-      opts = inputmask.opts;
-    let inputValue = inputmask._valueGet(true),
-      pastedValue;
+      opts = inputmask.opts,
+      inputValue = inputmask._valueGet(true);
+    let pastedValue;
     if (e.clipboardData && e.clipboardData.getData) {
       pastedValue = e.clipboardData.getData("text/plain");
     } else if (_global_window__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.clipboardData && _global_window__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.clipboardData.getData) {
@@ -625,11 +625,11 @@ const EventHandlers = {
     // PageSpeed "preventing users from pasting into input fields" audit (#2823)
     // and keeps password-manager fills working.  The browser fires an input
     // event with inputType "insertFromPaste" right after a non-prevented paste.
-    let caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true),
-      valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+    const caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true);
+    let valueBeforeCaret = inputValue.substr(0, caretPos.begin),
       valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
-    if (valueBeforeCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-    if (valueAfterCaret == (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
+    if (valueBeforeCaret === (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+    if (valueAfterCaret === (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
     let pasteValue = valueBeforeCaret + pastedValue + valueAfterCaret;
     if (inputmask.isRTL && opts.numericInput !== true) {
       pasteValue = pasteValue.split("");
@@ -704,7 +704,7 @@ const EventHandlers = {
         placeholder = _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getPlaceholder */ .G_.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .translatePosition */ .Mu.call(inputmask, i));
         switch (action) {
           case "insertText":
-            if (oldBuffer[i - 1] === newBuffer[i] && caretPos.begin == newBuffer.length - 1) {
+            if (oldBuffer[i - 1] === newBuffer[i] && caretPos.begin === newBuffer.length - 1) {
               data.push(newBuffer[i]);
             }
             i = bl;
@@ -762,12 +762,11 @@ const EventHandlers = {
         caret: caretPos
       };
     }
-    let input = this,
+    const input = this,
       inputValue = input.inputmask._valueGet(true),
       buffer = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask)).join(""),
-      caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true),
-      changes,
-      keydown;
+      caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true);
+    let changes, keydown;
     if (buffer !== inputValue) {
       const charBeforeCaret = inputValue.charAt(caretPos.begin - 1),
         nptValue = inputValue.split("");
@@ -819,9 +818,9 @@ const EventHandlers = {
   },
   setValueEvent: function (e) {
     const inputmask = this.inputmask,
-      $ = inputmask.dependencyLib;
-    let input = this,
-      value = e && e.detail ? e.detail[0] : arguments[1];
+      $ = inputmask.dependencyLib,
+      input = this;
+    let value = e && e.detail ? e.detail[0] : arguments[1];
     if (value === undefined) {
       value = input.inputmask._valueGet(true);
     } else if (typeof inputmask.opts.onBeforeMask === "function") {
@@ -1016,6 +1015,7 @@ const canUseDOM = !!(typeof window !== "undefined" && window.document && window.
 /* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(895);
 
 
+// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 
 
@@ -1039,8 +1039,8 @@ function applyInputValue(input, value, initialEvent, strict) {
 function clearOptionalTail(buffer) {
   const inputmask = this;
   buffer.length = 0;
-  let template = _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getMaskTemplate */ .XR.call(inputmask, true, 0, true, undefined, true),
-    lmnt;
+  const template = _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getMaskTemplate */ .XR.call(inputmask, true, 0, true, undefined, true);
+  let lmnt;
   while ((lmnt = template.shift()) !== undefined) buffer.push(lmnt);
   return buffer;
 }
@@ -1048,17 +1048,17 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
   const inputmask = input ? input.inputmask : this,
     maskset = inputmask.maskset,
     opts = inputmask.opts,
-    $ = inputmask.dependencyLib;
-  let inputValue = nptvl.slice(),
-    charCodes = "",
-    initialNdx = -1,
-    result,
+    $ = inputmask.dependencyLib,
+    inputValue = nptvl.slice(),
     skipOptionalPartCharacter = opts.skipOptionalPartCharacter;
+  let charCodes = "",
+    initialNdx = -1,
+    result;
   opts.skipOptionalPartCharacter = ""; // see issue #2311
 
   function isTemplateMatch(ndx, charCodes) {
-    let targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getMaskTemplate */ .XR.call(inputmask, true, 0).slice(ndx, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .seekNext */ .u4.call(inputmask, ndx, false, false)).join("").replace(/'/g, ""),
-      charCodeNdx = targetTemplate.indexOf(charCodes);
+    const targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getMaskTemplate */ .XR.call(inputmask, true, 0).slice(ndx, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .seekNext */ .u4.call(inputmask, ndx, false, false)).join("").replace(/'/g, "");
+    let charCodeNdx = targetTemplate.indexOf(charCodes);
     // strip spaces from targetTemplate
     while (charCodeNdx > 0 && targetTemplate[charCodeNdx - 1] === " ") charCodeNdx--;
     const match = charCodeNdx === 0 && !_positioning__WEBPACK_IMPORTED_MODULE_4__/* .isMask */ .$b.call(inputmask, ndx) && (_validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx).match.static === true && _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === "'" + charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === " " && (_validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx + 1).match.nativeDef === charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx + 1).match.static === true && _validation_tests__WEBPACK_IMPORTED_MODULE_6__/* .getTest */ .bm.call(inputmask, ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
@@ -1083,8 +1083,8 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
   inputmask.caretPos = {
     begin: initialNdx
   };
-  let staticMatches = [],
-    prevCaretPos = inputmask.caretPos;
+  const staticMatches = [];
+  let prevCaretPos = inputmask.caretPos;
   inputValue.forEach(function (charCode, ndx) {
     if (charCode !== undefined) {
       // inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
@@ -1127,9 +1127,8 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
     }
   });
   if (staticMatches.length > 0) {
-    let sndx,
-      validPos,
-      nextValid = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .seekNext */ .u4.call(inputmask, -1, undefined, false);
+    let sndx, validPos;
+    const nextValid = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .seekNext */ .u4.call(inputmask, -1, undefined, false);
     if (!_validation__WEBPACK_IMPORTED_MODULE_5__/* .isComplete */ .As.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask)) && staticMatches.length <= nextValid || _validation__WEBPACK_IMPORTED_MODULE_5__/* .isComplete */ .As.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask)) && staticMatches.length > 0 && staticMatches.length !== nextValid && staticMatches[0] === 0) {
       // should check if is sequence starting from 0
       let nextSndx = nextValid;
@@ -1171,8 +1170,8 @@ function HandleNativePlaceholder(npt, value) {
   const inputmask = npt ? npt.inputmask : this;
   if (_environment__WEBPACK_IMPORTED_MODULE_0__.ie) {
     if (npt.inputmask._valueGet() !== value && (npt.placeholder !== value || npt.placeholder === "")) {
-      let buffer = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).slice(),
-        nptValue = npt.inputmask._valueGet();
+      let buffer = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).slice();
+      const nptValue = npt.inputmask._valueGet();
       if (nptValue !== value) {
         const lvp = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getLastValidPosition */ .SE.call(inputmask);
         if (lvp === -1 && nptValue === _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBufferTemplate */ .Tc.call(inputmask).join("")) {
@@ -1205,7 +1204,7 @@ function unmaskedvalue(input) {
   const umValue = [],
     vps = maskset.validPositions;
   for (let pndx = 0, vpl = vps.length; pndx < vpl; pndx++) {
-    if (vps[pndx] && vps[pndx].match && (vps[pndx].match.static != true || opts.keepStatic !== true && Array.isArray(maskset.metadata) && vps[pndx].generatedInput !== true)) {
+    if (vps[pndx] && vps[pndx].match && (vps[pndx].match.static !== true || opts.keepStatic !== true && Array.isArray(maskset.metadata) && vps[pndx].generatedInput !== true)) {
       // only include non generated input with multiple masks (check on metadata) and without keepStatic true
       umValue.push(vps[pndx].input);
     }
@@ -1488,6 +1487,7 @@ var keycode = __webpack_require__(32);
 var positioning = __webpack_require__(539);
 ;// ./lib/eventruler.js
 
+// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 
 
@@ -1680,7 +1680,7 @@ function mask() {
           const input = this,
             value = input.inputmask._valueGet(true),
             bufferValue = (input.inputmask.isRTL ? positioning/* getBuffer */.Zo.call(input.inputmask).slice().reverse() : positioning/* getBuffer */.Zo.call(input.inputmask)).join("");
-          if (value != bufferValue) {
+          if (value !== bufferValue) {
             (0,inputHandling/* applyInputValue */.gc)(input, value);
           }
         });
@@ -1870,6 +1870,7 @@ var escapeRegex = __webpack_require__(340);
 }
 ;// ./lib/mask-lexer.js
 
+// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 
 
@@ -2585,6 +2586,7 @@ var validation_tests = __webpack_require__(895);
 
 
 
+// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 
 
@@ -3493,7 +3495,7 @@ function translatePosition(pos) {
 
 function getLocator(tst, align) {
   // need to align the locators to be correct
-  let locator = (tst.alternation != undefined ? tst.mloc[`${getDecisionTaker(tst)}:${tst.alternation}`] || tst.locator : tst.locator).join("");
+  let locator = (tst.alternation != null ? tst.mloc[`${getDecisionTaker(tst)}:${tst.alternation}`] || tst.locator : tst.locator).join("");
   if (locator !== "") {
     locator = locator.split(":")[0]; // strip off alternation marker
     if (align > locator.length) locator = locator.padEnd(align, "0");
@@ -3599,7 +3601,7 @@ function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptio
     jitRenderStatic;
   do {
     if (baseOnInput === true && maskset.validPositions[pos]) {
-      testPos = clearOptionalTail && maskset.validPositions[pos].match.optionality && maskset.validPositions[pos + 1] === undefined && (maskset.validPositions[pos].generatedInput === true || maskset.validPositions[pos].input == opts.skipOptionalPartCharacter && pos > 0) ? determineTestTemplate.call(inputmask, pos, getTests.call(inputmask, pos, ndxIntlzr, pos - 1)) : maskset.validPositions[pos];
+      testPos = clearOptionalTail && maskset.validPositions[pos].match.optionality && maskset.validPositions[pos + 1] === undefined && (maskset.validPositions[pos].generatedInput === true || maskset.validPositions[pos].input === opts.skipOptionalPartCharacter && pos > 0) ? determineTestTemplate.call(inputmask, pos, getTests.call(inputmask, pos, ndxIntlzr, pos - 1)) : maskset.validPositions[pos];
       test = testPos.match;
       ndxIntlzr = testPos.locator.slice();
       maskTemplate.push(includeMode === true ? testPos.match.displayChar !== undefined ? testPos.match.displayChar : testPos.input : includeMode === false ? test.nativeDef : getPlaceholder.call(inputmask, pos, test));
@@ -3691,7 +3693,7 @@ function determineOptionalityLevel(pos, tests) {
     }
   });
   if (optionalityLevel) {
-    if (pos == 0) optionalityLevel = 0;else if (tests.length == 1) optionalityLevel = 0;else if (!differentOptionalLevels) optionalityLevel = 0;
+    if (pos === 0) optionalityLevel = 0;else if (tests.length === 1) optionalityLevel = 0;else if (!differentOptionalLevels) optionalityLevel = 0;
   }
   return optionalityLevel;
 }
@@ -3707,8 +3709,8 @@ function getTest(pos, tests) {
 }
 function isSubsetOf(source, target, opts) {
   function expand(pattern) {
-    let expanded = [],
-      start = -1,
+    const expanded = [];
+    let start = -1,
       end;
     for (let i = 0, l = pattern.length; i < l; i++) {
       if (pattern.charAt(i) === "-") {
@@ -3732,13 +3734,13 @@ function isSubsetOf(source, target, opts) {
 
 // tobe put on prototype?
 function getTests(pos, ndxIntlzr, tstPs) {
-  let inputmask = this,
+  const inputmask = this,
     $ = this.dependencyLib,
     maskset = this.maskset,
     opts = this.opts,
     el = this.el,
-    maskTokens = maskset.maskToken,
-    testPos = ndxIntlzr ? tstPs : 0,
+    maskTokens = maskset.maskToken;
+  let testPos = ndxIntlzr ? tstPs : 0,
     ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [0],
     matches = [],
     insertStop = false,
@@ -3970,7 +3972,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
             const altIndexArrClone = altIndexArr.slice();
             for (let i = 0, exl = maskset.excludes[pos].length; i < exl; i++) {
               const excludeSet = maskset.excludes[pos][i].toString().split(":");
-              if (loopNdx.length == excludeSet[1]) {
+              if (loopNdx.length === Number(excludeSet[1])) {
                 altIndexArr.splice(altIndexArr.indexOf(excludeSet[0]), 1);
               }
             }
@@ -4005,8 +4007,8 @@ function getTests(pos, ndxIntlzr, tstPs) {
 
             // fuzzy merge matches
             for (let ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
-              let altMatch = maltMatches[ndx1],
-                dropMatch = false;
+              const altMatch = maltMatches[ndx1];
+              let dropMatch = false;
               altMatch.alternation = altMatch.alternation || loopNdxCnt;
               setMergeLocators(altMatch);
               for (let ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
@@ -4090,7 +4092,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
               if ((latestMatch.optionalQuantifier || latestMatch.optionality) && isFirstMatch(latestMatch, tokenGroup)) {
                 insertStop = true;
                 testPos = pos; // match the position after the group
-                if (opts.greedy && maskset.validPositions[pos - 1] == undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) != -1) {
+                if (opts.greedy && maskset.validPositions[pos - 1] === undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) !== -1) {
                   matches.pop();
                   cacheDependency = undefined;
                 }
@@ -4415,7 +4417,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
         returnRslt = false;
         if (maskset.excludes[decisionPos]) {
-          if (prevAltPos.alternation != undefined) {
+          if (prevAltPos.alternation != null) {
             const decisionTaker = (0,_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getDecisionTaker */ .gb)(prevAltPos);
             if (maskset.excludes[decisionPos].indexOf(decisionTaker + ":" + prevAltPos.alternation) !== -1) {
               returnRslt = alternate.call(inputmask, maskPos, c, strict, fromIsValid, decisionPos - 1, selection);
@@ -4456,13 +4458,15 @@ function casing(elem, test, pos) {
       elem = elem.toLocaleLowerCase();
       break;
     case "title":
-      var posBefore = maskset.validPositions[pos - 1];
-      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keyCode */ .tS.Space)) {
-        elem = elem.toLocaleUpperCase();
-      } else {
-        elem = elem.toLocaleLowerCase();
+      {
+        const posBefore = maskset.validPositions[pos - 1];
+        if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keyCode */ .tS.Space)) {
+          elem = elem.toLocaleUpperCase();
+        } else {
+          elem = elem.toLocaleLowerCase();
+        }
+        break;
       }
-      break;
     case "follow":
       if (test.def && test.def !== test.def.toLocaleLowerCase()) {
         elem = elem.toLocaleUpperCase();
@@ -4482,10 +4486,10 @@ function casing(elem, test, pos) {
 
 // tobe put on prototype?
 function checkAlternationMatch(altArr1, altArr2, na) {
-  const opts = this.opts;
-  let altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
-    isMatch = false,
-    naArr = na !== undefined ? na.split(",") : [],
+  const opts = this.opts,
+    altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
+    naArr = na !== undefined ? na.split(",") : [];
+  let isMatch = false,
     naNdx;
 
   // remove no alternate indexes from alternation array
@@ -4581,18 +4585,18 @@ function isComplete(buffer) {
     }
     return maskset.wholeRegex.test(filledValue);
   }
-  let complete = false,
-    lrp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
+  let complete = false;
+  const lrp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
     aml = lrp.l; // seekPrevious.call(inputmask, lrp.l);
 
   if (lrp.def === undefined || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
     complete = true;
     for (let i = 0; i <= aml; i++) {
       const test = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, i).match;
-      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker == false ||
+      if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker === false ||
       // an optional position in the same optional block as the last valid
       // position is required ~ the optional block is entered
-      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def != "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
+      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def !== "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
         complete = false;
         break;
       }
@@ -4710,8 +4714,8 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     });
     return rslt;
   }
-  let result = true,
-    positionsClone = $.extend(true, [], maskset.validPositions); // clone the currentPositions
+  let result = true;
+  const positionsClone = $.extend(true, [], maskset.validPositions); // clone the currentPositions
 
   if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && typeof fromAlternate !== "number" && fromIsValid !== true) {
     for (let i = maskPos; i < (inputmask.isRTL ? pos.begin : pos.end); i++) {
@@ -4824,8 +4828,8 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
 function positionCanMatchDefinition(pos, testDefinition, opts) {
   const inputmask = this,
     maskset = this.maskset;
-  let valid = false,
-    tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, pos);
+  let valid = false;
+  const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, pos);
   for (let tndx = 0; tndx < tests.length; tndx++) {
     if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] && (!opts.shiftPositions || !testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef || opts.regex && !tests[tndx].match.static && tests[tndx].match.fn.test(testDefinition.input, maskset, pos, false, opts))) {
       valid = true;
@@ -4850,9 +4854,8 @@ function refreshFromBuffer(start, end, buffer) {
     opts = this.opts,
     $ = this.dependencyLib;
   // checkVal.call(inputmask, el, false, true, isRTL ? buffer.reverse() : buffer);
-  let i,
-    p,
-    skipOptionalPartCharacter = opts.skipOptionalPartCharacter,
+  let i, p;
+  const skipOptionalPartCharacter = opts.skipOptionalPartCharacter,
     bffr = inputmask.isRTL ? buffer.slice().reverse() : buffer;
   opts.skipOptionalPartCharacter = "";
   if (start === true) {
@@ -4897,11 +4900,11 @@ function trackbackPositions(originalPos, newPos, fillOnly) {
   }
   for (let ps = originalPos; ps < newPos; ps++) {
     if (maskset.validPositions[ps] === undefined && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ps, false)) {
-      const vp = ps == 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, ps) : maskset.validPositions[ps - 1];
+      const vp = ps === 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, ps) : maskset.validPositions[ps - 1];
       if (vp) {
         const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, ps).slice();
         if (tests[tests.length - 1].match.def === "") tests.pop();
-        var bestMatch = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .determineTestTemplate */ .WW.call(inputmask, ps, tests),
+        let bestMatch = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .determineTestTemplate */ .WW.call(inputmask, ps, tests),
           np;
         if (bestMatch && (bestMatch.match.jit !== true || bestMatch.match.newBlockMarker === "master" && (np = maskset.validPositions[ps + 1]) && np.match.optionalQuantifier === true)) {
           bestMatch = $.extend({}, bestMatch, {
@@ -4948,9 +4951,9 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
   validatedPos = validatedPos !== undefined ? validatedPos : begin;
   if (fromIsValid === undefined && (begin !== end || opts.insertMode && maskset.validPositions[validatedPos] !== undefined || validTest === undefined || validTest.match.optionalQuantifier || validTest.match.optionality)) {
     // reposition & revalidate others
-    let positionsClone = $.extend(true, [], maskset.validPositions),
-      lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true),
-      i;
+    const positionsClone = $.extend(true, [], maskset.validPositions),
+      lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
+    let i;
     maskset.p = begin; // needed for alternated position after overtype selection
 
     const clearpos = isSelection.call(inputmask, pos) ? begin : validatedPos;
@@ -5013,7 +5016,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
           }
           posMatch++;
         }
-        if (_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch).match.def == "") {
+        if (_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch).match.def === "") {
           valid = false;
         }
         // restore position
