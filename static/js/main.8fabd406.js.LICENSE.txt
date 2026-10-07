@@ -5,6 +5,14 @@
  * @license  MIT
  */
 
+/*!
+ * dist/esm/inputmask.mjs
+ * https://github.com/RobinHerbots/Inputmask
+ * Copyright (c) 2010 - 2026 Robin Herbots
+ * Licensed under the MIT license
+ * Version: 5.1.0-beta.34
+ */
+
 /**
  * @license React
  * react-dom.production.min.js
