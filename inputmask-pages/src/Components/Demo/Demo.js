@@ -13,41 +13,35 @@ export const Demo = () => {
     <div className={styles.Demo} data-testid="Demo">
       <DemoMask
         label="Date:"
-        maskOptions={new datetime({ inputFormat: "dd/MM/yyyy" })}
+        maskOptions={datetime({ inputFormat: "dd/MM/yyyy" })}
       />
       <DemoMask
         label="Date:"
-        maskOptions={new datetime({ inputFormat: "MM/dd/yyyy" })}
+        maskOptions={datetime({ inputFormat: "MM/dd/yyyy" })}
       />
       <DemoMask
         label="Date:"
-        maskOptions={
-          new datetime({
-            inputFormat: "dd MMM yyyy",
-            inputmode: "text"
-          })
-        }
+        maskOptions={datetime({
+          inputFormat: "dd MMM yyyy",
+          inputmode: "text"
+        })}
       />
       <DemoMask
         label="Date:"
-        maskOptions={
-          new datetime({
-            inputFormat: "dd MMMM yyyy",
-            inputmode: "text"
-          })
-        }
+        maskOptions={datetime({
+          inputFormat: "dd MMMM yyyy",
+          inputmode: "text"
+        })}
       />
       <DemoMask
         label="Currency:"
-        maskOptions={
-          new numeric({
-            groupSeparator: ",",
-            digits: 2,
-            digitsOptional: false,
-            prefix: "$",
-            placeholer: "0"
-          })
-        }
+        maskOptions={numeric({
+          groupSeparator: ",",
+          digits: 2,
+          digitsOptional: false,
+          prefix: "$",
+          placeholer: "0"
+        })}
       />
       <DemoMask
         label="License plate:"
@@ -56,15 +50,15 @@ export const Demo = () => {
       />
       <DemoMask
         label="Decimal:"
-        maskOptions={new decimal({ groupSeparator: "," })}
+        maskOptions={decimal({ groupSeparator: "," })}
         comment="Group separator: , RadixPoint: ."
       />
       <DemoMask
         label="IP address:"
-        maskOptions={new ip({ greedy: true })}
+        maskOptions={ip({ greedy: true })}
         comment="greedy: true"
       />
-      <DemoMask label="Email address:" maskOptions={new email()} />
+      <DemoMask label="Email address:" maskOptions={email()} />
     </div>
   );
 };
