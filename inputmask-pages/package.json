@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "/Inputmask/#/",
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -20,7 +21,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "gh-pages": "^6.3.0",
     "history": "^5.3.0",
-    "inputmask": "^5.0.10",
+    "inputmask": "file:..",
     "postcss-normalize": "^10.0.1",
     "prettier": "3.8.1",
     "react": "^18.3.1",
@@ -38,7 +39,7 @@
     "sass": "^1.98.0",
     "unified": "^10.1.2",
     "web-vitals": "^3.5.2",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "webpack": "^5.108.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -69,5 +70,11 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(rehype-autolink-headings))"
     ]
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "core-js@3.33.0": true
   }
 }
+
+

@@ -23,7 +23,14 @@
   "settings": {
     "react": {
       "version": "detect"
-    }
+    },
+    "import/core-modules": [
+      "inputmask/extensions/date",
+      "inputmask/extensions/definitions",
+      "inputmask/extensions/email",
+      "inputmask/extensions/ip",
+      "inputmask/extensions/numeric"
+    ]
   },
   "rules": {
     "react/prop-types": "off",
@@ -57,7 +64,23 @@
       }
     ],
     "import/named": "error",
+    "new-cap": [
+      "error",
+      {
+        "newIsCap": true,
+        "capIsNew": false,
+        "properties": true,
+        "newIsCapExceptions": [
+          "datetime",
+          "numeric",
+          "decimal",
+          "definitions",
+          "ip",
+          "email"
+        ]
+      }
+    ],
     "prettier/prettier": ["error", { "singleQuote": false }],
-    "one-var": ["error", "consecutive"]
+    "one-var": ["warn", "consecutive"]
   }
 }

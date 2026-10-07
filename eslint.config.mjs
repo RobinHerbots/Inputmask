@@ -347,7 +347,7 @@ export default [
       ],
       "import-x/named": "error",
       "prettier/prettier": ["error", { singleQuote: false }],
-      "one-var": ["error", "consecutive"],
+      "one-var": ["warn", "consecutive"],
       "no-use-before-define": "off",
       "no-unmodified-loop-condition": "off",
       eqeqeq: "warn",

@@ -1,3 +1,9 @@
+import { datetime } from "inputmask/extensions/date";
+import { definitions } from "inputmask/extensions/definitions";
+import { email } from "inputmask/extensions/email";
+import { ip } from "inputmask/extensions/ip";
+import { numeric, decimal } from "inputmask/extensions/numeric";
+
 import { DemoMask } from "../DemoMask/DemoMask";
 
 import styles from "./Demo.module.scss";
@@ -7,55 +13,58 @@ export const Demo = () => {
     <div className={styles.Demo} data-testid="Demo">
       <DemoMask
         label="Date:"
-        maskOptions={{ alias: "datetime", inputFormat: "dd/MM/yyyy" }}
+        maskOptions={new datetime({ inputFormat: "dd/MM/yyyy" })}
       />
       <DemoMask
         label="Date:"
-        maskOptions={{ alias: "datetime", inputFormat: "MM/dd/yyyy" }}
+        maskOptions={new datetime({ inputFormat: "MM/dd/yyyy" })}
       />
       <DemoMask
         label="Date:"
-        maskOptions={{
-          alias: "datetime",
-          inputFormat: "dd MMM yyyy",
-          inputmode: "text"
-        }}
+        maskOptions={
+          new datetime({
+            inputFormat: "dd MMM yyyy",
+            inputmode: "text"
+          })
+        }
       />
       <DemoMask
         label="Date:"
-        maskOptions={{
-          alias: "datetime",
-          inputFormat: "dd MMMM yyyy",
-          inputmode: "text"
-        }}
+        maskOptions={
+          new datetime({
+            inputFormat: "dd MMMM yyyy",
+            inputmode: "text"
+          })
+        }
       />
       <DemoMask
         label="Currency:"
-        maskOptions={{
-          alias: "numeric",
-          groupSeparator: ",",
-          digits: 2,
-          digitsOptional: false,
-          prefix: "$",
-          placeholer: "0"
-        }}
+        maskOptions={
+          new numeric({
+            groupSeparator: ",",
+            digits: 2,
+            digitsOptional: false,
+            prefix: "$",
+            placeholer: "0"
+          })
+        }
       />
       <DemoMask
         label="License plate:"
-        maskOptions={{ mask: "[9-]AAA-999" }}
+        maskOptions={{ mask: "[9-]AAA-999", definitions: new definitions() }}
         comment="[9-]AAA-999"
       />
       <DemoMask
         label="Decimal:"
-        maskOptions={{ alias: "decimal", groupSeparator: "," }}
+        maskOptions={new decimal({ groupSeparator: "," })}
         comment="Group separator: , RadixPoint: ."
       />
       <DemoMask
         label="IP address:"
-        maskOptions={{ alias: "ip", greedy: true }}
+        maskOptions={new ip({ greedy: true })}
         comment="greedy: true"
       />
-      <DemoMask label="Email address:" maskOptions={{ alias: "email" }} />
+      <DemoMask label="Email address:" maskOptions={new email()} />
     </div>
   );
 };

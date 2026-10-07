@@ -13,31 +13,41 @@ import styles from "./MarkDownPage.module.scss";
 import "highlight.js/scss/github-dark-dimmed.scss";
 import { MarkDownPageContext } from "./MarkDownPageContext";
 
-const DANGEROUS_TAGS = new Set(["script", "iframe", "object", "embed", "style"]);
-const UNSAFE_URL = /^\s*(javascript|data|vbscript):/i;
-
-// Strips executable content (script/iframe tags, on*-handlers and
-// javascript:/data: URLs) from the fetched markdown's HTML tree before it
-// is turned into React elements, since the markdown is fetched from a
-// caller-supplied, potentially untrusted `md` URL.
-const sanitizeHast = () => (tree) => {
-  visit(tree, "element", (node) => {
-    if (DANGEROUS_TAGS.has(node.tagName)) {
-      node.tagName = "span";
-      node.children = [];
-      node.properties = {};
-      return;
-    }
-    if (node.properties) {
-      Object.keys(node.properties).forEach((key) => {
-        const value = node.properties[key];
-        if (/^on/i.test(key) || ((key === "href" || key === "src") && typeof value === "string" && UNSAFE_URL.test(value))) {
-          delete node.properties[key];
-        }
-      });
-    }
-  });
-};
+const DANGEROUS_TAGS = new Set([
+    "script",
+    "iframe",
+    "object",
+    "embed",
+    "style"
+  ]),
+  UNSAFE_URL = /^\s*(javascript|data|vbscript):/i,
+  // Strips executable content (script/iframe tags, on*-handlers and
+  // javascript:/data: URLs) from the fetched markdown's HTML tree before it
+  // is turned into React elements, since the markdown is fetched from a
+  // caller-supplied, potentially untrusted `md` URL.
+  sanitizeHast = () => (tree) => {
+    visit(tree, "element", (node) => {
+      if (DANGEROUS_TAGS.has(node.tagName)) {
+        node.tagName = "span";
+        node.children = [];
+        node.properties = {};
+        return;
+      }
+      if (node.properties) {
+        Object.keys(node.properties).forEach((key) => {
+          const value = node.properties[key];
+          if (
+            /^on/i.test(key) ||
+            ((key === "href" || key === "src") &&
+              typeof value === "string" &&
+              UNSAFE_URL.test(value))
+          ) {
+            delete node.properties[key];
+          }
+        });
+      }
+    });
+  };
 
 export const MarkDownPage = (props) => {
   const { className, md, children } = props,

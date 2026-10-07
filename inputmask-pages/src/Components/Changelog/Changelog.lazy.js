@@ -1,11 +1,10 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from "react";
 
-const LazyChangelog = lazy(() => import('./Changelog'));
-
-const Changelog = props => (
-  <Suspense fallback={null}>
-    <LazyChangelog {...props} />
-  </Suspense>
-);
+const LazyChangelog = lazy(() => import("./Changelog")),
+  Changelog = (props) => (
+    <Suspense fallback={null}>
+      <LazyChangelog {...props} />
+    </Suspense>
+  );
 
 export default Changelog;
