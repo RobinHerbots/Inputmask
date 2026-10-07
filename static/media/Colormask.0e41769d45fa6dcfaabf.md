@@ -15,7 +15,14 @@ Include the files which you can find in the `dist` folder.
 
 ### In your modules
 
-If you want to include the Inputmask and all extensions.
+```javascript
+import "inputmask/colormask.css";
+import Colormask from "inputmask/colormask";
+
+Colormask({ mask: "999-999-9999" }).mask(selector);
+```
+
+If your bundler does not resolve the `inputmask/*` subpath exports, use the `dist` files directly:
 
 ```javascript
 import "inputmask/dist/colormask.css";

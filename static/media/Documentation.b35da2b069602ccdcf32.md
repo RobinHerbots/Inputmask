@@ -56,10 +56,86 @@ var Inputmask = require('inputmask');
 import Inputmask from "inputmask";
 ```
 
-### ES6
+### Modern ES Modules (tree-shakable)
+
+Inputmask exposes a modern, tree-shakable ES Module build. Import only the modules you need and use the exported factories to build the options for your mask. No global registration is required:
+
+```javascript
+import Inputmask from "inputmask";
+import { url } from "inputmask/extensions/url";
+import { email } from "inputmask/extensions/email";
+import { numeric } from "inputmask/extensions/numeric";
+import { datetime } from "inputmask/extensions/date";
+
+Inputmask(url()).mask(document.getElementById("linkInput"));
+Inputmask(email()).mask(document.getElementById("mailInput"));
+Inputmask(numeric({ digits: 2, prefix: "€ " })).mask(
+  document.getElementById("amountInput")
+);
+Inputmask(datetime({ inputFormat: "dd/MM/yyyy" })).mask(
+  document.getElementById("dateInput")
+);
+```
+
+Every factory accepts an options object to customize the mask, e.g. `Inputmask(numeric({ radixPoint: ",", digits: 2 }))`.
+
+Each extension is available as a separate module under `inputmask/extensions/<name>` and exports a factory that returns the options for that mask:
+
+| module | factory exports | alias(es) |
+|---|---|---|
+| `inputmask/extensions/url` | `url()` | `url` |
+| `inputmask/extensions/ip` | `ip()` | `ip` |
+| `inputmask/extensions/email` | `email()` | `email` |
+| `inputmask/extensions/mac` | `mac()` | `mac` |
+| `inputmask/extensions/vin` | `vin()` | `vin` |
+| `inputmask/extensions/ssn` | `ssn()` | `ssn` |
+| `inputmask/extensions/cssunit` | `cssunit()` | `cssunit` |
+| `inputmask/extensions/date` | `datetime()` | `datetime` |
+| `inputmask/extensions/numeric` | `numeric()`, `currency()`, `decimal()`, `integer()`, `percentage()`, `indianns()` | `numeric`, `currency`, `decimal`, `integer`, `percentage`, `indianns` |
+| `inputmask/extensions/definitions` | `definitions()` | the `A`, `&` and `#` definitions |
+
+The `A`, `&` and `#` definitions are not registered automatically. Merge them into the `definitions` option instead:
+
+```javascript
+import Inputmask from "inputmask";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask({ mask: "999-AAA", definitions: definitions() }).mask(selector);
+```
+
+The `mac` mask uses the `#` hexadecimal definition, so it needs them as well:
+
+```javascript
+import Inputmask from "inputmask";
+import { mac } from "inputmask/extensions/mac";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask(mac({ definitions: definitions() })).mask(selector);
+```
+
+If you prefer the classic string aliases (`Inputmask("email")`, `Inputmask("numeric")`, ...), each module also exports a `register*` function (`registerEmail`, `registerNumeric`, `registerDatetime`, `registerDefinitions`, ...) that registers the aliases globally. Registering is optional.
+
+### Colormask
+
+```javascript
+import "inputmask/colormask.css";
+import Colormask from "inputmask/colormask";
+
+Colormask({ mask: "999-999-9999" }).mask(selector);
+```
+
+### InputmaskElement (custom element)
+
+```javascript
+import "inputmask/inputmaskElement";
+
+<input-mask mask="999-999-9999" />;
+```
+
+### Legacy ES6 via explicit path
 
 ```
-import Inputmask from "inputmask.mjs";
+import Inputmask from "inputmask/dist/esm/inputmask.mjs";
 ```
 
 ## Usage
@@ -399,6 +475,28 @@ Inputmask.extendDefinitions({
 
 Specify a placeholder for a definition. This can also be a function.
 
+### displayChar
+
+Specify a character that is shown in the masked element instead of the entered character. The entered (native) value is still stored and can be retrieved via `unmaskedvalue()` or the `autoUnmask` option.
+
+For example, hide all but the last 4 digits of a US social security number (see [#2402](https://github.com/RobinHerbots/Inputmask/issues/2402)):
+
+```javascript
+$("#ssn").inputmask({
+  mask: "999-99-9999",
+  definitions: {
+    "9": {
+      validator: "\\d",
+      displayChar: "*" // hide the entered digits
+    }
+  },
+  autoUnmask: true
+});
+```
+
+Entering `123-45-6789` shows `***-**-6789` in the field, while `$(selector).val()` (and `unmaskedvalue()`) returns `123-45-6789`.  
+The `displayChar` must be a single character. The native value is preserved when a masked value is re-read (e.g. on form reset or paste).
+
 ### optional
 
 Mark the definition as optional
@@ -698,11 +796,24 @@ $(document).ready(function () {
 });
 ```
 
-or a multi-char placeholder
+or a multi-char placeholder. A multi-char placeholder is mapped onto the mask
+tokens by index, so it only lines up for a mask without groups or quantifiers:
 
 ```javascript
 $(document).ready(function () {
   $("#date").inputmask("99/99/9999", { placeholder: "dd/MM/yyyy" });
+});
+```
+
+For anything else, pass a placeholder map with one entry per mask position. A map
+is looked up per position, so a missing entry falls back to the placeholder of
+the definition:
+
+```javascript
+$(document).ready(function () {
+  $("#date").inputmask("(999) 999-9999", {
+    placeholder: { 0: "(", 1: "a", 2: "b", 3: "c", 4: ")", 5: "d", 6: "e", 7: "f" }
+  });
 });
 ```
 
@@ -888,7 +999,7 @@ First, you have to create an alias definition. The alias definition can contain 
 
 When you pass in an alias, the alias is first resolved and then the other options are applied. So you can call an alias and pass another mask to be applied over the alias. This also means that you can write aliases that "inherit" from another alias.
 
-Some examples can be found in jquery.inputmask.xxx.extensions.js
+Some examples can be found in lib/extensions/*.js
 
 use:
 
@@ -1319,7 +1430,14 @@ Inputmask.extendDefinitions({
 });
 ```
 
-Include jquery.inputmask.extensions.js for using the A and # definitions.
+Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, merge them in via the `definitions()` factory instead:
+
+```javascript
+import Inputmask from "inputmask";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask({ mask: "999-AAA", definitions: definitions() }).mask(selector);
+```
 
 ```javascript
 $(document).ready(function () {

@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/Inputmask/static/css/main.0e2ff974.css",
-    "main.js": "/Inputmask/static/js/main.47f6cd45.js",
+    "main.js": "/Inputmask/static/js/main.987525f1.js",
     "static/js/522.e177ee66.chunk.js": "/Inputmask/static/js/522.e177ee66.chunk.js",
-    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.516c61899d946dfb8112.md",
-    "static/media/Documentation.md": "/Inputmask/static/media/Documentation.5f41836bb1bd1da923a6.md",
+    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.1f319bee51983fdd99cc.md",
+    "static/media/Documentation.md": "/Inputmask/static/media/Documentation.b35da2b069602ccdcf32.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
     "static/media/inputmask.svg": "/Inputmask/static/media/inputmask.6fe5e4943b8c73acfbe8bcda7b7fa072.svg",
-    "static/media/NumericExtension.md": "/Inputmask/static/media/NumericExtension.2169d2c46b1107e12308.md",
-    "static/media/DatetimeExtension.md": "/Inputmask/static/media/DatetimeExtension.d35a01cedcea0b20e771.md",
+    "static/media/NumericExtension.md": "/Inputmask/static/media/NumericExtension.b5aa54ceb9b634c8a368.md",
+    "static/media/DatetimeExtension.md": "/Inputmask/static/media/DatetimeExtension.40beb006c331456e254d.md",
+    "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.2f051d2c2119c8a6dffb.md",
     "static/media/Introduction.md": "/Inputmask/static/media/Introduction.f7fe28ea4fbc4bd8bb27.md",
-    "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.90646b45ae895d040cc3.md",
-    "index.html": "/Inputmask/index.html",
-    "static/media/Colormask.md": "/Inputmask/static/media/Colormask.6ade0ed63f174ac58fa4.md"
+    "static/media/Colormask.md": "/Inputmask/static/media/Colormask.0e41769d45fa6dcfaabf.md",
+    "index.html": "/Inputmask/index.html"
   },
   "entrypoints": [
     "static/css/main.0e2ff974.css",
-    "static/js/main.47f6cd45.js"
+    "static/js/main.987525f1.js"
   ]
 }

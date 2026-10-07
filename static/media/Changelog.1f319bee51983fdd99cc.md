@@ -1,5 +1,50 @@
 # Change Log
 
+## [5.1.0 - UNRELEASED]
+
+### Addition
+
+- Provide TypeScript definitions #1939
+- add displayChar option to mask definitions (masked display, native value) #2402
+- datetime accepts whole values written in the outputFormat and converts them to the inputFormat #576
+
+### Updates
+
+- new `insertModeToggle` option (default `true`) to switch off the INSERT key insert/overwrite toggle
+- `SetMaxOnOverflow` is renamed to `setMinMaxOnOverflow`, it sets `min` as well as `max` (breaking)
+- the NuGet packages work again on modern .NET and are built with the dotnet SDK instead of the Windows-only nuget.exe
+- the `placeholder` option is resolved per position: a placeholder map first, then the placeholder of the mask definition, then the string option, then the default of the prototype definitions
+- a multi-char `placeholder` string is mapped onto the mask tokens by index, so it lines up with an ungrouped mask only. Use a placeholder map for a mask with groups or quantifiers
+
+### Fixed
+
+- a placeholder map only covered the positions it listed and rendered the mask symbols for the rest, `{mask: "999", placeholder: {0: "a"}}` rendered `a**`
+- `placeholder: null` rendered the mask symbols instead of the default placeholder, `{mask: "999", placeholder: null}` rendered `***`
+- a placeholder map with a gap on a custom definition that declares no placeholder of its own rendered the mask symbol, `{mask: "w", definitions: {w: {validator: "[0-9]"}}, placeholder: {}}` rendered `w`
+- native change event not fired when backspacing fractional part on numeric #2793
+- Prototype pollution in extendDefaults() via unsafe deep merge #2885
+- clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
+- correct deletion of the digit immediately before the radix point on currency/numeric
+- radix point is kept when typing a negative value with min/max #2846
+- removing the sign of a negative value past max sets max with `setMinMaxOnOverflow` instead of leaving the value to be clamped on blur #2846
+- deleted digits right of the radix point can be typed again on numeric #2801
+- caret focus lands on the radix point when setting a grouped initial value #2850
+- typing over a fully-selected numeric value with digitsOptional no longer inserts into decimal slot #2893
+- deleting the month in a datetime mask re-adds a leading zero #2002
+- a partially typed date keeps the entered digits in the unmasked value (e.g. a half-typed year stays `20yy` instead of collapsing to the output-format token)
+- programmatic trigger() of a custom event object on a masked input no longer throws a TypeError on read-only DOM event properties
+- a trailing dot in an email address is reported as incomplete on blur instead of complete #2897
+- options read from `data-inputmask` attributes are no longer dropped from `userOptions` (an explicitly given `insertMode` is now respected on the INSERT key) #2847
+- the INSERT key no longer flips the deliberate `insertMode: false` of the date/datetime alias #2847
+- `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
+- pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
+- clicking in or behind the suffix of a numeric value without a radix point keeps the caret out of the suffix and lands it at the end of the digits
+
+### Tests
+
+- Add Node/SSR smoke test to validate pipeline
+- Add regression test for percentage select-all overwrite issue (#2893)
+
 ## [5.0.10 - 31/07/2026]
 
 ### Addition
@@ -202,9 +247,9 @@
 - enhance alternation logic
 - update datetime alias
 - datetime prefillYear option  
-   Enable/disable prefilling of the year.  
-   Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
-   This options is to disable this feature.
+  Enable/disable prefilling of the year.  
+  Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
+  This options is to disable this feature.
 - better handle maxLength
 
 ### Fixed

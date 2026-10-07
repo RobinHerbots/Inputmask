@@ -1,5 +1,30 @@
 # numeric extensions
 
+## Setup
+
+With the modern ES Module build, import the numeric module and use its factories to build the mask options. No alias registration is needed:
+
+```javascript
+import Inputmask from "inputmask";
+import {
+  numeric,
+  currency,
+  decimal,
+  integer,
+  percentage,
+  indianns
+} from "inputmask/extensions/numeric";
+
+Inputmask(numeric()).mask(selector);
+Inputmask(currency({ prefix: "$ " })).mask(selector);
+Inputmask(decimal({ radixPoint: ",", digits: 2 })).mask(selector);
+Inputmask(integer()).mask(selector);
+Inputmask(percentage({ suffix: " %" })).mask(selector);
+Inputmask(indianns()).mask(selector);
+```
+
+The classic string aliases (`Inputmask("numeric")`, ...) require the global registration build instead.
+
 ## Aliases
 
 - ### numeric
@@ -12,9 +37,11 @@
 
 - ### percentage
 
+- ### indianns
+
 The defaults are those defined in the base numeric alias.
 The currency alias and others are derived from the numeric alias and can have other defaults.
-Have a look in the inputmask.numeric.extensions.js for more details about which defaults are used. (At the end of the file)
+Have a look in the numeric.js for more details about which defaults are used. (At the end of the file)
 
 ## Options
 
@@ -84,9 +111,13 @@ Default: undefined
 Maximum value  
 Default: undefined
 
-### SetMaxOnOverflow
+### setMinMaxOnOverflow
 
-Set the maximum value when the user types a number which is greater that the value of max.
+Set the boundary the value crossed when it goes out of range: `max` when the value goes over it, `min` when it goes under. The boundary is put in the field right away, both for an overflowing keystroke and for a sign removal (Backspace, Delete or cut on the `-` of a negative value) - a deletion can only cross `max`.
+
+With `false` an overflowing keystroke is refused, while a sign removal goes through and the value is clamped when the field loses focus.
+
+Renamed from `SetMaxOnOverflow`, which set `min` as well since 5.x.
 
 Default: false
 

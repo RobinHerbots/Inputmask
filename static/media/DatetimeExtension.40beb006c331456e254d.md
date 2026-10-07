@@ -2,6 +2,20 @@
 
 Date and Time masks.
 
+## Setup
+
+With the modern ES Module build, import the date module and use its factory to build the mask options. No alias registration is needed:
+
+```javascript
+import Inputmask from "inputmask";
+import { datetime } from "inputmask/extensions/date";
+
+Inputmask(datetime({ inputFormat: "dd/MM/yyyy" })).mask(selector);
+Inputmask(datetime({ inputFormat: "dd.MM.yyyy HH:MM:ss" })).mask(selector);
+```
+
+The classic string alias (`Inputmask("datetime")`, ...) requires the global registration build instead.
+
 ## Aliases
 
 - ### datetime
@@ -92,7 +106,8 @@ Visual format when the input looses focus
 
 ### outputFormat
 
-Unmasking format
+Unmasking format  
+Whole values written to the input (via the native `.value` setter, `setValue` or a datepicker setting the field value) are also accepted in this format and converted to the `inputFormat` before masking. Values already conforming to the `inputFormat` are left untouched.
 
 ### min
 
