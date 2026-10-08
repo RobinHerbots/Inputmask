@@ -1343,6 +1343,28 @@ Use the default defined definitions from the prototype.
 
 Default: true
 
+### validateOnly
+
+Validate the input against a `regex` mask without running the position-based
+masking engine, for free-form fields (such as a `<textarea>`) that act as a
+simple input filter on long content (see #2567). Characters that do not match
+the mask are filtered out; caret handling, `isValid`, `isComplete`,
+`unmaskedvalue` and the usual events keep working.
+
+Only masks consisting of a single character class with an unlimited `*`
+quantifier are supported, for example `regex: "[^<|>]*"`. The same test applies
+at every position for such masks, which is what makes the shortcut possible.
+For any other mask the option is ignored (a warning is logged) and the
+standard validation is used instead. This includes `+` and bounded quantifiers
+(`{0,8}`), alternations (`(a|b)*`) and multi-character patterns, because their
+definition differs per position.
+
+```javascript
+Inputmask({ regex: "[^<|>]*", validateOnly: true }).mask(textarea);
+```
+
+Default: false
+
 ### validationEventTimeOut
 
 Time to show html5 validation error on form submit.

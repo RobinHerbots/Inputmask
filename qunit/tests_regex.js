@@ -728,4 +728,166 @@ qunit.test("#2535 lookahead ^(0|(?!0+$)[\\dA-Z]+)$", function (assert) {
       "01 isComplete " + testmask.inputmask.isComplete()
     );
   });
+
+  qunit.test(
+    "validateOnly ~ [^<|>]* filters like the standard engine (#2567)",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<textarea id="testmask"></textarea>');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ regex: "[^<|>]*", validateOnly: true }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("ab<1c|d2e");
+
+      assert.equal(
+        testmask.value,
+        "ab1cd2e",
+        "disallowed characters are filtered while typing: " + testmask.value
+      );
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        true,
+        "isComplete " + testmask.inputmask.isComplete()
+      );
+      assert.equal(
+        testmask.inputmask.unmaskedvalue(),
+        "ab1cd2e",
+        "unmaskedvalue " + testmask.inputmask.unmaskedvalue()
+      );
+
+      // note: isValid() with a foreign value revalidates it against the live
+      // instance, so keep those checks after the typing checks below
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(
+        testmask.value,
+        "ab1cd2",
+        "Backspace removes the last character: " + testmask.value
+      );
+
+      $("#testmask").val("ab<cd>ef");
+      assert.equal(
+        testmask.value,
+        "abcdef",
+        "a programmatic value assignment is filtered: " + testmask.value
+      );
+
+      assert.equal(
+        testmask.inputmask.isValid("<a|b>?<"),
+        false,
+        "disallowed characters are not valid"
+      );
+      assert.equal(
+        testmask.inputmask.isValid("abcd1234"),
+        true,
+        "allowed input is valid"
+      );
+    }
+  );
+
+  qunit.test(
+    "validateOnly ~ long pasted value stays filtered beyond _maxTestPos (#2567)",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<textarea id="testmask"></textarea>');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ regex: "[^<|>]*", validateOnly: true }).mask(testmask);
+
+      testmask.focus();
+      let garbage = "";
+      for (let i = 0; i < 600; i++) {
+        garbage += i % 10 === 0 ? "<" : i % 17 === 0 ? "|" : "a";
+      }
+
+      $("#testmask").paste(garbage);
+      window.clipboardData = undefined; // reset the simulator's clipboard stub
+
+      assert.equal(
+        testmask.value,
+        garbage.replace(/[<|>]/g, ""),
+        "disallowed characters are stripped from the pasted value"
+      );
+      assert.equal(
+        testmask.value.length > 500,
+        true,
+        "the resulting value exceeds the default _maxTestPos"
+      );
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        true,
+        "isComplete " + testmask.inputmask.isComplete()
+      );
+    }
+  );
+
+  qunit.test(
+    "validateOnly ~ replacing a selection stays filtered (#2567)",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<textarea id="testmask"></textarea>');
+      const testmask = document.getElementById("testmask");
+      Inputmask({ regex: "[^<|>]*", validateOnly: true }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).input("abcdef", 2, 4);
+      $(testmask).input("abXY<Zef", 2, 6, "insertText");
+
+      assert.equal(
+        testmask.value,
+        "abXYZef",
+        "replacing a selection filters the disallowed character: " +
+          testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "validateOnly ~ warns and falls back for unsupported masks (#2567)",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      const warns = [];
+      const origWarn = console.warn;
+      console.warn = function () {
+        warns.push(Array.prototype.slice.call(arguments).join(" "));
+        origWarn.apply(console, arguments);
+      };
+      let bounded, control;
+      try {
+        // bounded quantifier: the definition differs per position, so the
+        // validateOnly shortcut does not apply
+        const pat = "^[0-9A-Za-z]{2}[0-9A-Za-z_\\-/'&*,\\. ]{0,8}$";
+        $fixture.append('<input type="text" id="testmask" />');
+        bounded = document.getElementById("testmask");
+        Inputmask({ regex: pat, validateOnly: true }).mask(bounded);
+
+        $fixture.append('<input type="text" id="testmask2" />');
+        control = document.getElementById("testmask2");
+        Inputmask({ regex: pat }).mask(control);
+      } finally {
+        console.warn = origWarn;
+      }
+
+      assert.equal(
+        warns.length,
+        1,
+        "validateOnly announces that it is ignored: " + warns[0]
+      );
+
+      bounded.focus();
+      $("#testmask").Type("Ab12_-/'");
+      control.focus();
+      $("#testmask2").Type("Ab12_-/'");
+
+      assert.equal(
+        bounded.value,
+        control.value,
+        "the fallback keeps the standard behaviour: " + bounded.value
+      );
+      assert.equal(
+        bounded.inputmask.isComplete(),
+        control.inputmask.isComplete(),
+        "isComplete matches the standard engine"
+      );
+    }
+  );
 }

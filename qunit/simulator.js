@@ -70,7 +70,10 @@ export default function ($, Inputmask) {
   $.fn.SendKey = function (key, modifier) {
     const elem = this.nodeName ? this : this[0],
       origCode = key;
-    elem.type = "text"; // force textinput to support caret fn
+    if (elem.tagName !== "TEXTAREA") {
+      // force textinput to support caret fn ~ textarea has no writable type
+      elem.type = "text";
+    }
 
     function trigger(elem, evnt) {
       elem.focus();
