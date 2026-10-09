@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.34
+ * Version: 5.1.0-beta.35
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -426,7 +426,9 @@ const numericAlias = {
       if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
         const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
         if (maskset.validPositions[radixValidatorPos]) {
-          maskset.validPositions[radixValidatorPos].generatedInput = maskset.validPositions[radixValidatorPos].generated || false;
+          maskset.validPositions[radixValidatorPos] = _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, maskset.validPositions[radixValidatorPos], {
+            generatedInput: maskset.validPositions[radixValidatorPos].generated || false
+          });
         }
         return {
           caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.34
+ * Version: 5.1.0-beta.35
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -752,7 +752,10 @@ const datetimeAlias = {
           delete maskset.validPositions[tokenMatch.targetMatchIndex + 1];
           buffer[tokenMatch.targetMatchIndex + 1] = tpl[tokenMatch.targetMatchIndex + 1];
         } else {
-          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+          const staleIdx = tokenMatch.targetMatchIndex + 1;
+          maskset.validPositions[staleIdx] = inputmask_dependencyLib/* default */.A.extend(true, {}, maskset.validPositions[staleIdx], {
+            input: "0"
+          });
         }
       }
       if (fcode[2] == "year") {

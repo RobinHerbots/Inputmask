@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.34
+ * Version: 5.1.0-beta.35
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -3532,6 +3532,7 @@ function registerDefinitions() {
  * @property {boolean} [importDataAttributes]
  * @property {boolean} [shiftPositions]
  * @property {boolean} [usePrototypeDefinitions]
+ * @property {boolean} [validateOnly]
  * @property {number} [validationEventTimeOut]
  * @property {Record<string, string>} [substitutes]
  */
@@ -3649,7 +3650,9 @@ const defaults = {
   // use the default defined definitions from the prototype
   validationEventTimeOut: 3000,
   // Time to show validation error on form submit
-  substitutes: {} // define character substitutes
+  substitutes: {},
+  // define character substitutes
+  validateOnly: false // regex masks of a single character class with a "*" quantifier (e.g. "[^<|>]*") apply the same test at every position ~ reuse it instead of re-resolving the mask per position, so long free-form input (see #2567) stays cheap. Ignored with a warning for any other mask.
 };
 /* harmony default export */ const lib_defaults = (defaults);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.includes.js
@@ -4013,6 +4016,20 @@ function getTests(pos, ndxIntlzr, tstPs) {
     latestMatch,
     cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
     unMatchedAlternation = false;
+  if (opts.validateOnly === true && maskset.wholeRegex && maskset.positionIndependent === true && maskset.voBuilding !== true) {
+    // validateOnly: an unlimited single-definition mask matches the same way at
+    // every position, so resolve the definition once (position 0) and reuse it
+    // instead of walking the mask tokens for each character
+    if (maskset.voTests === undefined) {
+      maskset.voBuilding = true;
+      try {
+        maskset.voTests = getTests.call(inputmask, 0);
+      } finally {
+        maskset.voBuilding = false;
+      }
+    }
+    return maskset.voTests;
+  }
   function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
     // ndxInitializer contains a set of indexes to speedup searches in the mtokens
     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -4437,6 +4454,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
     if (!Array.isArray(tests)) tests = [tests];
     if (tests.length > 0) {
       if (tests[0].alternation === undefined || opts.keepStatic === true || isFinite(parseInt(opts.keepStatic)) && pos >= opts.keepStatic) {
+        // A single test is always returned by determineTestTemplate, so skip the
+        // selection walk and read its locator directly.
+        if (tests.length === 1) return tests[0].locator.slice();
         locator = determineTestTemplate.call(inputmask, pos, tests.slice()).locator.slice();
         if (locator.length === 0) locator = tests[0].locator.slice();
       } else {
@@ -4542,7 +4562,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     opts = this.opts,
     maskset = inputmask.maskset;
   if (!inputmask.hasAlternator) return false;
-  const validPsClone = $.extend(true, [], maskset.validPositions),
+  const validPsClone = maskset.validPositions.slice(),
     tstClone = $.extend(true, {}, maskset.tests);
   let lastAlt,
     alternation,
@@ -4665,8 +4685,8 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
       if (!isValidRslt) {
         resetMaskSet.call(inputmask);
         prevAltPos = getTest.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
-        // reset & revert
-        maskset.validPositions = $.extend(true, [], validPsClone);
+        // reset & revert (copy: execution continues and mutates the live array below)
+        maskset.validPositions = validPsClone.slice();
         maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
         returnRslt = false;
         if (maskset.excludes[decisionPos]) {
@@ -4695,7 +4715,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     delete maskset.excludes[decisionPos];
   }
   if (!returnRslt) {
-    maskset.validPositions = $.extend(true, [], validPsClone);
+    maskset.validPositions = validPsClone;
     maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
   }
   return returnRslt;
@@ -4922,8 +4942,12 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     let rslt = false;
     getTests.call(inputmask, position).every(function (tst, ndx) {
       const test = tst.match;
-      // make sure the buffer is set and correct
-      getBuffer.call(inputmask, true);
+      // make sure the buffer is set and correct; a validateOnly mask is one
+      // character class at every position, so its tests never read the buffer
+      // and the forced refresh is a pure O(n) rebuild per test entry
+      if (opts.validateOnly !== true || maskset.positionIndependent !== true) {
+        getBuffer.call(inputmask, true);
+      }
       if (test.jit && maskset.validPositions[seekPrevious.call(inputmask, position)] === undefined) {
         // ignore if jit is not desirable
         rslt = false;
@@ -4968,7 +4992,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     return rslt;
   }
   let result = true;
-  const positionsClone = $.extend(true, [], maskset.validPositions); // clone the currentPositions
+  const positionsClone = maskset.validPositions.slice(); // snapshot currentPositions (shallow: entries are never mutated in place during a validation pass)
 
   if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && typeof fromAlternate !== "number" && fromIsValid !== true) {
     for (let i = maskPos; i < (inputmask.isRTL ? pos.begin : pos.end); i++) {
@@ -5060,7 +5084,8 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   }
   if (result === false || validateOnly === true) {
     resetMaskSet.call(inputmask, true);
-    maskset.validPositions = $.extend(true, [], positionsClone); // revert validation changes
+    // revert validation changes (copy: processCommandObject below may still mutate the live array)
+    maskset.validPositions = positionsClone.slice();
   } else {
     trackbackPositions.call(inputmask, undefined, maskPos, true);
   }
@@ -5070,7 +5095,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     const buffer = getBuffer.call(inputmask);
     if (buffer.length > inputmask.maxLength && !fromIsValid) {
       resetMaskSet.call(inputmask, true);
-      maskset.validPositions = $.extend(true, [], positionsClone); // revert validation changes
+      maskset.validPositions = positionsClone; // revert validation changes
       endResult = false;
     }
   }
@@ -5204,15 +5229,17 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
   validatedPos = validatedPos !== undefined ? validatedPos : begin;
   if (fromIsValid === undefined && (begin !== end || opts.insertMode && maskset.validPositions[validatedPos] !== undefined || validTest === undefined || validTest.match.optionalQuantifier || validTest.match.optionality)) {
     // reposition & revalidate others
-    const positionsClone = $.extend(true, [], maskset.validPositions),
+    const positionsClone = maskset.validPositions.slice(),
       lvp = getLastValidPosition.call(inputmask, undefined, true);
     let i;
     maskset.p = begin; // needed for alternated position after overtype selection
 
     const clearpos = isSelection.call(inputmask, pos) ? begin : validatedPos;
-    for (i = lvp; i >= clearpos; i--) {
-      maskset.validPositions.splice(i, 1);
-      if (validTest === undefined) delete maskset.tests[i + 1];
+    if (lvp >= clearpos) {
+      if (validTest === undefined) {
+        for (i = lvp; i >= clearpos; i--) delete maskset.tests[i + 1];
+      }
+      maskset.validPositions.splice(clearpos, lvp - clearpos + 1);
     }
     let j = validatedPos,
       posMatch = j,
@@ -5278,7 +5305,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       if (!valid) break;
     }
     if (!valid) {
-      maskset.validPositions = $.extend(true, [], positionsClone);
+      maskset.validPositions = positionsClone;
       resetMaskSet.call(inputmask, true);
       return false;
     }
@@ -6240,6 +6267,11 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
   opts.skipOptionalPartCharacter = ""; // see issue #2311
 
   function isTemplateMatch(ndx, charCodes) {
+    if (opts.validateOnly === true && maskset.positionIndependent === true && isMask.call(inputmask, ndx) && isMask.call(inputmask, ndx, false, true)) {
+      // every position holds the mask definition, so the static template can
+      // never start with the typed characters; skip rebuilding it per character
+      return false;
+    }
     const targetTemplate = getMaskTemplate.call(inputmask, true, 0).slice(ndx, seekNext.call(inputmask, ndx, false, false)).join("").replace(/'/g, "");
     let charCodeNdx = targetTemplate.indexOf(charCodes);
     // strip spaces from targetTemplate
@@ -6869,6 +6901,7 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  * @typedef {Object} Maskset
  * @property {string} mask
  * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
+ * @property {boolean} [positionIndependent] true when the mask is one definition with an unlimited quantifier, so every position shares the same test
  * @property {import("./masktoken").MaskToken[]} maskToken
  * @property {any[]} validPositions
  * @property {string[] | undefined} _buffer
@@ -6895,6 +6928,26 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  */
 function isPlaceholderMap(opts) {
   return typeof opts.placeholder === "object" && opts.placeholder !== null;
+}
+
+/**
+ * Whether the parsed token tree contains an alternator (regex "|").
+ *
+ * Recurses through group and quantifier tokens; mask tests are leaves.
+ *
+ * @param {import("./masktoken").MaskToken | MaskTest} token
+ * @returns {boolean}
+ */
+function containsAlternator(token) {
+  if (token.isAlternator === true || token.alternatorGroup === true) {
+    return true;
+  }
+  if (Array.isArray(token.matches)) {
+    for (let i = 0; i < token.matches.length; i++) {
+      if (containsAlternator(token.matches[i])) return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -6978,10 +7031,11 @@ function generateMaskSet(opts, nocache) {
       maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
     }
     if (masksCache[maskdefKey] === undefined || nocache === true) {
+      const maskToken = analyseMask(mask, regexMask, opts);
       /** @type {Maskset} */
       masksetDefinition = {
         mask,
-        maskToken: analyseMask(mask, regexMask, opts),
+        maskToken,
         validPositions: [],
         _buffer: undefined,
         buffer: undefined,
@@ -6991,8 +7045,17 @@ function generateMaskSet(opts, nocache) {
         metadata,
         maskLength: undefined,
         jitOffset: {},
-        wholeRegex: undefined
+        wholeRegex: undefined,
+        positionIndependent: undefined
       };
+
+      // one definition carrying an unlimited quantifier (e.g. "[^<|>]*"): the
+      // same test applies at every position, so resolving it once is enough.
+      // A "+" quantifier is excluded: position 0 requires a character while
+      // later positions do not, so the tests are not position-independent.
+      // Alternation (e.g. "(a|b)*") is excluded: its branch tests differ per
+      // position and must be built by the standard walk.
+      masksetDefinition.positionIndependent = maskToken.length === 1 && maskToken[0].matches.length === 2 && maskToken[0].matches[1].isQuantifier === true && maskToken[0].matches[1].quantifier.max === "*" && !containsAlternator(maskToken[0]);
       if (regexMask) {
         // compile the full-string regex once
         try {
@@ -7005,6 +7068,9 @@ function generateMaskSet(opts, nocache) {
             masksetDefinition.wholeRegex = null;
           }
         }
+      }
+      if (opts.validateOnly === true && (!masksetDefinition.wholeRegex || masksetDefinition.positionIndependent !== true)) {
+        console.warn("Inputmask: validateOnly is ignored for this mask - it needs a regex mask of one character class with an unlimited quantifier, such as opts.regex = " + '"[^<|>]*". Standard validation is used instead.');
       }
       if (nocache !== true) {
         masksCache[maskdefKey] = masksetDefinition;
@@ -8944,7 +9010,10 @@ const datetimeAlias = {
           delete maskset.validPositions[tokenMatch.targetMatchIndex + 1];
           buffer[tokenMatch.targetMatchIndex + 1] = tpl[tokenMatch.targetMatchIndex + 1];
         } else {
-          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+          const staleIdx = tokenMatch.targetMatchIndex + 1;
+          maskset.validPositions[staleIdx] = inputmask_dependencyLib.extend(true, {}, maskset.validPositions[staleIdx], {
+            input: "0"
+          });
         }
       }
       if (fcode[2] == "year") {
@@ -9431,7 +9500,9 @@ const numericAlias = {
       if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
         const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
         if (maskset.validPositions[radixValidatorPos]) {
-          maskset.validPositions[radixValidatorPos].generatedInput = maskset.validPositions[radixValidatorPos].generated || false;
+          maskset.validPositions[radixValidatorPos] = inputmask_dependencyLib.extend(true, {}, maskset.validPositions[radixValidatorPos], {
+            generatedInput: maskset.validPositions[radixValidatorPos].generated || false
+          });
         }
         return {
           caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos

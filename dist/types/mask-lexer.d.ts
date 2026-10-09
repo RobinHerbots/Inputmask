@@ -28,6 +28,10 @@ export type Maskset = {
      * compiled full-string regex for the regex mask
      */
     wholeRegex?: RegExp | null | undefined;
+    /**
+     * true when the mask is one definition with an unlimited quantifier, so every position shares the same test
+     */
+    positionIndependent?: boolean;
     maskToken: import("./masktoken").MaskToken[];
     validPositions: any[];
     _buffer: string[] | undefined;

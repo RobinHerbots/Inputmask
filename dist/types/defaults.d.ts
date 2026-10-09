@@ -70,6 +70,7 @@ export type InputmaskOptions = {
     importDataAttributes?: boolean;
     shiftPositions?: boolean;
     usePrototypeDefinitions?: boolean;
+    validateOnly?: boolean;
     validationEventTimeOut?: number;
     substitutes?: Record<string, string>;
 };
@@ -144,6 +145,7 @@ export type InputmaskOptions = {
  * @property {boolean} [importDataAttributes]
  * @property {boolean} [shiftPositions]
  * @property {boolean} [usePrototypeDefinitions]
+ * @property {boolean} [validateOnly]
  * @property {number} [validationEventTimeOut]
  * @property {Record<string, string>} [substitutes]
  */
