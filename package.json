@@ -129,7 +129,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-import-x": "^4.16.2",
-    "eslint-plugin-jsdoc": "^61.7.1",
+    "eslint-plugin-jsdoc": "^65.3.0",
     "eslint-plugin-n": "^18.2.2",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-promise": "^7.3.0",
