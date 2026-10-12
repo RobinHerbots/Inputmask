@@ -37,7 +37,7 @@ module.exports = function (grunt) {
       }
     },
     eslint: {
-      target: "lib/*.js"
+      target: "lib/**/*.js"
     },
     availabletasks: {
       tasks: {

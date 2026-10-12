@@ -14,7 +14,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 | Watch (jQuery bundle) | `npm run jquery` |
 | Watch (test bundle) | `npm run qunit` |
 | Generate types only | `npm run types` |
-| Lint only | `npx eslint lib/*.js` |
+| Lint only | `npx eslint "lib/**/*.js"` |
 
 **Command order matters for `validate`:** webpack → copy → types → eslint → karma. Running steps out of order will fail (tests need the built bundle, lint needs the source).
 
