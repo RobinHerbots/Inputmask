@@ -2713,6 +2713,37 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    "decimal with suffix - blank or whitespace value is not reset to min - #2863",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("decimal", {
+        radixPoint: ",",
+        groupSeparator: ".",
+        placeholder: "",
+        digits: 2,
+        suffix: " \u20ac",
+        rightAlign: true,
+        autoUnmask: true,
+        min: 10
+      }).mask(testmask);
+
+      // the 5.x strict setvalue path skips onBeforeMask, so the clamp lives in
+      // the numeric onBeforeWrite hook; a blank value must not read as 0
+      testmask.inputmask.setValue("");
+      assert.equal(testmask.value, "", "Blank value stays empty");
+
+      testmask.inputmask.setValue(" ");
+      assert.equal(testmask.value, "", "Whitespace value stays empty");
+
+      $(testmask).val(" ");
+      testmask.blur();
+      assert.equal(testmask.value, "", "Whitespace value stays empty on blur");
+    }
+  );
+
+  qunit.test(
     "Initial value with group separator and radix point - #2850",
     function (assert) {
       const $fixture = $("#qunit-fixture");
