@@ -16,8 +16,8 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   R: () => (/* binding */ email),
 /* harmony export */   Y: () => (/* binding */ registerEmail)
 /* harmony export */ });
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(375);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(123);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -28,7 +28,7 @@ export const __webpack_esm_modules__ = {
 
 
 function email(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, {
     // https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
     // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
     // should be extended with the toplevel domains at the end
@@ -36,8 +36,8 @@ function email(options) {
       separator,
       quantifier
     }) {
-      let emailMask = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
-        mask = emailMask;
+      const emailMask = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
+      let mask = emailMask;
       if (separator) {
         for (let i = 0; i < quantifier; i++) {
           mask += `[${separator}${emailMask}]`;
@@ -69,7 +69,7 @@ function email(options) {
   }, options);
 }
 function registerEmail() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_1__/* .aliases */ .z2, {
     email: email()
   });
 }

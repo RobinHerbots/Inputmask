@@ -67,8 +67,8 @@ function initializeColorMask(input) {
   const computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
   function findCaretPos(clientx) {
     // calculate text width
-    let e = document.createElement("span"),
-      caretPos = 0;
+    const e = document.createElement("span");
+    let caretPos = 0;
     for (const style in computedStyle) {
       // clone styles
       if (isNaN(style) && style.indexOf("font") !== -1) {
@@ -83,14 +83,14 @@ function initializeColorMask(input) {
     e.style.visibility = "hidden";
     e.style.whiteSpace = "nowrap";
     document.body.appendChild(e);
-    let inputText = input.inputmask.__valueGet.call(input),
-      previousWidth = 0;
+    const inputText = input.inputmask.__valueGet.call(input);
+    let previousWidth = 0;
     while (e.offsetWidth < clientx) {
       const ichar = inputText.charAt(caretPos);
       e.innerHTML += ichar === " " || ichar === "" ? "_" : ichar;
       if (e.offsetWidth >= clientx) {
-        let offset1 = clientx - previousWidth,
-          offset2 = e.offsetWidth - clientx;
+        let offset1 = clientx - previousWidth;
+        const offset2 = e.offsetWidth - clientx;
         e.innerHTML = inputText.charAt(caretPos);
         offset1 += Math.round(e.offsetWidth / 2);
         caretPos = (offset1 < offset2 ? caretPos - 1 : caretPos) - 1;
@@ -133,30 +133,30 @@ function positionColorMask(input, template) {
   input.style.left = template.offsetLeft + "px";
 }
 function renderColorMask(input, caretPos, clear) {
-  let inputmask = this,
+  const inputmask = this,
     {
       isRTL,
       maskset,
       opts,
       maxLength
     } = inputmask,
-    maskTemplate = [],
-    isStatic = false,
+    maskTemplate = [];
+  let isStatic = false,
     test,
     testPos,
     ndxIntlzr,
-    pos = 0,
-    templates = {
-      static: {
-        start: isRTL ? "</span>" : "<span class='im-static'>",
-        end: isRTL ? "<span class='im-static'>" : "</span>"
-      },
-      caret: {
-        start: '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">',
-        start_select: '<mark class="im-caret-select">',
-        end: "</mark>"
-      }
-    };
+    pos = 0;
+  const templates = {
+    static: {
+      start: isRTL ? "</span>" : "<span class='im-static'>",
+      end: isRTL ? "<span class='im-static'>" : "</span>"
+    },
+    caret: {
+      start: '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">',
+      start_select: '<mark class="im-caret-select">',
+      end: "</mark>"
+    }
+  };
   function setEntry(entry) {
     if (entry === undefined) entry = "";
     if (!isStatic && (test.static === true || testPos.input === undefined)) {

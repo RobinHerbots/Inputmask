@@ -16,8 +16,8 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   V: () => (/* binding */ ssn),
 /* harmony export */   s: () => (/* binding */ registerSsn)
 /* harmony export */ });
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(375);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(123);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(539);
 /* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(895);
 /*
@@ -31,9 +31,8 @@ export const __webpack_esm_modules__ = {
 
 
 
-
 function ssn(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, {
     mask: "999-99-9999",
     postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
       const bffr = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getMaskTemplate */ .XR.call(this, true, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(this), true, true);
@@ -42,7 +41,7 @@ function ssn(options) {
   }, options);
 }
 function registerSsn() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_1__/* .aliases */ .z2, {
     // http://rion.io/2013/09/10/validating-social-security-numbers-through-regular-expressions-2/
     // https://en.wikipedia.org/wiki/Social_Security_number
     ssn: ssn()

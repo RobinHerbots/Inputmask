@@ -402,6 +402,81 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    '#2226 regex "{2}" quantifier inside an optional group keeps the required positions',
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      $fixture.append('<input type="text" id="testmask2" />');
+
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        regex: "x(\\d{2})?"
+      }).mask(testmask);
+
+      const testmask2 = document.getElementById("testmask2");
+      Inputmask({
+        regex: "x(\\d\\d)?"
+      }).mask(testmask2);
+
+      testmask.focus();
+      $("#testmask").Type("x1");
+      testmask2.focus();
+      $("#testmask2").Type("x1");
+
+      // both notations have to render the still required second digit
+      assert.equal(
+        testmask.inputmask.__valueGet.call(testmask),
+        "x1_",
+        "quantifier Result " + testmask.inputmask.__valueGet.call(testmask)
+      );
+      assert.equal(
+        testmask2.inputmask.__valueGet.call(testmask2),
+        "x1_",
+        "expanded Result " + testmask2.inputmask.__valueGet.call(testmask2)
+      );
+    }
+  );
+
+  qunit.test(
+    '#2226 regex "\\d{2,}:\\d{2}(:\\d{2})?" equals "\\d{2,}:\\d{2}(:\\d\\d)?"',
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        regex: "\\d{2,}:\\d{2}(:\\d{2})?"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("03:00:1");
+
+      assert.equal(
+        testmask.inputmask.__valueGet.call(testmask),
+        "03:00:1_",
+        "template " + testmask.inputmask.__valueGet.call(testmask)
+      );
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        false,
+        "isComplete " + testmask.inputmask.isComplete()
+      );
+
+      $("#testmask").Type("2");
+
+      assert.equal(
+        testmask.inputmask.__valueGet.call(testmask),
+        "03:00:12",
+        "template " + testmask.inputmask.__valueGet.call(testmask)
+      );
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        true,
+        "isComplete " + testmask.inputmask.isComplete()
+      );
+    }
+  );
+
+  qunit.test(
     'inputmask({regex: "[а-яА-Я\\s]*"}) - type space - SilentImp',
     function (assert) {
       const $fixture = $("#qunit-fixture");

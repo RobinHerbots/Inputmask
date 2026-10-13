@@ -91,8 +91,8 @@ function extend() {
     clone,
     target = arguments[0] || {},
     i = 1,
-    length = arguments.length,
     deep = false;
+  const length = arguments.length;
 
   // Handle a deep copy situation
   if (typeof target === "boolean") {
@@ -3787,9 +3787,14 @@ function getTests(pos, ndxIntlzr, tstPs) {
     matches = [],
     insertStop = false,
     insertStopFromAlternation = false,
-    latestMatch,
+    latestMatchEntry,
     cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
     unMatchedAlternation = false;
+  // stack of the repetition indexes of the currently resolved quantifiers,
+  // innermost last. It lets a match tell from which quantifier repetition it
+  // originates, so the optional stop is not inserted on a later repetition of a
+  // nested quantifier (see isNestedQuantifierContinuation).
+  const quantifierStack = [];
   if (opts.validateOnly === true && maskset.wholeRegex && maskset.positionIndependent === true && maskset.voBuilding !== true) {
     // validateOnly: an unlimited single-definition mask matches the same way at
     // every position, so resolve the definition once (position 0) and reuse it
@@ -3826,6 +3831,18 @@ function getTests(pos, ndxIntlzr, tstPs) {
           });
         }
         return firstMatch;
+      }
+
+      // A group whose first element is itself a quantified group (e.g. the
+      // "(\\d{2})" in "(\\d{2})?") re-enters the same match object on every
+      // repetition of the inner quantifier, so isFirstMatch keeps reporting
+      // true. The optional stop is inserted only on the first repetition of a
+      // nested quantifier ~ otherwise it lands one repetition too early and the
+      // template loses the still required positions (see #2226).
+      // It mirrors the optionality level of optionals, but for quantifiers: the
+      // repetition index of the innermost quantifier.
+      function isNestedQuantifierContinuation(latestMatchEntry) {
+        return latestMatchEntry.quantifierNdx > 0 && latestMatchEntry.quantifierDepth > quantifierStack.length + 1;
       }
       function resolveNdxInitializer(pos, alternateNdx, targetAlternation) {
         let bestMatch,
@@ -3971,8 +3988,8 @@ function getTests(pos, ndxIntlzr, tstPs) {
               mtch.match.optionality = mtch.match.optionality ? mtch.match.optionality + 1 : 1;
             }
           });
-          latestMatch = matches[matches.length - 1].match;
-          if (quantifierRecurse === undefined && isFirstMatch(latestMatch, optionalToken)) {
+          latestMatchEntry = matches[matches.length - 1];
+          if (quantifierRecurse === undefined && isFirstMatch(latestMatchEntry.match, optionalToken)) {
             // prevent loop see #698
             insertStop = true; // insert a stop
             testPos = pos; // match the position after the group
@@ -4134,18 +4151,23 @@ function getTests(pos, ndxIntlzr, tstPs) {
           tokenGroup = maskToken.matches[maskToken.matches.indexOf(qt) - 1];
         let breakloop = false;
         for (let qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && testPos <= pos; qndx++) {
+          quantifierStack.push(qndx);
           match = handleMatch(tokenGroup, [qndx].concat(loopNdx), tokenGroup); // set the tokenGroup as quantifierRecurse marker
+          quantifierStack.pop();
           if (match) {
             matches.forEach(function (mtch, ndx) {
-              if (IsMatchOf(tokenGroup, mtch.match)) latestMatch = mtch.match;else latestMatch = matches[matches.length - 1].match;
+              if (IsMatchOf(tokenGroup, mtch.match)) {
+                latestMatchEntry = mtch;
+              } else {
+                latestMatchEntry = matches[matches.length - 1];
+              }
 
               // mark optionality
-              // TODO FIX RECURSIVE QUANTIFIERS
-              latestMatch.optionalQuantifier = qndx >= qt.quantifier.min;
-              // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
+              latestMatchEntry.match.optionalQuantifier = qndx >= qt.quantifier.min;
+              // console.log(pos + " " + qt.quantifier.min + " " + latestMatchEntry.match.optionalQuantifier);
               // qndx + 1 as the index starts from 0
-              latestMatch.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatch) + 1) > qt.quantifier.jit;
-              if ((latestMatch.optionalQuantifier || latestMatch.optionality) && isFirstMatch(latestMatch, tokenGroup)) {
+              latestMatchEntry.match.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatchEntry.match) + 1) > qt.quantifier.jit;
+              if ((latestMatchEntry.match.optionalQuantifier || latestMatchEntry.match.optionality) && isFirstMatch(latestMatchEntry.match, tokenGroup) && !isNestedQuantifierContinuation(latestMatchEntry)) {
                 insertStop = true;
                 testPos = pos; // match the position after the group
                 if (opts.greedy && maskset.validPositions[pos - 1] === undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) !== -1) {
@@ -4155,9 +4177,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
                 breakloop = true; // stop quantifierloop && search for next possible match
                 match = false; // mark match to false to make sure the loop in optionals continues
               }
-              if (!breakloop && latestMatch.jit /* && !latestMatch.optionalQuantifier */) {
+              if (!breakloop && latestMatchEntry.match.jit) {
                 // always set jitOffset, isvalid checks when to apply
-                maskset.jitOffset[pos] = tokenGroup.matches.length - tokenGroup.matches.indexOf(latestMatch);
+                maskset.jitOffset[pos] = tokenGroup.matches.length - tokenGroup.matches.indexOf(latestMatchEntry.match);
               }
             });
             if (breakloop) break; // search for next possible match
@@ -4173,7 +4195,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
           match,
           locator: loopNdx.reverse(),
           cd: cacheDependency,
-          mloc: {}
+          mloc: {},
+          quantifierNdx: quantifierStack.length ? quantifierStack[quantifierStack.length - 1] : 0,
+          quantifierDepth: quantifierStack.length
         });
         if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef] && _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef].optional)) {
           // prevent loop see #698

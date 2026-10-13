@@ -16,8 +16,8 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   W: () => (/* binding */ vin),
 /* harmony export */   j: () => (/* binding */ registerVin)
 /* harmony export */ });
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(375);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(123);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -28,7 +28,7 @@ export const __webpack_esm_modules__ = {
 
 
 function vin(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, {
     // https://en.wikipedia.org/wiki/Vehicle_identification_number
     // see issue #1199
     mask: "V{13}9{4}",
@@ -43,7 +43,7 @@ function vin(options) {
   }, options);
 }
 function registerVin() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_1__/* .aliases */ .z2, {
     vin: vin()
   });
 }

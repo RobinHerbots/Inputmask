@@ -536,7 +536,10 @@ const numericAlias = {
         if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$.call(this, opts.radixPoint), ".");
         processValue = processValue.replace(new RegExp("^" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front)), "-");
         processValue = processValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "$"), "");
-        return Number(processValue);
+        // a blank buffer, or a lone sign/radix, holds no number; Number("") is
+        // 0, which a min/max check would mistake for a real 0 (#2863)
+        const numberValue = Number(processValue);
+        return /[0-9]/.test(processValue) ? numberValue : NaN;
       }
       return processValue;
     },
@@ -609,12 +612,13 @@ const numericAlias = {
         maskset = inputmask.maskset;
       function stripBuffer(buffer, stripRadix) {
         if (opts.__financeInput !== false || stripRadix) {
-          var position = buffer.indexOf(opts.radixPoint);
+          const position = buffer.indexOf(opts.radixPoint);
           if (position !== -1) {
             buffer.splice(position, 1);
           }
         }
         if (opts.groupSeparator !== "") {
+          let position;
           while ((position = buffer.indexOf(opts.groupSeparator)) !== -1) {
             buffer.splice(position, 1);
           }
@@ -678,12 +682,14 @@ const numericAlias = {
           case "input":
             if ((opts.min !== null || opts.max !== null) && this.maskset.validPositions.length > 0) {
               const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
-              if (opts.min !== null && unmasked < opts.min) {
+              // unmaskAsNumber is NaN when the buffer holds no number, so a
+              // blank/whitespace value is not mistaken for a real 0 and clamped
+              if (!isNaN(unmasked) && opts.min !== null && unmasked < opts.min) {
                 return {
                   refreshFromBuffer: true,
                   buffer: boundaryBuffer(opts.min, opts)
                 };
-              } else if (opts.max !== null && unmasked > opts.max) {
+              } else if (!isNaN(unmasked) && opts.max !== null && unmasked > opts.max) {
                 return {
                   refreshFromBuffer: true,
                   buffer: boundaryBuffer(opts.max, opts)

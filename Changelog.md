@@ -39,11 +39,13 @@
 - `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
 - pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
 - clicking in or behind the suffix of a numeric value without a radix point keeps the caret out of the suffix and lands it at the end of the digits
+- a regex quantifier on the first element of an optional group dropped the still required positions, so `\d{2,}:\d{2}(:\d{2})?` no longer renders like `\d{2,}:\d{2}(:\d\d)?` #2226
 
 ### Tests
 
 - Add Node/SSR smoke test to validate pipeline
 - Add regression test for percentage select-all overwrite issue (#2893)
+- Add regression test for regex quantifier inside an optional group (#2226)
 
 ## [5.0.10 - 31/07/2026]
 

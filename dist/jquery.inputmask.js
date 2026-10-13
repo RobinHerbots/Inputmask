@@ -3145,8 +3145,8 @@ function extend() {
     clone,
     target = arguments[0] || {},
     i = 1,
-    length = arguments.length,
     deep = false;
+  const length = arguments.length;
 
   // Handle a deep copy situation
   if (typeof target === "boolean") {
@@ -4049,9 +4049,14 @@ function getTests(pos, ndxIntlzr, tstPs) {
     matches = [],
     insertStop = false,
     insertStopFromAlternation = false,
-    latestMatch,
+    latestMatchEntry,
     cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
     unMatchedAlternation = false;
+  // stack of the repetition indexes of the currently resolved quantifiers,
+  // innermost last. It lets a match tell from which quantifier repetition it
+  // originates, so the optional stop is not inserted on a later repetition of a
+  // nested quantifier (see isNestedQuantifierContinuation).
+  const quantifierStack = [];
   if (opts.validateOnly === true && maskset.wholeRegex && maskset.positionIndependent === true && maskset.voBuilding !== true) {
     // validateOnly: an unlimited single-definition mask matches the same way at
     // every position, so resolve the definition once (position 0) and reuse it
@@ -4088,6 +4093,18 @@ function getTests(pos, ndxIntlzr, tstPs) {
           });
         }
         return firstMatch;
+      }
+
+      // A group whose first element is itself a quantified group (e.g. the
+      // "(\\d{2})" in "(\\d{2})?") re-enters the same match object on every
+      // repetition of the inner quantifier, so isFirstMatch keeps reporting
+      // true. The optional stop is inserted only on the first repetition of a
+      // nested quantifier ~ otherwise it lands one repetition too early and the
+      // template loses the still required positions (see #2226).
+      // It mirrors the optionality level of optionals, but for quantifiers: the
+      // repetition index of the innermost quantifier.
+      function isNestedQuantifierContinuation(latestMatchEntry) {
+        return latestMatchEntry.quantifierNdx > 0 && latestMatchEntry.quantifierDepth > quantifierStack.length + 1;
       }
       function resolveNdxInitializer(pos, alternateNdx, targetAlternation) {
         let bestMatch,
@@ -4233,8 +4250,8 @@ function getTests(pos, ndxIntlzr, tstPs) {
               mtch.match.optionality = mtch.match.optionality ? mtch.match.optionality + 1 : 1;
             }
           });
-          latestMatch = matches[matches.length - 1].match;
-          if (quantifierRecurse === undefined && isFirstMatch(latestMatch, optionalToken)) {
+          latestMatchEntry = matches[matches.length - 1];
+          if (quantifierRecurse === undefined && isFirstMatch(latestMatchEntry.match, optionalToken)) {
             // prevent loop see #698
             insertStop = true; // insert a stop
             testPos = pos; // match the position after the group
@@ -4396,18 +4413,23 @@ function getTests(pos, ndxIntlzr, tstPs) {
           tokenGroup = maskToken.matches[maskToken.matches.indexOf(qt) - 1];
         let breakloop = false;
         for (let qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && testPos <= pos; qndx++) {
+          quantifierStack.push(qndx);
           match = handleMatch(tokenGroup, [qndx].concat(loopNdx), tokenGroup); // set the tokenGroup as quantifierRecurse marker
+          quantifierStack.pop();
           if (match) {
             matches.forEach(function (mtch, ndx) {
-              if (IsMatchOf(tokenGroup, mtch.match)) latestMatch = mtch.match;else latestMatch = matches[matches.length - 1].match;
+              if (IsMatchOf(tokenGroup, mtch.match)) {
+                latestMatchEntry = mtch;
+              } else {
+                latestMatchEntry = matches[matches.length - 1];
+              }
 
               // mark optionality
-              // TODO FIX RECURSIVE QUANTIFIERS
-              latestMatch.optionalQuantifier = qndx >= qt.quantifier.min;
-              // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
+              latestMatchEntry.match.optionalQuantifier = qndx >= qt.quantifier.min;
+              // console.log(pos + " " + qt.quantifier.min + " " + latestMatchEntry.match.optionalQuantifier);
               // qndx + 1 as the index starts from 0
-              latestMatch.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatch) + 1) > qt.quantifier.jit;
-              if ((latestMatch.optionalQuantifier || latestMatch.optionality) && isFirstMatch(latestMatch, tokenGroup)) {
+              latestMatchEntry.match.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatchEntry.match) + 1) > qt.quantifier.jit;
+              if ((latestMatchEntry.match.optionalQuantifier || latestMatchEntry.match.optionality) && isFirstMatch(latestMatchEntry.match, tokenGroup) && !isNestedQuantifierContinuation(latestMatchEntry)) {
                 insertStop = true;
                 testPos = pos; // match the position after the group
                 if (opts.greedy && maskset.validPositions[pos - 1] === undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) !== -1) {
@@ -4417,9 +4439,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
                 breakloop = true; // stop quantifierloop && search for next possible match
                 match = false; // mark match to false to make sure the loop in optionals continues
               }
-              if (!breakloop && latestMatch.jit /* && !latestMatch.optionalQuantifier */) {
+              if (!breakloop && latestMatchEntry.match.jit) {
                 // always set jitOffset, isvalid checks when to apply
-                maskset.jitOffset[pos] = tokenGroup.matches.length - tokenGroup.matches.indexOf(latestMatch);
+                maskset.jitOffset[pos] = tokenGroup.matches.length - tokenGroup.matches.indexOf(latestMatchEntry.match);
               }
             });
             if (breakloop) break; // search for next possible match
@@ -4435,7 +4457,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
           match,
           locator: loopNdx.reverse(),
           cd: cacheDependency,
-          mloc: {}
+          mloc: {},
+          quantifierNdx: quantifierStack.length ? quantifierStack[quantifierStack.length - 1] : 0,
+          quantifierDepth: quantifierStack.length
         });
         if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || definitions[match.nativeDef] && definitions[match.nativeDef].optional)) {
           // prevent loop see #698
@@ -8202,8 +8226,8 @@ function email(options) {
       separator,
       quantifier
     }) {
-      let emailMask = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
-        mask = emailMask;
+      const emailMask = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
+      let mask = emailMask;
       if (separator) {
         for (let i = 0; i < quantifier; i++) {
           mask += `[${separator}${emailMask}]`;
@@ -8303,7 +8327,6 @@ function registerVin() {
 
 
 
-
 function ssn(options) {
   return inputmask_dependencyLib.extend(true, {
     mask: "999-99-9999",
@@ -8375,9 +8398,9 @@ class DateObject {
     getTokenizer(opts).lastIndex = 0;
     while (match = getTokenizer(opts).exec(this.format)) {
       if (match.index >= lastNdx) {
-        let dynMatches = /\d+$/.exec(match[0]),
-          fcode = dynMatches ? match[0][0] + "x" : match[0],
-          value;
+        const dynMatches = /\d+$/.exec(match[0]),
+          fcode = dynMatches ? match[0][0] + "x" : match[0];
+        let value;
         if (mask !== undefined) {
           // console.log("mask", mask);
           if (dynMatches) {
@@ -8386,8 +8409,8 @@ class DateObject {
             getTokenizer(opts).lastIndex = lastIndex;
             value = mask.slice(0, mask.indexOf(tokenMatch.nextMatch[0]));
           } else {
-            let targetSymbol = match[0][0],
-              ndx = match.index;
+            const targetSymbol = match[0][0];
+            let ndx = match.index;
             while (inputmask && (opts.placeholder[`${match.index}'${getTest.call(inputmask, ndx).match.placeholder}`] || getTest.call(inputmask, ndx).match.placeholder) === targetSymbol) {
               ndx++;
             }
@@ -8604,17 +8627,17 @@ function setAMPM(value) {
   }
 }
 function getAMPM() {
-  let date = this,
-    hours = date.getHours();
+  const date = this;
+  let hours = date.getHours();
   hours = hours || 12;
   return hours >= 12 ? "PM" : "AM";
 }
 function getTimeZoneAbbreviated() {
   // not perfect, but ok for now
-  let date = this,
-    {
-      1: tz
-    } = date.toString().match(/\((.+)\)/);
+  const date = this;
+  let {
+    1: tz
+  } = date.toString().match(/\((.+)\)/);
   if (tz.includes(" ")) {
     tz = tz.replace("-", " ").toUpperCase();
     tz = tz.split(" ").map(([first]) => first).join("");
@@ -8717,14 +8740,14 @@ function isDateInRange(dateParts, result, opts, maskset, fromCheckval) {
       dateParts.reset();
       getTokenizer(opts).lastIndex = 0;
       while (match = getTokenizer(opts).exec(opts.inputFormat)) {
-        var fcode;
+        let fcode;
         if (fcode = formatcode(match[0])) {
           if (fcode[3]) {
-            let setFn = fcode[1],
+            const setFn = fcode[1],
               current = dateParts[fcode[2]],
               minVal = opts.min[fcode[2]],
-              maxVal = opts.max ? opts.max[fcode[2]] : minVal + 1,
-              curVal = [],
+              maxVal = opts.max ? opts.max[fcode[2]] : minVal + 1;
+            let curVal = [],
               forceCurrentValue = false;
             for (let i = 0; i < minVal.length; i++) {
               if (maskset.validPositions[i + match.index] === undefined && !forceCurrentValue) {
@@ -8846,8 +8869,8 @@ function importDate(dateObj, opts) {
   }, opts);
 }
 function getTokenMatch(pos, opts, maskset) {
-  let inputmask = this,
-    calcPos = 0,
+  const inputmask = this;
+  let calcPos = 0,
     targetMatch,
     match,
     matchLength = 0;
@@ -8858,8 +8881,8 @@ function getTokenMatch(pos, opts, maskset) {
     if (dynMatches) {
       matchLength = parseInt(dynMatches[0]);
     } else {
-      let targetSymbol = match[0][0],
-        ndx = calcPos;
+      const targetSymbol = match[0][0];
+      let ndx = calcPos;
       while (inputmask && (opts.placeholder[`${match.index}'${getTest.call(inputmask, ndx).match.placeholder}`] || getTest.call(inputmask, ndx).match.placeholder) === targetSymbol) {
         ndx++;
       }
@@ -9065,8 +9088,8 @@ const datetimeAlias = {
         }
       }
     }
-    let result = currentResult,
-      dateParts = date_analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
+    let result = currentResult;
+    const dateParts = date_analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
     if (result && !isNaN(dateParts.date.getTime())) {
       // check for a valid date ~ an invalid date returns NaN which isn't equal
       if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
@@ -9646,7 +9669,10 @@ const numericAlias = {
         if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(escapeRegex.call(this, opts.radixPoint), ".");
         processValue = processValue.replace(new RegExp("^" + escapeRegex(opts.negationSymbol.front)), "-");
         processValue = processValue.replace(new RegExp(escapeRegex(opts.negationSymbol.back) + "$"), "");
-        return Number(processValue);
+        // a blank buffer, or a lone sign/radix, holds no number; Number("") is
+        // 0, which a min/max check would mistake for a real 0 (#2863)
+        const numberValue = Number(processValue);
+        return /[0-9]/.test(processValue) ? numberValue : NaN;
       }
       return processValue;
     },
@@ -9719,12 +9745,13 @@ const numericAlias = {
         maskset = inputmask.maskset;
       function stripBuffer(buffer, stripRadix) {
         if (opts.__financeInput !== false || stripRadix) {
-          var position = buffer.indexOf(opts.radixPoint);
+          const position = buffer.indexOf(opts.radixPoint);
           if (position !== -1) {
             buffer.splice(position, 1);
           }
         }
         if (opts.groupSeparator !== "") {
+          let position;
           while ((position = buffer.indexOf(opts.groupSeparator)) !== -1) {
             buffer.splice(position, 1);
           }
@@ -9788,12 +9815,14 @@ const numericAlias = {
           case "input":
             if ((opts.min !== null || opts.max !== null) && this.maskset.validPositions.length > 0) {
               const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
-              if (opts.min !== null && unmasked < opts.min) {
+              // unmaskAsNumber is NaN when the buffer holds no number, so a
+              // blank/whitespace value is not mistaken for a real 0 and clamped
+              if (!isNaN(unmasked) && opts.min !== null && unmasked < opts.min) {
                 return {
                   refreshFromBuffer: true,
                   buffer: boundaryBuffer(opts.min, opts)
                 };
-              } else if (opts.max !== null && unmasked > opts.max) {
+              } else if (!isNaN(unmasked) && opts.max !== null && unmasked > opts.max) {
                 return {
                   refreshFromBuffer: true,
                   buffer: boundaryBuffer(opts.max, opts)

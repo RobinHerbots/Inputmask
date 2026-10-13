@@ -81,9 +81,9 @@ class DateObject {
     getTokenizer(opts).lastIndex = 0;
     while (match = getTokenizer(opts).exec(this.format)) {
       if (match.index >= lastNdx) {
-        let dynMatches = /\d+$/.exec(match[0]),
-          fcode = dynMatches ? match[0][0] + "x" : match[0],
-          value;
+        const dynMatches = /\d+$/.exec(match[0]),
+          fcode = dynMatches ? match[0][0] + "x" : match[0];
+        let value;
         if (mask !== undefined) {
           // console.log("mask", mask);
           if (dynMatches) {
@@ -92,8 +92,8 @@ class DateObject {
             getTokenizer(opts).lastIndex = lastIndex;
             value = mask.slice(0, mask.indexOf(tokenMatch.nextMatch[0]));
           } else {
-            let targetSymbol = match[0][0],
-              ndx = match.index;
+            const targetSymbol = match[0][0];
+            let ndx = match.index;
             while (inputmask && (opts.placeholder[`${match.index}'${validation_tests/* getTest */.bm.call(inputmask, ndx).match.placeholder}`] || validation_tests/* getTest */.bm.call(inputmask, ndx).match.placeholder) === targetSymbol) {
               ndx++;
             }
@@ -310,17 +310,17 @@ function setAMPM(value) {
   }
 }
 function getAMPM() {
-  let date = this,
-    hours = date.getHours();
+  const date = this;
+  let hours = date.getHours();
   hours = hours || 12;
   return hours >= 12 ? "PM" : "AM";
 }
 function getTimeZoneAbbreviated() {
   // not perfect, but ok for now
-  let date = this,
-    {
-      1: tz
-    } = date.toString().match(/\((.+)\)/);
+  const date = this;
+  let {
+    1: tz
+  } = date.toString().match(/\((.+)\)/);
   if (tz.includes(" ")) {
     tz = tz.replace("-", " ").toUpperCase();
     tz = tz.split(" ").map(([first]) => first).join("");
@@ -423,14 +423,14 @@ function isDateInRange(dateParts, result, opts, maskset, fromCheckval) {
       dateParts.reset();
       getTokenizer(opts).lastIndex = 0;
       while (match = getTokenizer(opts).exec(opts.inputFormat)) {
-        var fcode;
+        let fcode;
         if (fcode = formatcode(match[0])) {
           if (fcode[3]) {
-            let setFn = fcode[1],
+            const setFn = fcode[1],
               current = dateParts[fcode[2]],
               minVal = opts.min[fcode[2]],
-              maxVal = opts.max ? opts.max[fcode[2]] : minVal + 1,
-              curVal = [],
+              maxVal = opts.max ? opts.max[fcode[2]] : minVal + 1;
+            let curVal = [],
               forceCurrentValue = false;
             for (let i = 0; i < minVal.length; i++) {
               if (maskset.validPositions[i + match.index] === undefined && !forceCurrentValue) {
@@ -552,8 +552,8 @@ function importDate(dateObj, opts) {
   }, opts);
 }
 function getTokenMatch(pos, opts, maskset) {
-  let inputmask = this,
-    calcPos = 0,
+  const inputmask = this;
+  let calcPos = 0,
     targetMatch,
     match,
     matchLength = 0;
@@ -564,8 +564,8 @@ function getTokenMatch(pos, opts, maskset) {
     if (dynMatches) {
       matchLength = parseInt(dynMatches[0]);
     } else {
-      let targetSymbol = match[0][0],
-        ndx = calcPos;
+      const targetSymbol = match[0][0];
+      let ndx = calcPos;
       while (inputmask && (opts.placeholder[`${match.index}'${validation_tests/* getTest */.bm.call(inputmask, ndx).match.placeholder}`] || validation_tests/* getTest */.bm.call(inputmask, ndx).match.placeholder) === targetSymbol) {
         ndx++;
       }
@@ -771,8 +771,8 @@ const datetimeAlias = {
         }
       }
     }
-    let result = currentResult,
-      dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
+    let result = currentResult;
+    const dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
     if (result && !isNaN(dateParts.date.getTime())) {
       // check for a valid date ~ an invalid date returns NaN which isn't equal
       if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
