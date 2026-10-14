@@ -16,7 +16,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 | Generate types only | `npm run types` |
 | Lint only | `npx eslint "lib/**/*.js"` |
 
-**Command order matters for `validate`:** webpack → copy → types → eslint → karma. Running steps out of order will fail (tests need the built bundle, lint needs the source).
+**Command order matters for `validate`:** webpack → copy → types → qunitnode → eslint → karma:unit → karma:jsdom. Running steps out of order will fail (the tests need the built `dist/`/test bundle, lint needs the source).
 
 ## Architecture
 
@@ -29,12 +29,22 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 
 ## Testing
 
-- Framework: QUnit via Karma
-- Locally: Chrome (added automatically when `CI` env is not set)
-- CI: BrowserStack (requires `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` env vars)
-- Test bundle is built by webpack (`npm run qunit` or as part of `grunt validate`)
-- Tests import from `../bundle` (the vanilla bundle entry), not from `dist/`
-- To run a focused test: edit `qunit/index.js` to import only the test module you need, then run `npm test`
+QUnit is the only test framework; it runs in three lanes:
+
+| Lane | Command | Notes |
+|------|---------|-------|
+| All lanes | `npm run test:all` | Node → Chrome → jsdom → BrowserStack; build first (`grunt webpack`) |
+| BrowserStack matrix | `npm run test:browserstack` | Real desktop + mobile devices (`cross-env CI=true karma start karma.conf.js --single-run`); needs `BROWSERSTACK_USERNAME`/`BROWSERSTACK_ACCESS_KEY` in the environment |
+| Browser (Karma) | `npm run test:chrome` | Local `ChromeHeadless` |
+| Node + jsdom (Karma) | `npm run test:jsdom` | Same bundle/config via the `jsdom` launcher |
+| Node, DOM-less bundles | `npm run test:node` | Runs `qunit/tests_node.js` against `dist/` (build first) |
+
+- `grunt validate` covers all three (`qunitnode` → `karma:unit` → `karma:jsdom`).
+- `QUnit.config.testTimeout` is set to 10s (`client.qunit.testTimeout` in `karma.conf.js`) so a stalled async test fails instead of tripping Karma's 30s `browserNoActivityTimeout` and disconnecting the whole browser.
+- Real mobile BrowserStack (`bs_chrome_pixel*`, `bs_*_iPhone*`) runs with `document.hasFocus() === false`, so the browser never dispatches `focus`/`blur` even though `element.focus()` sets `document.activeElement`. `qunit/focusShim.js` (installed first thing in `qunit/index.js`) replays the withheld event so the focus/blur-driven paths (`showMaskOnFocus`, `clearMaskOnLostFocus`, `clearIncomplete`, `onincomplete`) run as on a focused page; all real desktop + mobile devices pass 927/927. It is a no-op when the browser fires the real event.
+- The browser/jsdom suite is built by webpack into `qunit/qunit.js` (`npm run qunit` watches it); tests import from `../bundle`, not `dist/`.
+- `qunit/tests_node.js` is the only module that loads `dist/` directly (Node `require` + dynamic `import`), and must not be imported by `qunit/index.js`.
+- To run a focused test: edit `qunit/index.js` to import only the test module you need, rebuild the bundle, then run Karma.
 
 ## Numeric input gotchas
 

@@ -4,6 +4,7 @@ import qunit from "qunit";
 import Inputmask from "../bundle";
 
 import "./prototypeExtensions.js";
+import installFocusShim from "./focusShim.js";
 import simulator from "./simulator.js"; // inject globally for the simulator to detect inputeventonly
 import testsAlternations from "./tests_alternations";
 import testsAndroid from "./tests_android";
@@ -43,6 +44,9 @@ window.Inputmask = Inputmask;
 simulator(Inputmask.dependencyLib, Inputmask);
 simulator(jQuery, Inputmask);
 
+// normalise focus/blur for pages without document focus (real mobile devices)
+installFocusShim();
+
 // load tests
 if (qunit) {
   testsAlternations(qunit, Inputmask);
@@ -69,7 +73,4 @@ if (qunit) {
   testsPaste(qunit, Inputmask);
   testsRegex(qunit, Inputmask);
   testsSetvalue(qunit, Inputmask);
-
-  qunit.load();
-  // qunit.start();
 }

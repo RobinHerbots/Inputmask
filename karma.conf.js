@@ -24,7 +24,9 @@ module.exports = function (config) {
     ];
 
   if (!isCI) {
-    browsers.splice(1, 0, "Chrome");
+    // local/default target: headless Chrome. Never the GUI launcher, it does
+    // not exit on its own when run unattended.
+    browsers.splice(0, browsers.length, "ChromeHeadless");
   }
 
   config.set({
@@ -48,7 +50,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://www.npmjs.com/search?q=keywords:karma-reporter
-    reporters: ["progress", "BrowserStack"],
+    reporters: isCI ? ["progress", "BrowserStack"] : ["progress"],
 
     // web server port
     port: 9876,
@@ -59,6 +61,19 @@ module.exports = function (config) {
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
+
+    // pass options to the QUnit runner (karma-qunit maps these to QUnit.config)
+    client: {
+      qunit: {
+        showUI: false,
+        // Fail a test that stops reporting instead of letting the browser go
+        // quiet until Karma's browserNoActivityTimeout (30s) disconnects it and
+        // takes the whole run down. Must stay below that 30s. See the
+        // onincomplete test in qunit/tests_base.js, which only calls done() from
+        // a blur-driven callback and never completes on real mobile devices.
+        testTimeout: 10000
+      }
+    },
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
@@ -73,6 +88,11 @@ module.exports = function (config) {
 
     // define browsers
     customLaunchers: {
+      // headless Chrome for CI containers that run as root
+      ChromeHeadlessNoSandbox: {
+        base: "ChromeHeadless",
+        flags: ["--no-sandbox", "--disable-gpu"]
+      },
       bs_chrome96_win11: {
         base: "BrowserStack",
         browser: "chrome",
@@ -202,7 +222,7 @@ module.exports = function (config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser instances should be started simultaneously

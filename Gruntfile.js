@@ -34,6 +34,10 @@ module.exports = function (grunt) {
       },
       unit: {
         singleRun: true
+      },
+      jsdom: {
+        browsers: ["jsdom"],
+        singleRun: true
       }
     },
     eslint: {
@@ -254,16 +258,17 @@ module.exports = function (grunt) {
   grunt.registerTask("types", function () {
     execSync("npm run types", { stdio: "inherit" });
   });
-  grunt.registerTask("nodetest", function () {
-    execSync("node nodetest.js", { stdio: "inherit" });
+  grunt.registerTask("qunitnode", function () {
+    execSync("npm run test:node", { stdio: "inherit" });
   });
   grunt.registerTask("validate", [
     "webpack",
     "copy",
     "types",
-    "nodetest",
+    "qunitnode",
     "eslint",
-    "karma"
+    "karma:unit",
+    "karma:jsdom"
   ]);
   grunt.registerTask("build", [
     "updateYear",

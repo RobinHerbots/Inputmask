@@ -91,6 +91,11 @@
     "qunit": "webpack --progress --watch --config-name test --config webpack.config.js",
     "types": "tsc -p tsconfig.types.json --emitDeclarationOnly",
     "test": "grunt validate",
+    "test:all": "npm run test:node && npm run test:chrome && npm run test:jsdom && npm run test:browserstack",
+    "test:browserstack": "cross-env CI=true karma start karma.conf.js --single-run",
+    "test:chrome": "karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:node": "qunit qunit/tests_node.js",
+    "test:jsdom": "karma start karma.conf.js --browsers jsdom --single-run",
     "update-browserlist": "npx update-browserslist-db@latest"
   },
   "repository": {
@@ -120,12 +125,13 @@
     "@babel/eslint-parser": "^8.0.1",
     "@babel/preset-env": "^8.0.6",
     "@babel/preset-typescript": "^8.0.1",
+    "@eslint/js": "^9.39.5",
     "@robinherbots/grunt-available-tasks": "^0.6.4",
     "babel-loader": "^10.1.1",
     "babel-plugin-polyfill-corejs3": "^1.0.0",
     "core-js": "3.50.0",
+    "cross-env": "^10.1.0",
     "eslint": "^10.7.0",
-    "@eslint/js": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-import-x": "^4.16.2",
@@ -142,9 +148,11 @@
     "grunt-karma": "^4.0.2",
     "grunt-webpack": "^8.0.0",
     "jquery": "^3.7.1",
+    "jsdom": "^30.1.2",
     "karma": "^6.4.4",
     "karma-browserstack-launcher": "^1.6.0",
     "karma-chrome-launcher": "^3.2.0",
+    "karma-jsdom-launcher": "^22.0.0",
     "karma-qunit": "^4.2.1",
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.18.1",
@@ -159,5 +167,9 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "allowScripts": {
+    "core-js@3.50.0": true,
+    "unrs-resolver@1.12.2": true
+  }
 }
