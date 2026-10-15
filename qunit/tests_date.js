@@ -1482,6 +1482,66 @@ export default function (qunit, Inputmask) {
   });
 
   qunit.test(
+    "leapyear jitMasking odd leading years - #2763",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      // leap years starting with an odd digit used to be rejected (#2763),
+      // while the even digit ones (2004, 2012) already worked
+      ["1972", "1980", "1988", "1996", "2004", "2012"].forEach(function (year) {
+        $fixture.append('<input type="text" id="testmask" />');
+        const testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+          inputFormat: "dd/MM/yyyy",
+          jitMasking: true
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("292" + year);
+
+        assert.equal(
+          testmask.value,
+          "29/02/" + year,
+          "Result " + testmask.value
+        );
+        $(testmask).remove();
+      });
+    }
+  );
+
+  qunit.test("leapyear jitMasking dd-MM-yyyy 1980 - #2763", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd-MM-yyyy",
+      jitMasking: true
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("2921980");
+
+    assert.equal(testmask.value, "29-02-1980", "Result " + testmask.value);
+  });
+
+  qunit.test(
+    "leapyear jitMasking odd leading non-leap year 1981 - #2763",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        jitMasking: true
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("2921981");
+
+      assert.notEqual(testmask.value, "29/02/1981", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
     "Problem with seconds in format 'HH:mm:ss' - #2745",
     function (assert) {
       const $fixture = $("#qunit-fixture");
