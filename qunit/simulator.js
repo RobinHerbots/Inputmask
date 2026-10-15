@@ -227,26 +227,19 @@ export default function ($, Inputmask) {
 
   $.fn.paste = function (inputStr) {
     const input = this.nodeName ? this : this[0],
-      $input = $(input);
-    if (window.clipboardData) {
-      window.clipboardData.setData("Text", inputStr);
-    } else {
-      $.data($input, "clipboard", inputStr);
-      window.clipboardData = {
-        getData: function () {
-          window.clipboardData = undefined;
-          return $.data($input, "clipboard");
-        }
-      };
-    }
-
-    const caretPos = $.caret(input),
+      caretPos = $.caret(input),
       im = input.inputmask,
       rawValue = im ? im._valueGet(true) : input.value,
       selectionBegin = caretPos.begin,
-      selectionEnd = caretPos.end;
+      selectionEnd = caretPos.end,
+      // dispatch a real paste event carrying the clipboard content, so the
+      // handler reads it off e.clipboardData like a modern browser
+      pasteEvt = new Event("paste", { bubbles: true, cancelable: true });
 
-    $input.trigger("paste");
+    Object.defineProperty(pasteEvt, "clipboardData", {
+      value: { getData: () => inputStr }
+    });
+    input.dispatchEvent(pasteEvt);
 
     // simulate the browser's default (non-prevented) paste action: replace the
     // selection with the clipboard content, then fire the input event that a
