@@ -2465,4 +2465,229 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  qunit.test(
+    "datetime isComplete transitions to false after deleting a year digit - #2708",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy HH:mm:ss"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("30032023120000");
+      assert.equal(
+        testmask.value,
+        "30/03/2023 12:00:00",
+        "Result " + testmask.value
+      );
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        true,
+        "isComplete should be true initially"
+      );
+
+      $.caret(testmask, 9);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(
+        testmask.inputmask.isComplete(),
+        false,
+        "isComplete should be false after deleting year digit"
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime format and init with Date object - #2097",
+    function (assert) {
+      const d = new Date(2023, 2, 15, 10, 30),
+        formatted = Inputmask.format(d, {
+          alias: "datetime",
+          inputFormat: "dd/MM/yyyy HH:mm"
+        });
+      assert.equal(formatted, "15/03/2023 10:30", "format(Date) result");
+
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy HH:mm"
+      }).mask(testmask);
+
+      testmask.inputmask.setValue(d);
+      assert.equal(
+        testmask.value,
+        "15/03/2023 10:30",
+        "setValue(Date) result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy overtype month 10 with 01 does not shift - #1504",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("21102016");
+      assert.equal(
+        testmask.value,
+        "21/10/2016",
+        "Initial date " + testmask.value
+      );
+
+      $.caret(testmask, 3);
+      $("#testmask").Type("01");
+      assert.equal(
+        testmask.value,
+        "21/01/2016",
+        "Result after month change " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "MM/dd/yyyy deleting month segment leaves year in position - #2006",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "MM/dd/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("12312023");
+      assert.equal(
+        testmask.value,
+        "12/31/2023",
+        "Initial date " + testmask.value
+      );
+
+      $.caret(testmask, 0, 2);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(
+        testmask.value,
+        "MM/31/2023",
+        "Result after deleting month " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "MM/dd/yyyy overtyping month 09 to 19 is rejected - #1941",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "MM/dd/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("09292017");
+      assert.equal(
+        testmask.value,
+        "09/29/2017",
+        "Initial date " + testmask.value
+      );
+
+      $.caret(testmask, 0);
+      $("#testmask").Type("1");
+      assert.notEqual(
+        testmask.value,
+        "19/29/2017",
+        "Month 19 must not be valid"
+      );
+    }
+  );
+
+  qunit.test(
+    "dd-MM-yyyy prepopulated with 01-01-2016 retains leading zeroes - #1296",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" value="01-01-2016" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd-MM-yyyy"
+      }).mask(testmask);
+
+      assert.equal(testmask.value, "01-01-2016", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy partial entry preserves year template on blur - #1733",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("2303");
+      $("#testmask").trigger("blur");
+      assert.equal(
+        testmask.value,
+        "23/03/yyyy",
+        "Year template preserved on blur " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime optional time displays correctly with TR35 tokens - #2593",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "MM/dd/yyyy[ HH:mm TT]"
+      }).mask(testmask);
+
+      testmask.inputmask.setValue("12/25/2022 09:00 AM");
+      assert.equal(
+        testmask.value,
+        "12/25/2022 09:00 AM",
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "dd/MM/yyyy editing day part does not jump prematurely - #2761",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("23122023");
+      assert.equal(
+        testmask.value,
+        "23/12/2023",
+        "Initial date " + testmask.value
+      );
+
+      $.caret(testmask, 1);
+      $("#testmask").Type("1");
+      assert.equal(
+        testmask.value,
+        "21/12/2023",
+        "Result after replacing day digit " + testmask.value
+      );
+    }
+  );
 }
