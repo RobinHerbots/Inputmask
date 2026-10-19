@@ -20,7 +20,10 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 
 ## Architecture
 
-- **Entry point:** `lib/inputmask.js` — the core Inputmask class
+- **Entry point:** `lib/index.js` — public entry; re-exports the headless class and attaches the DOM driver (`lib/dom/attach.js`). Deep import `lib/core/inputmask.js` for the DOM-free class only
+- **Headless class:** `lib/core/inputmask.js` — constructor, aliases/definitions, validation/format statics and the headless session API; part of `lib/core/`, so it never imports `lib/dom/`
+- **Headless core:** `lib/core/` — mask lexer, validation, positioning, key processing, input handling; no DOM/window dependencies (only the safe `lib/global/window` shim)
+- **DOM driver:** `lib/dom/` — browser event handlers (`eventhandlers.js`), event binding (`eventruler.js`), element patching (`mask.js`), environment sniffing (`environment.js`), and `attach.js` which adds the element-bound instance methods (`mask`, `remove`) and statics (`remove`, `setValue`) to the class
 - **Bundle entry points:** `bundle.js` (vanilla), `bundle.jquery.js` (jQuery), `bundle.colormask.js`
 - **Dependency abstraction:** `lib/dependencyLibs/` — swaps between vanilla DOM and jQuery via webpack alias
 - **Extensions:** `lib/extensions/` — each exports a `register*()` function, called in `bundle.js`

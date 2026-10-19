@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough */
-import defaultSettings from "../lib/defaults";
-import { keys } from "../lib/keycode";
+import defaultSettings from "../lib/core/defaults";
+import { keys } from "../lib/core/keycode";
 
 export default function ($, Inputmask) {
   $.caret = function (input, begin, end) {

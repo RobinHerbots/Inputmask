@@ -1,17 +1,17 @@
 import "./lib/global/FormData";
 
-import { registerDefinitions } from "./lib/extensions/definitions";
 import { registerCssunit } from "./lib/extensions/cssunit";
-import { registerUrl } from "./lib/extensions/url";
-import { registerIp } from "./lib/extensions/ip";
-import { registerEmail } from "./lib/extensions/email";
-import { registerMac } from "./lib/extensions/mac";
-import { registerVin } from "./lib/extensions/vin";
-import { registerSsn } from "./lib/extensions/ssn";
 import { registerDatetime } from "./lib/extensions/date";
+import { registerDefinitions } from "./lib/extensions/definitions";
+import { registerEmail } from "./lib/extensions/email";
+import { registerIp } from "./lib/extensions/ip";
+import { registerMac } from "./lib/extensions/mac";
 import { registerNumeric } from "./lib/extensions/numeric";
+import { registerSsn } from "./lib/extensions/ssn";
+import { registerUrl } from "./lib/extensions/url";
+import { registerVin } from "./lib/extensions/vin";
 import "./lib/inputmaskElement";
-import Inputmask from "./lib/inputmask";
+import Inputmask from "./lib/index";
 
 registerDefinitions();
 registerCssunit();

@@ -96,7 +96,7 @@ module.exports = function (env, argv) {
   const modernConfig = {
       name: "modern",
       entry: {
-        "dist/esm/inputmask.mjs": "./lib/inputmask.js",
+        "dist/esm/inputmask.mjs": "./lib/index.js",
         "dist/esm/inputmaskElement.mjs": {
           import: "./lib/inputmaskElement.js",
           dependOn: "dist/esm/inputmask.mjs"

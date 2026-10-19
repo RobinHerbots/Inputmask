@@ -1,4 +1,4 @@
-import { keys } from "../lib/keycode";
+import { keys } from "../lib/core/keycode";
 
 // https://github.com/RobinHerbots/Inputmask/issues/2402
 export default function (qunit, Inputmask) {

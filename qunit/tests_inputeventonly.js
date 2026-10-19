@@ -1,4 +1,4 @@
-import { keys } from "../lib/keycode";
+import { keys } from "../lib/core/keycode";
 
 export default function (qunit, Inputmask) {
   const $ = Inputmask.dependencyLib;
