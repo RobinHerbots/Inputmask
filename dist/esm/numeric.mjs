@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -21,13 +21,13 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   pd: () => (/* binding */ registerNumeric),
 /* harmony export */   sH: () => (/* binding */ numeric)
 /* harmony export */ });
-/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(472);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
-/* harmony import */ var _escapeRegex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(340);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(375);
-/* harmony import */ var _keycode__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(32);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(539);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(687);
+/* harmony import */ var _core_definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(542);
+/* harmony import */ var _core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(466);
+/* harmony import */ var _core_keycode__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(462);
+/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(173);
+/* harmony import */ var _core_validation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(841);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(123);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -44,12 +44,12 @@ export const __webpack_esm_modules__ = {
 
 // resolved on every call so a definition extended at runtime is honoured
 function isDigit(chr) {
-  return new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u").test(chr);
+  return new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u").test(chr);
 }
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
-    if (_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
+    if (_core_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
       escapedTxt += "\\" + txt.charAt(i);
     } else {
       escapedTxt += txt.charAt(i);
@@ -79,14 +79,14 @@ function alignDigits(buffer, digits, opts, force) {
   return buffer;
 }
 function unmaskAsNumber(str, opts) {
-  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend({}, opts, {
+  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend({}, opts, {
     unmaskAsNumber: true
   }));
 }
 
 // onUnMask's text form, whatever the unmaskAsNumber option says
 function unmaskAsString(str, opts) {
-  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend({}, opts, {
+  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend({}, opts, {
     unmaskAsNumber: false
   }));
 }
@@ -99,7 +99,7 @@ function boundaryBuffer(bound, opts) {
 function findValidator(symbol, maskset) {
   let posNdx = 0;
   if (symbol === "+") {
-    posNdx = _positioning__WEBPACK_IMPORTED_MODULE_5__/* .seekNext */ .u4.call(this, maskset.validPositions.length - 1);
+    posNdx = _core_positioning__WEBPACK_IMPORTED_MODULE_4__/* .seekNext */ .u4.call(this, maskset.validPositions.length - 1);
   }
   for (let tstNdx in maskset.tests) {
     tstNdx = parseInt(tstNdx);
@@ -148,13 +148,13 @@ function parseMinMaxOptions(opts) {
   if (opts.parseMinMaxOptions === undefined) {
     // convert min and max options
     if (opts.min !== null) {
-      opts.min = opts.min.toString().replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
+      opts.min = opts.min.toString().replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
       if (opts.radixPoint === ",") opts.min = opts.min.replace(opts.radixPoint, ".");
       opts.min = isFinite(opts.min) ? parseFloat(opts.min) : NaN;
       if (isNaN(opts.min)) opts.min = Number.MIN_VALUE;
     }
     if (opts.max !== null) {
-      opts.max = opts.max.toString().replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
+      opts.max = opts.max.toString().replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
       if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
       opts.max = isFinite(opts.max) ? parseFloat(opts.max) : NaN;
       if (isNaN(opts.max)) opts.max = Number.MAX_VALUE;
@@ -267,7 +267,7 @@ function handleRadixDance(pos, c, radixPos, maskset, opts) {
 }
 function decimalValidator(chrs, maskset, pos, strict, opts) {
   const radixPos = maskset.buffer ? maskset.buffer.indexOf(opts.radixPoint) : -1,
-    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u").test(chrs);
+    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u").test(chrs);
   if (!strict && opts._radixDance && radixPos !== -1 && result && maskset.validPositions[radixPos] == undefined) {
     return {
       insert: {
@@ -284,7 +284,7 @@ function decimalValidator(chrs, maskset, pos, strict, opts) {
 // Match the numeric body of the (reversed) buffer against the prefix/suffix
 // wrapper, returning the captured "number" group or null if the match fails.
 function matchNumberInWrapper(buffer, opts) {
-  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? "(?:" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front) + ")?" : "") + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.prefix) + ")(.*?)(" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.suffix) + (opts.negationSymbol.back !== "" ? "(?:" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + ")?" : "") + "$)").exec(buffer.slice().reverse().join(""));
+  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? "(?:" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.front) + ")?" : "") + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.prefix) + ")(.*?)(" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.suffix) + (opts.negationSymbol.back !== "" ? "(?:" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.back) + ")?" : "") + "$)").exec(buffer.slice().reverse().join(""));
   return match ? match[2] : null;
 }
 function checkForLeadingZeroes(buffer, opts) {
@@ -426,7 +426,7 @@ const numericAlias = {
       if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
         const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
         if (maskset.validPositions[radixValidatorPos]) {
-          maskset.validPositions[radixValidatorPos] = _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, maskset.validPositions[radixValidatorPos], {
+          maskset.validPositions[radixValidatorPos] = _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, maskset.validPositions[radixValidatorPos], {
             generatedInput: maskset.validPositions[radixValidatorPos].generated || false
           });
         }
@@ -480,7 +480,7 @@ const numericAlias = {
           // would otherwise fall through to alternation switching and land
           // in the decimal part (#2615)
           if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
-            const digitTest = new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u");
+            const digitTest = new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A["9"].validator, "u");
             if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
               return {
                 rewritePosition: radixPos !== -1 ? radixPos : 0
@@ -527,15 +527,15 @@ const numericAlias = {
       }
       let processValue = maskedValue.replace(opts.prefix, "");
       processValue = processValue.replace(opts.suffix, "");
-      processValue = processValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
+      processValue = processValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.groupSeparator), "g"), "");
       const placeholderChar = opts.placeholder !== undefined ? opts.placeholder.charAt(0) : "";
       if (placeholderChar !== "") {
         processValue = processValue.replace(new RegExp(placeholderChar, "g"), "0");
       }
       if (opts.unmaskAsNumber) {
-        if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$.call(this, opts.radixPoint), ".");
-        processValue = processValue.replace(new RegExp("^" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front)), "-");
-        processValue = processValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "$"), "");
+        if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$.call(this, opts.radixPoint), ".");
+        processValue = processValue.replace(new RegExp("^" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.front)), "-");
+        processValue = processValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "$"), "");
         // a blank buffer, or a lone sign/radix, holds no number; Number("") is
         // 0, which a min/max check would mistake for a real 0 (#2863)
         const numberValue = Number(processValue);
@@ -545,12 +545,12 @@ const numericAlias = {
     },
     isComplete: function (buffer, opts) {
       let maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
-      maskedValue = maskedValue.replace(new RegExp("^" + (0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.front)), "-");
-      maskedValue = maskedValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "$"), "");
+      maskedValue = maskedValue.replace(new RegExp("^" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.front)), "-");
+      maskedValue = maskedValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.negationSymbol.back) + "$"), "");
       maskedValue = maskedValue.replace(opts.prefix, "");
       maskedValue = maskedValue.replace(opts.suffix, "");
-      maskedValue = maskedValue.replace(new RegExp((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
-      if (opts.radixPoint === ",") maskedValue = maskedValue.replace((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(opts.radixPoint), ".");
+      maskedValue = maskedValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
+      if (opts.radixPoint === ",") maskedValue = maskedValue.replace((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(opts.radixPoint), ".");
       return isFinite(maskedValue);
     },
     onBeforeMask: function (initialValue, opts) {
@@ -582,7 +582,7 @@ const numericAlias = {
             const digitsFactor = Math.pow(10, digits || 1);
 
             // make the initialValue a valid javascript number for the parsefloat
-            initialValue = initialValue.replace((0,_escapeRegex__WEBPACK_IMPORTED_MODULE_2__/* .escapeRegex */ .$)(radixPoint), ".");
+            initialValue = initialValue.replace((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__/* .escapeRegex */ .$)(radixPoint), ".");
             if (!isNaN(parseFloat(initialValue))) {
               initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
             }
@@ -671,7 +671,7 @@ const numericAlias = {
           // when the value is already negative) when there is no radix yet
           const injectNdx = isRadixStart ? radixNdx + 1 : opts.suffix.length + backLen;
           // place a real input digit, like the engine's own insert command
-          _validation__WEBPACK_IMPORTED_MODULE_6__/* .isValid */ .fn.call(inputmask, injectNdx, "0", true, true);
+          _core_validation__WEBPACK_IMPORTED_MODULE_5__/* .isValid */ .fn.call(inputmask, injectNdx, "0", true, true);
           buffer.splice(injectNdx, 0, "0");
         }
       }
@@ -733,7 +733,7 @@ const numericAlias = {
             break;
           case "_checkval":
           case "keydown":
-            if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI) {
+            if (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Delete || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Backspace || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.BACKSPACE_SAFARI) {
               if (
               // nothing but the sign is left, e.g. "-0" - clear it
               isNegated(maskset) && holdsNoNumber(buffer, maskset, opts) ||
@@ -799,7 +799,7 @@ const numericAlias = {
                   // anything was deleted from it. So both have to agree.
                   // translatePosition cannot bridge the gap either, it derives
                   // the mask position from that same stale native value.
-                  if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1]) && inputmask._valueGet().length === buffer.length && /\d/.test(buffer.slice().reverse()[caret.begin] || "")) {
+                  if (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1]) && inputmask._valueGet().length === buffer.length && /\d/.test(buffer.slice().reverse()[caret.begin] || "")) {
                     const spliced = buffer.slice();
                     spliced.splice(caret.begin - 1, 1);
                     result.refreshFromBuffer = true;
@@ -817,7 +817,7 @@ const numericAlias = {
       // on blur. Only the pure flip counts - the sign and nothing else,
       // compared as text, not as a number: deleting digits is ordinary
       // editing. #2846
-      if (e && opts.setMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.BACKSPACE_SAFARI))) {
+      if (e && opts.setMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Delete || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Backspace || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.BACKSPACE_SAFARI))) {
         const after = buffer.slice().reverse().join("");
         if (unmaskAsNumber(after, opts) > opts.max && unmaskAsString(inputmask._valueGet(true), opts) === opts.negationSymbol.front + unmaskAsString(after, opts) + opts.negationSymbol.back) {
           return {
@@ -829,7 +829,7 @@ const numericAlias = {
       return result;
     },
     onKeyDown: function (e, buffer, caretPos, opts) {
-      const $input = (0,_dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)(this);
+      const $input = (0,_dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A)(this);
       if (e.location !== 3) {
         let pattern;
         const c = e.key;
@@ -843,11 +843,11 @@ const numericAlias = {
       }
       if (e.ctrlKey) {
         switch (e.key) {
-          case _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.ArrowUp:
+          case _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.ArrowUp:
             this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
             $input.trigger("setvalue");
             return false;
-          case _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.ArrowDown:
+          case _core_keycode__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.ArrowDown:
             this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
             $input.trigger("setvalue");
             return false;
@@ -893,25 +893,25 @@ const numericAlias = {
   };
 
 function numeric(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, options);
 }
 function currency(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, currencyAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, currencyAlias, options);
 }
 function decimal(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, decimalAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, decimalAlias, options);
 }
 function integer(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, integerAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, integerAlias, options);
 }
 function percentage(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, percentageAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, percentageAlias, options);
 }
 function indianns(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {}, numericAlias, indiannsAlias, options);
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, {}, numericAlias, indiannsAlias, options);
 }
 function registerNumeric() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_3__/* .aliases */ .z2, {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.extend(true, _core_inputmask__WEBPACK_IMPORTED_MODULE_2__/* .aliases */ .z2, {
     numeric: numericAlias,
     currency: {
       alias: "numeric",

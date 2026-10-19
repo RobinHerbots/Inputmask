@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 export const __webpack_esm_id__ = 995;
 export const __webpack_esm_ids__ = [995];
@@ -16,8 +16,8 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   a: () => (/* binding */ cssunit),
 /* harmony export */   t: () => (/* binding */ registerCssunit)
 /* harmony export */ });
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(123);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(466);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -28,12 +28,12 @@ export const __webpack_esm_modules__ = {
 
 
 function cssunit(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
     regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
   }, options);
 }
 function registerCssunit() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_1__/* .aliases */ .z2, {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _core_inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
     cssunit: cssunit()
   });
 }

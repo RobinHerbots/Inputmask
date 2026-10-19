@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 export const __webpack_esm_id__ = 272;
 export const __webpack_esm_ids__ = [272];
@@ -13,9 +13,8 @@ export const __webpack_esm_modules__ = {
 (__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
 
 /* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(309);
 
-// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 const document = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.document;
 
@@ -39,7 +38,7 @@ if (document && document.head && document.head.attachShadow && _global_window__W
           this.input.setAttribute(attributeNames[attr], this.getAttribute(attributeNames[attr]));
         }
       }
-      const im = new _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay();
+      const im = new _index__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay();
       im.dataAttribute = "";
       im.mask(this.input);
     }

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 export const __webpack_esm_id__ = 153;
 export const __webpack_esm_ids__ = [153];
@@ -15,11 +15,11 @@ export const __webpack_esm_modules__ = {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   y: () => (/* binding */ renderColorMask)
 /* harmony export */ });
-/* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(47);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(32);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(539);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(895);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(272);
+/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(462);
+/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(173);
+/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(217);
+/* harmony import */ var _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(800);
 /*
  Input Mask colormask extension
  http://github.com/RobinHerbots/inputmask
@@ -31,20 +31,20 @@ export const __webpack_esm_modules__ = {
 
 
 
-const $ = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay.dependencyLib;
+const $ = _core_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Ay.dependencyLib;
 function Colormask(alias, options, internal) {
   // allow instanciating without new
   if (!(this instanceof Colormask)) {
     return new Colormask(alias, options, internal);
   }
   this.colorMask = undefined;
-  Object.getOwnPropertyNames(_inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay).forEach(function (key) {
+  Object.getOwnPropertyNames(_core_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Ay).forEach(function (key) {
     if (!Object.prototype.hasOwnProperty.call(this, key)) {
-      this[key] = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay[key];
+      this[key] = _core_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Ay[key];
     }
   }, this);
 }
-Colormask.prototype = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay.prototype;
+Colormask.prototype = _core_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Ay.prototype;
 Colormask.prototype.writeBufferHook = function (caretPos) {
   renderColorMask.call(this, this.el, caretPos, false);
 };
@@ -55,10 +55,10 @@ Colormask.prototype.applyMaskHook = function () {
   initializeColorMask.call(this, this.el);
 };
 Colormask.prototype.keyEventHook = function (e) {
-  if (e.key === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.ArrowRight || e.key === _keycode_js__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.ArrowLeft) {
+  if (e.key === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.ArrowRight || e.key === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.ArrowLeft) {
     const inputmask = this;
     setTimeout(function () {
-      const caretPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, inputmask.el, undefined, undefined, true);
+      const caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .caret */ .OW.call(inputmask, inputmask.el, undefined, undefined, true);
       renderColorMask.call(inputmask, inputmask.el, caretPos);
     }, 0);
   }
@@ -119,14 +119,14 @@ function initializeColorMask(input) {
   colorMask.appendChild(template);
   input.style.left = template.offsetLeft + "px";
   $(colorMask).on("mouseleave", function (e) {
-    return _eventhandlers__WEBPACK_IMPORTED_MODULE_0__/* .EventHandlers */ .C.mouseleaveEvent.call(input, [e]);
+    return _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__/* .EventHandlers */ .C.mouseleaveEvent.call(input, [e]);
   });
   $(colorMask).on("mouseenter", function (e) {
-    return _eventhandlers__WEBPACK_IMPORTED_MODULE_0__/* .EventHandlers */ .C.mouseenterEvent.call(input, [e]);
+    return _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__/* .EventHandlers */ .C.mouseenterEvent.call(input, [e]);
   });
   $(colorMask).on("click", function (e) {
-    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(input.inputmask, input, findCaretPos(e.clientX), undefined, true);
-    return _eventhandlers__WEBPACK_IMPORTED_MODULE_0__/* .EventHandlers */ .C.clickEvent.call(input, [e]);
+    _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .caret */ .OW.call(input.inputmask, input, findCaretPos(e.clientX), undefined, true);
+    return _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__/* .EventHandlers */ .C.clickEvent.call(input, [e]);
   });
 }
 function positionColorMask(input, template) {
@@ -176,9 +176,9 @@ function renderColorMask(input, caretPos, clear) {
     }
   }
   if (input.inputmask.colorMask !== undefined) {
-    const buffer = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask);
+    const buffer = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask);
     if (caretPos === undefined) {
-      caretPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input);
+      caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .caret */ .OW.call(inputmask, input);
     } else if (caretPos.begin === undefined) {
       caretPos = {
         begin: caretPos,
@@ -187,11 +187,11 @@ function renderColorMask(input, caretPos, clear) {
     }
     if (isRTL) {
       // translate caretPos
-      caretPos.begin = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, caretPos.begin);
-      caretPos.end = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, caretPos.end);
+      caretPos.begin = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .translatePosition */ .Mu.call(inputmask, caretPos.begin);
+      caretPos.end = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .translatePosition */ .Mu.call(inputmask, caretPos.end);
     }
     if (clear !== true) {
-      const lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask);
+      const lvp = _core_positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask);
       do {
         if (maskset.validPositions[pos]) {
           testPos = maskset.validPositions[pos];
@@ -199,12 +199,12 @@ function renderColorMask(input, caretPos, clear) {
           ndxIntlzr = testPos.locator.slice();
           setEntry(buffer[pos]);
         } else {
-          testPos = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, pos, ndxIntlzr, pos - 1);
+          testPos = _core_validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTestTemplate */ .t.call(inputmask, pos, ndxIntlzr, pos - 1);
           test = testPos.match;
           ndxIntlzr = testPos.locator.slice();
           const jitMasking = opts.jitMasking !== false ? opts.jitMasking : test.jit;
           if (jitMasking === false || jitMasking === undefined /* || pos < lvp */ || typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos) {
-            setEntry(_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, pos, test));
+            setEntry(_core_validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, pos, test));
             // } else {
             // 	isStatic = false;
           } // break infinite loop

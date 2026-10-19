@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -19,18 +19,20 @@ __webpack_require__.d(__webpack_exports__, {
   H: () => (/* binding */ registerDatetime)
 });
 
+// EXTERNAL MODULE: ./lib/core/escapeRegex.js
+var escapeRegex = __webpack_require__(30);
+// EXTERNAL MODULE: ./lib/core/inputmask.js + 1 modules
+var inputmask = __webpack_require__(272);
+// EXTERNAL MODULE: ./lib/core/cache.js
+var cache = __webpack_require__(466);
+// EXTERNAL MODULE: ./lib/core/keycode.js
+var keycode = __webpack_require__(462);
+// EXTERNAL MODULE: ./lib/core/positioning.js
+var positioning = __webpack_require__(173);
+// EXTERNAL MODULE: ./lib/core/validation-tests.js
+var validation_tests = __webpack_require__(217);
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
 var inputmask_dependencyLib = __webpack_require__(123);
-// EXTERNAL MODULE: ./lib/escapeRegex.js
-var escapeRegex = __webpack_require__(340);
-// EXTERNAL MODULE: ./lib/inputmask.js + 5 modules
-var inputmask = __webpack_require__(375);
-// EXTERNAL MODULE: ./lib/keycode.js
-var keycode = __webpack_require__(32);
-// EXTERNAL MODULE: ./lib/positioning.js
-var positioning = __webpack_require__(539);
-// EXTERNAL MODULE: ./lib/validation-tests.js
-var validation_tests = __webpack_require__(895);
 ;// ./lib/extensions/inputmask.date.i18n.js
 /*
  Input Mask plugin extensions
@@ -832,7 +834,7 @@ function datetime(options) {
   return inputmask_dependencyLib/* default */.A.extend(true, {}, datetimeAlias, options);
 }
 function registerDatetime() {
-  inputmask_dependencyLib/* default */.A.extend(true, inputmask/* aliases */.z2, {
+  inputmask_dependencyLib/* default */.A.extend(true, cache/* aliases */.z2, {
     datetime: datetime()
   });
 }

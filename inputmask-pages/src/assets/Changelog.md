@@ -7,6 +7,11 @@
 - Provide TypeScript definitions #1939
 - add displayChar option to mask definitions (masked display, native value) #2402
 - datetime accepts whole values written in the outputFormat and converts them to the inputFormat #576
+- headless / non-DOM usage: `Inputmask` runs entirely in-memory without an element (Node.js, React controlled inputs, CLI prompts, SSR)
+- interactive session API on the instance, initialized lazily on the first call:
+  - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
+  - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
+  - `setSelection(begin, end)`, `getSelection()`/`caret`
 
 ### Updates
 
@@ -15,6 +20,12 @@
 - the NuGet packages work again on modern .NET and are built with the dotnet SDK instead of the Windows-only nuget.exe
 - the `placeholder` option is resolved per position: a placeholder map first, then the placeholder of the mask definition, then the string option, then the default of the prototype definitions
 - a multi-char `placeholder` string is mapped onto the mask tokens by index, so it lines up with an ungrouped mask only. Use a placeholder map for a mask with groups or quantifiers
+- `caret()`, `checkVal()` and `writeBuffer()` no longer depend on DOM globals or element references; in-memory caret tracking is kept when there is no element
+- headless `setValue()` runs `onBeforeMask` like the DOM path
+- headless `input()`/`delete()` use the core keystroke logic directly and no longer fire `onKeyDown`
+- source split into `lib/core/` (DOM-free engine: lexer, validation, positioning, key processing, input handling) and `lib/dom/` (browser driver: event handlers/binding, element patching, environment sniffing)
+- the headless class (`lib/core/inputmask.js`) has no `lib/dom/` imports; the element-bound `mask`/`remove` methods and `remove`/`setValue` statics attach from `lib/dom/attach.js`, wired by the `lib/index.js` entry
+- internal module paths moved under `lib/core/` and `lib/dom/` (e.g. `inputmask/lib/inputmask` → `inputmask/lib/core/inputmask`, `inputmask/lib/eventhandlers` → `inputmask/lib/dom/eventhandlers`); the public entry points (`inputmask`, `inputmask/extensions/*`) are unchanged (deep imports only)
 
 ### Fixed
 
