@@ -10,14 +10,14 @@ export const __webpack_esm_ids__ = [995];
 export const __webpack_esm_modules__ = {
 
 /***/ 408
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   a: () => (/* binding */ cssunit),
 /* harmony export */   t: () => (/* binding */ registerCssunit)
 /* harmony export */ });
-/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(466);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(466);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(123);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -44,11 +44,11 @@ function registerCssunit() {
 ;
 
 // load runtime
-import { __webpack_require__ } from "./inputmask.mjs";
-var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+import { __inputmask_require } from "./inputmask.mjs";
+var __webpack_exec__ = (moduleId) => (__inputmask_require(__inputmask_require.s = moduleId))
 
 import * as __webpack_chunk_1__ from "./cssunit.mjs";
-__webpack_require__.C(__webpack_chunk_1__);
+__inputmask_require.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(408);
 const __webpack_exports__cssunit = __webpack_exports__.a;
 const __webpack_exports__registerCssunit = __webpack_exports__.t;

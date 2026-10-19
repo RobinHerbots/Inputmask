@@ -8,12 +8,12 @@
 /******/ var __webpack_modules__ = ({
 
 /***/ 466
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   Zg: () => (/* binding */ resolveAlias)
 /* harmony export */ });
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(123);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(123);
 
 const aliases = {},
   masksCache = {};
@@ -34,7 +34,7 @@ function resolveAlias(aliasStr, options, opts) {
   return false;
 }
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */ __inputmask_require.d(__webpack_exports__, [
 /* harmony export */   "st", 0, /* binding */ masksCache,
 /* harmony export */   "z2", 0, /* binding */ aliases
 /* harmony export */ ]);
@@ -43,7 +43,7 @@ function resolveAlias(aliasStr, options, opts) {
 /***/ },
 
 /***/ 542
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 // Placeholder of the prototype definitions below. A regex mask has no
 // definition to inherit it from, so the lexer falls back to this one.
@@ -64,7 +64,7 @@ const DEFAULT_PLACEHOLDER = "_";
     placeholder: "_"
   }
 });
-/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */ __inputmask_require.d(__webpack_exports__, [
 /* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ ]);
 
@@ -72,9 +72,9 @@ const DEFAULT_PLACEHOLDER = "_";
 /***/ },
 
 /***/ 30
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   $: () => (/* binding */ escapeRegex)
 /* harmony export */ });
 const escapeRegexRegex = new RegExp("(\\" + ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^"].join("|\\") + ")", "gim");
@@ -85,9 +85,9 @@ function escapeRegex(str) {
 /***/ },
 
 /***/ 749
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   Au: () => (/* binding */ writeBuffer),
 /* harmony export */   b1: () => (/* binding */ HandleNativePlaceholder),
 /* harmony export */   eP: () => (/* binding */ checkVal),
@@ -95,12 +95,12 @@ function escapeRegex(str) {
 /* harmony export */   q4: () => (/* binding */ unmaskedvalue),
 /* harmony export */   ys: () => (/* binding */ clearOptionalTail)
 /* harmony export */ });
-/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(272);
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(462);
-/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(648);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(841);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(217);
+/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(272);
+/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
+/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(841);
+/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __inputmask_require(217);
 // eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
 
 
@@ -356,22 +356,22 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
 /***/ },
 
 /***/ 272
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, {
+__inputmask_require.d(__webpack_exports__, {
   Ay: () => (/* binding */ inputmask)
 });
 
 // UNUSED EXPORTS: aliases, masksCache
 
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __webpack_require__(123);
+var inputmask_dependencyLib = __inputmask_require(123);
 // EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __webpack_require__(266);
+var global_window = __inputmask_require(266);
 // EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __webpack_require__(466);
+var cache = __inputmask_require(466);
 ;// ./lib/core/defaults.js
 /**
  * fromAlternate tells whether the current validation runs as part of an alternation
@@ -569,21 +569,21 @@ const defaults = {
 };
 /* harmony default export */ const core_defaults = (defaults);
 // EXTERNAL MODULE: ./lib/core/definitions.js
-var definitions = __webpack_require__(542);
+var definitions = __inputmask_require(542);
 // EXTERNAL MODULE: ./lib/core/inputHandling.js
-var inputHandling = __webpack_require__(749);
+var inputHandling = __inputmask_require(749);
 // EXTERNAL MODULE: ./lib/core/keycode.js
-var keycode = __webpack_require__(462);
+var keycode = __inputmask_require(462);
 // EXTERNAL MODULE: ./lib/core/keyProcessing.js
-var keyProcessing = __webpack_require__(648);
+var keyProcessing = __inputmask_require(648);
 // EXTERNAL MODULE: ./lib/core/mask-lexer.js + 1 modules
-var mask_lexer = __webpack_require__(152);
+var mask_lexer = __inputmask_require(152);
 // EXTERNAL MODULE: ./lib/core/positioning.js
-var positioning = __webpack_require__(173);
+var positioning = __inputmask_require(173);
 // EXTERNAL MODULE: ./lib/core/validation.js
-var validation = __webpack_require__(841);
+var validation = __inputmask_require(841);
 // EXTERNAL MODULE: ./lib/core/validation-tests.js
-var validation_tests = __webpack_require__(217);
+var validation_tests = __inputmask_require(217);
 ;// ./lib/core/inputmask.js
 /*
  * Input Mask Core
@@ -942,15 +942,15 @@ const InputmaskExport = /** @type {InputmaskStatic} */Inputmask;
 /***/ },
 
 /***/ 648
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   G: () => (/* binding */ handleRemoveKey),
 /* harmony export */   g: () => (/* binding */ processKeypress)
 /* harmony export */ });
-/* harmony import */ var _inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(749);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(841);
+/* harmony import */ var _inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(749);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(173);
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(841);
 
 
 
@@ -1024,9 +1024,9 @@ function handleRemoveKey(input, c, pos, e) {
 /***/ },
 
 /***/ 462
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   HP: () => (/* binding */ keys),
 /* harmony export */   tS: () => (/* binding */ keyCode)
 /* harmony export */ });
@@ -1099,22 +1099,22 @@ function toKeyCode(key) {
 /***/ },
 
 /***/ 152
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, {
+__inputmask_require.d(__webpack_exports__, {
   _: () => (/* binding */ generateMaskSet)
 });
 
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __webpack_require__(123);
+var inputmask_dependencyLib = __inputmask_require(123);
 // EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __webpack_require__(466);
+var cache = __inputmask_require(466);
 // EXTERNAL MODULE: ./lib/core/definitions.js
-var definitions = __webpack_require__(542);
+var definitions = __inputmask_require(542);
 // EXTERNAL MODULE: ./lib/core/escapeRegex.js
-var escapeRegex = __webpack_require__(30);
+var escapeRegex = __inputmask_require(30);
 ;// ./lib/core/masktoken.js
 /**
  * A token of a parsed mask tree.
@@ -1886,9 +1886,9 @@ function analyseMask(mask, regexMask, opts) {
 /***/ },
 
 /***/ 173
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   $b: () => (/* binding */ isMask),
 /* harmony export */   Ef: () => (/* binding */ seekPrevious),
 /* harmony export */   Mu: () => (/* binding */ translatePosition),
@@ -1901,9 +1901,9 @@ function analyseMask(mask, regexMask, opts) {
 /* harmony export */   u4: () => (/* binding */ seekNext),
 /* harmony export */   wD: () => (/* binding */ determineNewCaretPosition)
 /* harmony export */ });
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(841);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(217);
+/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(266);
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(841);
+/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(217);
 
 
 
@@ -2299,9 +2299,9 @@ function translatePosition(pos) {
 /***/ },
 
 /***/ 217
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   G_: () => (/* binding */ getPlaceholder),
 /* harmony export */   WW: () => (/* binding */ determineTestTemplate),
 /* harmony export */   XR: () => (/* binding */ getMaskTemplate),
@@ -2311,9 +2311,9 @@ function translatePosition(pos) {
 /* harmony export */   t: () => (/* binding */ getTestTemplate)
 /* harmony export */ });
 /* unused harmony export isSubsetOf */
-/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(542);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(841);
+/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(542);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(173);
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(841);
 
 
 
@@ -3123,9 +3123,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
 /***/ },
 
 /***/ 841
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   As: () => (/* binding */ isComplete),
 /* harmony export */   Nl: () => (/* binding */ checkAlternationMatch),
 /* harmony export */   Nr: () => (/* binding */ handleRemove),
@@ -3135,10 +3135,10 @@ function getTests(pos, ndxIntlzr, tstPs) {
 /* harmony export */   m5: () => (/* binding */ refreshFromBuffer)
 /* harmony export */ });
 /* unused harmony exports alternate, revalidateMask */
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(462);
-/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(648);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(173);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(217);
+/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
+/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
+/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(217);
 
 
 
@@ -3911,16 +3911,16 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
 /***/ },
 
 /***/ 123
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, {
+__inputmask_require.d(__webpack_exports__, {
   A: () => (/* binding */ inputmask_dependencyLib)
 });
 
 // EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __webpack_require__(266);
+var global_window = __inputmask_require(266);
 ;// ./lib/dependencyLibs/data.js
 /* harmony default export */ function data(owner, key, value) {
   if (value === undefined) {
@@ -4247,9 +4247,9 @@ DependencyLib.Event = Evnt;
 /***/ },
 
 /***/ 752
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
+/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(266);
 
 const nav = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navigator || {},
   ua = nav.userAgent || "",
@@ -4263,7 +4263,7 @@ const nav = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navi
   })(),
   iphone = /iphone/i.test(ua);
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */ __inputmask_require.d(__webpack_exports__, [
 /* harmony export */   "H", 0, /* binding */ mobile,
 /* harmony export */   "Q", 0, /* binding */ iphone
 /* harmony export */ ]);
@@ -4272,19 +4272,19 @@ const nav = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navi
 /***/ },
 
 /***/ 800
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   C: () => (/* binding */ EventHandlers)
 /* harmony export */ });
-/* harmony import */ var _core_inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(749);
-/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(462);
-/* harmony import */ var _core_keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(648);
-/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(173);
-/* harmony import */ var _core_validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(841);
-/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(217);
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(266);
-/* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(752);
+/* harmony import */ var _core_inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(749);
+/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
+/* harmony import */ var _core_keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
+/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
+/* harmony import */ var _core_validation__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(841);
+/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __inputmask_require(217);
+/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_6__ = __inputmask_require(266);
+/* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_7__ = __inputmask_require(752);
 
 
 
@@ -4789,11 +4789,11 @@ const EventHandlers = {
 /***/ },
 
 /***/ 266
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 const canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (canUseDOM ? window : {});
-/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */ __inputmask_require.d(__webpack_exports__, [
 /* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ ]);
 
@@ -4801,32 +4801,32 @@ const canUseDOM = !!(typeof window !== "undefined" && window.document && window.
 /***/ },
 
 /***/ 309
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, {
+__inputmask_require.d(__webpack_exports__, {
   z2: () => (/* reexport */ cache/* aliases */.z2),
   Ay: () => (/* binding */ lib),
   st: () => (/* reexport */ cache/* masksCache */.st)
 });
 
 // EXTERNAL MODULE: ./lib/core/inputmask.js + 1 modules
-var core_inputmask = __webpack_require__(272);
+var core_inputmask = __inputmask_require(272);
 // EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __webpack_require__(466);
+var cache = __inputmask_require(466);
 // EXTERNAL MODULE: ./lib/core/inputHandling.js
-var inputHandling = __webpack_require__(749);
+var inputHandling = __inputmask_require(749);
 // EXTERNAL MODULE: ./lib/core/mask-lexer.js + 1 modules
-var mask_lexer = __webpack_require__(152);
+var mask_lexer = __inputmask_require(152);
 // EXTERNAL MODULE: ./lib/core/positioning.js
-var positioning = __webpack_require__(173);
+var positioning = __inputmask_require(173);
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __webpack_require__(123);
+var inputmask_dependencyLib = __inputmask_require(123);
 // EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __webpack_require__(266);
+var global_window = __inputmask_require(266);
 // EXTERNAL MODULE: ./lib/core/keycode.js
-var keycode = __webpack_require__(462);
+var keycode = __inputmask_require(462);
 ;// ./lib/dom/eventruler.js
 
 
@@ -4945,11 +4945,11 @@ const EventRuler = {
   }
 };
 // EXTERNAL MODULE: ./lib/core/validation.js
-var validation = __webpack_require__(841);
+var validation = __inputmask_require(841);
 // EXTERNAL MODULE: ./lib/dom/environment.js
-var environment = __webpack_require__(752);
+var environment = __inputmask_require(752);
 // EXTERNAL MODULE: ./lib/dom/eventhandlers.js
-var eventhandlers = __webpack_require__(800);
+var eventhandlers = __inputmask_require(800);
 ;// ./lib/dom/mask.js
 
 
@@ -5416,7 +5416,7 @@ attach(core_inputmask/* default */.Ay);
 /******/ const __webpack_module_cache__ = {};
 /******/ 
 /******/ // The require function
-/******/ function __webpack_require__(moduleId) {
+/******/ function __inputmask_require(moduleId) {
 /******/ 	// Check if module is in cache
 /******/ 	const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 	if (cachedModule !== undefined) {
@@ -5430,26 +5430,26 @@ attach(core_inputmask/* default */.Ay);
 /******/ 	};
 /******/ 
 /******/ 	// Execute the module function
-/******/ 	__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	__webpack_modules__[moduleId](module, module.exports, __inputmask_require);
 /******/ 
 /******/ 	// Return the exports of the module
 /******/ 	return module.exports;
 /******/ }
 /******/ 
 /******/ // expose the modules object (__webpack_modules__)
-/******/ __webpack_require__.m = __webpack_modules__;
+/******/ __inputmask_require.m = __webpack_modules__;
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
 /******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 	__inputmask_require.d = (exports, definition) => {
 /******/ 		if(Array.isArray(definition)) {
 /******/ 			var i = 0;
 /******/ 			while(i < definition.length) {
 /******/ 				var key = definition[i++];
 /******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 				if(!__inputmask_require.o(exports, key)) {
 /******/ 					if(binding === 0) {
 /******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
 /******/ 					} else {
@@ -5459,7 +5459,7 @@ attach(core_inputmask/* default */.Ay);
 /******/ 			}
 /******/ 		} else {
 /******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				if(__inputmask_require.o(definition, key) && !__inputmask_require.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5469,11 +5469,11 @@ attach(core_inputmask/* default */.Ay);
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	__inputmask_require.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
 /******/ 
 /******/ /* webpack/runtime/export webpack runtime */
-/******/ export { __webpack_require__ };
+/******/ export { __inputmask_require };
 /******/ 
 /******/ /* webpack/runtime/import chunk loading */
 /******/ (() => {
@@ -5492,14 +5492,14 @@ attach(core_inputmask/* default */.Ay);
 /******/ 		// then flag all "ids" as loaded and fire callback
 /******/ 		var moduleId, chunkId, i = 0;
 /******/ 		for(moduleId in __webpack_esm_modules__) {
-/******/ 			if(__webpack_require__.o(__webpack_esm_modules__, moduleId)) {
-/******/ 				__webpack_require__.m[moduleId] = __webpack_esm_modules__[moduleId];
+/******/ 			if(__inputmask_require.o(__webpack_esm_modules__, moduleId)) {
+/******/ 				__inputmask_require.m[moduleId] = __webpack_esm_modules__[moduleId];
 /******/ 			}
 /******/ 		}
-/******/ 		if(__webpack_esm_runtime__) __webpack_esm_runtime__(__webpack_require__);
+/******/ 		if(__webpack_esm_runtime__) __webpack_esm_runtime__(__inputmask_require);
 /******/ 		for(;i < __webpack_esm_ids__.length; i++) {
 /******/ 			chunkId = __webpack_esm_ids__[i];
-/******/ 			if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 			if(__inputmask_require.o(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 				installedChunks[chunkId][0]();
 /******/ 			}
 /******/ 			installedChunks[__webpack_esm_ids__[i]] = 0;
@@ -5513,7 +5513,7 @@ attach(core_inputmask/* default */.Ay);
 /******/ 	
 /******/ 	// no preloaded
 /******/ 	
-/******/ 	__webpack_require__.C = installChunk;
+/******/ 	__inputmask_require.C = installChunk;
 /******/ 	
 /******/ 	// no on chunks loaded
 /******/ 	// no HMR
@@ -5526,7 +5526,7 @@ attach(core_inputmask/* default */.Ay);
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module is referenced by other modules so it can't be inlined
-/******/ let __webpack_exports__ = __webpack_require__(309);
+/******/ let __webpack_exports__ = __inputmask_require(309);
 /******/ const __webpack_exports__aliases = __webpack_exports__.z2;
 /******/ const __webpack_exports__default = __webpack_exports__.Ay;
 /******/ const __webpack_exports__masksCache = __webpack_exports__.st;

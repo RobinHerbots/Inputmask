@@ -10,10 +10,10 @@ export const __webpack_esm_ids__ = [272];
 export const __webpack_esm_modules__ = {
 
 /***/ 952
-(__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __unused_webpack___webpack_exports__, __inputmask_require) {
 
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(309);
+/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(266);
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(309);
 
 
 const document = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.document;
@@ -71,9 +71,9 @@ if (document && document.head && document.head.attachShadow && _global_window__W
 ;
 
 // load runtime
-import { __webpack_require__ } from "./inputmask.mjs";
-var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+import { __inputmask_require } from "./inputmask.mjs";
+var __webpack_exec__ = (moduleId) => (__inputmask_require(__inputmask_require.s = moduleId))
 
 import * as __webpack_chunk_1__ from "./inputmaskElement.mjs";
-__webpack_require__.C(__webpack_chunk_1__);
+__inputmask_require.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(952);

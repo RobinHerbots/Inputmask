@@ -10,16 +10,16 @@ export const __webpack_esm_ids__ = [153];
 export const __webpack_esm_modules__ = {
 
 /***/ 122
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */ __inputmask_require.d(__webpack_exports__, {
 /* harmony export */   y: () => (/* binding */ renderColorMask)
 /* harmony export */ });
-/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(272);
-/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(462);
-/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(173);
-/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(217);
-/* harmony import */ var _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(800);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(272);
+/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
+/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(173);
+/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(217);
+/* harmony import */ var _dom_eventhandlers__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(800);
 /*
  Input Mask colormask extension
  http://github.com/RobinHerbots/inputmask
@@ -225,7 +225,7 @@ function renderColorMask(input, caretPos, clear) {
 // make inputmask available
 window.Colormask = Colormask;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Colormask);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */ __inputmask_require.d(__webpack_exports__, [
 /* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ ]);
 
@@ -236,11 +236,11 @@ window.Colormask = Colormask;
 ;
 
 // load runtime
-import { __webpack_require__ } from "./inputmask.mjs";
-var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+import { __inputmask_require } from "./inputmask.mjs";
+var __webpack_exec__ = (moduleId) => (__inputmask_require(__inputmask_require.s = moduleId))
 
 import * as __webpack_chunk_1__ from "./colormask.mjs";
-__webpack_require__.C(__webpack_chunk_1__);
+__inputmask_require.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(122);
 const __webpack_exports__default = __webpack_exports__.A;
 const __webpack_exports__renderColorMask = __webpack_exports__.y;
