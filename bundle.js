@@ -10,7 +10,7 @@ import { registerNumeric } from "./lib/extensions/numeric";
 import { registerSsn } from "./lib/extensions/ssn";
 import { registerUrl } from "./lib/extensions/url";
 import { registerVin } from "./lib/extensions/vin";
-import "./lib/inputmaskElement";
+import "./lib/components/inputmaskElement";
 import Inputmask from "./lib/index";
 
 registerDefinitions();

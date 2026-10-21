@@ -2,6 +2,7 @@ const fs = require("fs"),
   _ = require("lodash"),
   terserPlugin = require("terser-webpack-plugin"),
   webpack = require("webpack");
+const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 function createBanner() {
   const pkg = JSON.parse(fs.readFileSync("./package.json"));
@@ -97,52 +98,44 @@ module.exports = function (env, argv) {
       name: "modern",
       entry: {
         "dist/esm/inputmask.mjs": "./lib/index.js",
-        "dist/esm/inputmaskElement.mjs": {
-          import: "./lib/inputmaskElement.js",
-          dependOn: "dist/esm/inputmask.mjs"
-        },
-        "dist/esm/definitions.mjs": {
+        "dist/esm/extensions/definitions.mjs": {
           import: "./lib/extensions/definitions.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/cssunit.mjs": {
+        "dist/esm/extensions/cssunit.mjs": {
           import: "./lib/extensions/cssunit.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/url.mjs": {
+        "dist/esm/extensions/url.mjs": {
           import: "./lib/extensions/url.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/ip.mjs": {
+        "dist/esm/extensions/ip.mjs": {
           import: "./lib/extensions/ip.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/email.mjs": {
+        "dist/esm/extensions/email.mjs": {
           import: "./lib/extensions/email.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/mac.mjs": {
+        "dist/esm/extensions/mac.mjs": {
           import: "./lib/extensions/mac.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/vin.mjs": {
+        "dist/esm/extensions/vin.mjs": {
           import: "./lib/extensions/vin.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/ssn.mjs": {
+        "dist/esm/extensions/ssn.mjs": {
           import: "./lib/extensions/ssn.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/date.mjs": {
+        "dist/esm/extensions/date.mjs": {
           import: "./lib/extensions/date.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/numeric.mjs": {
+        "dist/esm/extensions/numeric.mjs": {
           import: "./lib/extensions/numeric.js",
-          dependOn: "dist/esm/inputmask.mjs"
-        },
-        "dist/esm/colormask.mjs": {
-          import: "./lib/extensions/colormask.js",
           dependOn: "dist/esm/inputmask.mjs"
         }
       },
@@ -151,7 +144,8 @@ module.exports = function (env, argv) {
         filename: "[name]",
         library: {
           type: "module"
-        }
+        },
+        chunkFormat: "module"
       },
       experiments: {
         outputModule: true
@@ -168,7 +162,14 @@ module.exports = function (env, argv) {
         window: "window"
       },
       optimization: {
-        minimize: false
+        minimize: false,
+        splitChunks: false,
+        runtimeChunk: false,
+        usedExports: true,
+        sideEffects: true,
+        innerGraph: true,
+        concatenateModules: true,
+        mangleExports: false
       },
       module: {
         rules: [rules.js]
@@ -181,14 +182,19 @@ module.exports = function (env, argv) {
       },
       devtool: env.production === true ? undefined : "source-map",
       plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.BannerPlugin({
           banner: createBanner,
           entryOnly: true
+        }),
+        new CircularDependencyPlugin({
+          exclude: /node_modules/,
+          failOnError: true // Zet op true om je build direct te laten stoppen bij een cirkel
         })
       ],
       bail: true,
       mode: env.production === true ? "production" : "none",
-      target: "web"
+      target: ["web", "node", "es2022"]
     },
     // Legacy UMD bundle (vanilla), extends on the modern base config.
     config = _.defaultsDeep({}, modernConfig);

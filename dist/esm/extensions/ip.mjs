@@ -1,0 +1,99 @@
+/*!
+ * dist/esm/extensions/ip.mjs
+ * https://github.com/RobinHerbots/Inputmask
+ * Copyright (c) 2010 - 2026 Robin Herbots
+ * Licensed under the MIT license
+ * Version: 5.1.0-beta.36
+ */
+export const __webpack_esm_id__ = 4;
+export const __webpack_esm_ids__ = [4];
+export const __webpack_esm_modules__ = {
+
+/***/ 20
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ip: () => (/* binding */ ip),
+/* harmony export */   registerIp: () => (/* binding */ registerIp)
+/* harmony export */ });
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+
+
+const ipValidatorRegex = /25[0-5]|2[0-4][0-9]|[01][0-9][0-9]/;
+function ipValidator(chrs, maskset, pos, strict, opts) {
+  if (pos - 1 > -1 && maskset.buffer[pos - 1] !== ".") {
+    chrs = maskset.buffer[pos - 1] + chrs;
+    if (pos - 2 > -1 && maskset.buffer[pos - 2] !== ".") {
+      chrs = maskset.buffer[pos - 2] + chrs;
+    } else chrs = "0" + chrs;
+  } else chrs = "00" + chrs;
+  if (opts.greedy && parseInt(chrs) > 255 && ipValidatorRegex.test("00" + chrs.charAt(2))) {
+    const buffer = [...maskset.buffer.slice(0, pos), ".", chrs.charAt(2)];
+    if (buffer.join("").match(/\./g).length < 4) {
+      return {
+        refreshFromBuffer: true,
+        buffer,
+        caret: pos + 2
+      };
+    }
+  }
+  return ipValidatorRegex.test(chrs);
+}
+function ip(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__["default"].extend(true, {
+    // ip-address mask
+    mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
+    definitions: {
+      i: {
+        validator: ipValidator
+      },
+      j: {
+        validator: ipValidator
+      },
+      k: {
+        validator: ipValidator
+      },
+      l: {
+        validator: ipValidator
+      }
+    },
+    onUnMask: function (maskedValue, unmaskedValue, opts) {
+      return maskedValue;
+    },
+    inputmode: "decimal",
+    substitutes: {
+      ",": "."
+    }
+  }, options);
+}
+function registerIp() {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__["default"].extend(true, _core_inputmask__WEBPACK_IMPORTED_MODULE_0__.aliases, {
+    ip: ip()
+  });
+}
+
+/***/ }
+
+};
+;
+
+// load runtime
+import { __webpack_require__ } from "../inputmask.mjs";
+var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+
+import * as __webpack_chunk_1__ from "./ip.mjs";
+__webpack_require__.C(__webpack_chunk_1__);
+var __webpack_exports__ = __webpack_exec__(20);
+const __webpack_exports__ip = __webpack_exports__.ip;
+const __webpack_exports__registerIp = __webpack_exports__.registerIp;
+export { __webpack_exports__ip as ip, __webpack_exports__registerIp as registerIp };
+
+//# sourceMappingURL=ip.mjs.map

@@ -13,56 +13,52 @@
     },
     "./extensions/date": {
       "types": "./lib/extensions/date.d.ts",
-      "import": "./dist/esm/date.mjs"
+      "import": "./dist/esm/extensions/date.mjs"
     },
     "./extensions/numeric": {
       "types": "./lib/extensions/numeric.d.ts",
-      "import": "./dist/esm/numeric.mjs"
+      "import": "./dist/esm/extensions/numeric.mjs"
     },
     "./extensions/definitions": {
       "types": "./dist/types/extensions/definitions.d.ts",
-      "import": "./dist/esm/definitions.mjs"
+      "import": "./dist/esm/extensions/definitions.mjs"
     },
     "./extensions/cssunit": {
       "types": "./dist/types/extensions/cssunit.d.ts",
-      "import": "./dist/esm/cssunit.mjs"
+      "import": "./dist/esm/extensions/cssunit.mjs"
     },
     "./extensions/url": {
       "types": "./dist/types/extensions/url.d.ts",
-      "import": "./dist/esm/url.mjs"
+      "import": "./dist/esm/extensions/url.mjs"
     },
     "./extensions/ip": {
       "types": "./dist/types/extensions/ip.d.ts",
-      "import": "./dist/esm/ip.mjs"
+      "import": "./dist/esm/extensions/ip.mjs"
     },
     "./extensions/email": {
       "types": "./dist/types/extensions/email.d.ts",
-      "import": "./dist/esm/email.mjs"
+      "import": "./dist/esm/extensions/email.mjs"
     },
     "./extensions/mac": {
       "types": "./dist/types/extensions/mac.d.ts",
-      "import": "./dist/esm/mac.mjs"
+      "import": "./dist/esm/extensions/mac.mjs"
     },
     "./extensions/vin": {
       "types": "./dist/types/extensions/vin.d.ts",
-      "import": "./dist/esm/vin.mjs"
+      "import": "./dist/esm/extensions/vin.mjs"
     },
     "./extensions/ssn": {
       "types": "./dist/types/extensions/ssn.d.ts",
-      "import": "./dist/esm/ssn.mjs"
+      "import": "./dist/esm/extensions/ssn.mjs"
     },
     "./colormask": {
       "types": "./dist/types/extensions/colormask.d.ts",
-      "import": "./dist/esm/colormask.mjs",
       "require": "./dist/colormask.js"
     },
     "./inputmaskElement": {
-      "types": "./dist/types/inputmaskElement.d.ts",
-      "import": "./dist/esm/inputmaskElement.mjs"
+      "types": "./dist/types/inputmaskElement.d.ts"
     },
-    "./dist/*": "./dist/*",
-    "./lib/*": "./lib/*",
-    "./micromasks/*": "./micromasks/*"
+    "./dist/*": "./dist/*"
   },
   "files": [
     "Changelog.md",
@@ -129,6 +125,7 @@
     "@robinherbots/grunt-available-tasks": "^0.6.4",
     "babel-loader": "^10.1.1",
     "babel-plugin-polyfill-corejs3": "^1.0.0",
+    "circular-dependency-plugin": "^5.2.2",
     "core-js": "3.50.0",
     "cross-env": "^10.1.0",
     "eslint": "^10.7.0",

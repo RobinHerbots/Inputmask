@@ -5,373 +5,25 @@
  * Licensed under the MIT license
  * Version: 5.1.0-beta.36
  */
-/******/ var __webpack_modules__ = ({
-
-/***/ 466
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   Zg: () => (/* binding */ resolveAlias)
-/* harmony export */ });
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(123);
-
-const aliases = {},
-  masksCache = {};
-
-// resolve a plain alias name (or an alias chain) into concrete mask options;
-// used by the instance constructor and by the data-attribute option import
-function resolveAlias(aliasStr, options, opts) {
-  const aliasDefinition = aliases[aliasStr];
-  if (aliasDefinition) {
-    if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); // alias is another alias
-    _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, opts, aliasDefinition); // merge alias definition in the options
-    _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extend(true, opts, options); // reapply extra given options
-    return true;
-  } // alias not found => treat as mask
-  else if (opts.mask === null) {
-    opts.mask = aliasStr;
-  }
-  return false;
-}
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, [
-/* harmony export */   "st", 0, /* binding */ masksCache,
-/* harmony export */   "z2", 0, /* binding */ aliases
-/* harmony export */ ]);
-
-
-/***/ },
-
-/***/ 542
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-// Placeholder of the prototype definitions below. A regex mask has no
-// definition to inherit it from, so the lexer falls back to this one.
-const DEFAULT_PLACEHOLDER = "_";
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  9: {
-    validator: "\\p{N}",
-    definitionSymbol: "*",
-    placeholder: "_"
-  },
-  a: {
-    validator: "\\p{L}",
-    definitionSymbol: "*",
-    placeholder: "_"
-  },
-  "*": {
-    validator: "[\\p{L}\\p{N}]",
-    placeholder: "_"
-  }
-});
-/* harmony export */ __inputmask_require.d(__webpack_exports__, [
-/* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
-/* harmony export */ ]);
-
-
-/***/ },
-
-/***/ 30
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   $: () => (/* binding */ escapeRegex)
-/* harmony export */ });
-const escapeRegexRegex = new RegExp("(\\" + ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^"].join("|\\") + ")", "gim");
-function escapeRegex(str) {
-  return str.replace(escapeRegexRegex, "\\$1");
-}
-
-/***/ },
-
-/***/ 749
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   Au: () => (/* binding */ writeBuffer),
-/* harmony export */   b1: () => (/* binding */ HandleNativePlaceholder),
-/* harmony export */   eP: () => (/* binding */ checkVal),
-/* harmony export */   gc: () => (/* binding */ applyInputValue),
-/* harmony export */   q4: () => (/* binding */ unmaskedvalue),
-/* harmony export */   ys: () => (/* binding */ clearOptionalTail)
-/* harmony export */ });
-/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(272);
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
-/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(841);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __inputmask_require(217);
-// eslint-disable-next-line import-x/no-rename-default -- renamed intentionally
-
-
-
-
-
-
-
-function applyInputValue(input, value, initialEvent, strict) {
-  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
-    opts = inputmask.opts;
-  if (input && input.inputmask) input.inputmask.refreshValue = false;else inputmask.refreshValue = false;
-  if (strict !== true && typeof opts.onBeforeMask === "function") value = opts.onBeforeMask.call(inputmask, value, opts) || value;
-  value = (value || "").toString().split("");
-  checkVal.call(inputmask, input, true, false, value, initialEvent);
-  inputmask.undoValue = inputmask._valueGet(true);
-  if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && inputmask._valueGet() === _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).join("") && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1) {
-    inputmask._valueSet("");
-  }
-}
-
-// todo put on prototype?
-function clearOptionalTail(buffer) {
-  const inputmask = this;
-  buffer.length = 0;
-  const template = _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getMaskTemplate */ .XR.call(inputmask, true, 0, true, undefined, true);
-  let lmnt;
-  while ((lmnt = template.shift()) !== undefined) buffer.push(lmnt);
-  return buffer;
-}
-function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
-  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
-    maskset = inputmask.maskset,
-    opts = inputmask.opts,
-    $ = inputmask.dependencyLib,
-    inputValue = nptvl.slice(),
-    skipOptionalPartCharacter = opts.skipOptionalPartCharacter;
-  let charCodes = "",
-    initialNdx = -1,
-    result;
-  opts.skipOptionalPartCharacter = ""; // see issue #2311
-
-  function isTemplateMatch(ndx, charCodes) {
-    if (opts.validateOnly === true && maskset.positionIndependent === true && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ndx) && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ndx, false, true)) {
-      // every position holds the mask definition, so the static template can
-      // never start with the typed characters; skip rebuilding it per character
-      return false;
-    }
-    const targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getMaskTemplate */ .XR.call(inputmask, true, 0).slice(ndx, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, ndx, false, false)).join("").replace(/'/g, "");
-    let charCodeNdx = targetTemplate.indexOf(charCodes);
-    // strip spaces from targetTemplate
-    while (charCodeNdx > 0 && targetTemplate[charCodeNdx - 1] === " ") charCodeNdx--;
-    const match = charCodeNdx === 0 && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ndx) && (_validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx).match.static === true && _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === "'" + charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx).match.nativeDef === " " && (_validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx + 1).match.nativeDef === charCodes.charAt(0) || _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx + 1).match.static === true && _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
-    if (!match && charCodeNdx > 0 && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ndx, false, true)) {
-      const nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, ndx);
-      if (inputmask.caretPos.begin < nextPos) {
-        inputmask.caretPos = {
-          begin: nextPos
-        };
-      }
-    }
-    return match;
-  }
-  inputmask._displayValueCache = maskset.validPositions.slice();
-  _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
-  inputmask.clicked = 0; // reset click counter to correctly determine the caretposition in checkval
-  initialNdx = opts.radixPoint ? _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
-    begin: 0,
-    end: 0
-  }, false, opts.__financeInput === false ? "radixFocus" : undefined).begin : 0;
-  maskset.p = initialNdx;
-  inputmask.caretPos = {
-    begin: initialNdx
-  };
-  const staticMatches = [];
-  let prevCaretPos = inputmask.caretPos;
-  inputValue.forEach(function (charCode, ndx) {
-    if (charCode !== undefined) {
-      // inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
-      /* if (maskset.validPositions[ndx] === undefined && inputValue[ndx] === getPlaceholder.call(inputmask, ndx) && isMask.call(inputmask, ndx, true) &&
-      isValid.call(inputmask, ndx, inputValue[ndx], true, undefined, true, true) === false) {
-      inputmask.caretPos.begin++;
-      } else */
-      // console.log("caret " + inputmask.caretPos.begin);
-      const keypress = new $.Event("_checkval");
-      keypress.key = charCode;
-      charCodes += charCode;
-      const lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
-      if (!isTemplateMatch(initialNdx, charCodes)) {
-        result = _keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .processKeypress */ .g.call(inputmask, keypress, true, false, strict, inputmask.caretPos.begin);
-        if (result) {
-          initialNdx = inputmask.caretPos.begin + 1;
-          charCodes = "";
-        }
-      } else {
-        result = _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, ndx).match.static === true ? _keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .processKeypress */ .g.call(inputmask, keypress, true, false, strict, lvp + 1) : false;
-      }
-      if (result) {
-        if (result.pos !== undefined && maskset.validPositions[result.pos] && maskset.validPositions[result.pos].match.static === true && maskset.validPositions[result.pos].alternation === undefined) {
-          staticMatches.push(result.pos);
-          if (!inputmask.isRTL) {
-            result.forwardPosition = result.pos + 1;
-          }
-        }
-        const onbeforeWriteResult = writeBuffer.call(inputmask, undefined, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), result.forwardPosition, keypress, false);
-        inputmask.caretPos = {
-          begin: onbeforeWriteResult?.caret || result.forwardPosition,
-          end: onbeforeWriteResult?.caret || result.forwardPosition
-        };
-        prevCaretPos = inputmask.caretPos;
-      } else {
-        if (maskset.validPositions[ndx] === undefined && inputValue[ndx] === _validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getPlaceholder */ .G_.call(inputmask, ndx) && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ndx, true)) {
-          inputmask.caretPos.begin++;
-        } else inputmask.caretPos = prevCaretPos; // restore the caret position from before the failed validation
-      }
-    }
-  });
-  if (staticMatches.length > 0) {
-    let sndx, validPos;
-    const nextValid = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, -1, undefined, false);
-    if (!_validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)) && staticMatches.length <= nextValid || _validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)) && staticMatches.length > 0 && staticMatches.length !== nextValid && staticMatches[0] === 0) {
-      // should check if is sequence starting from 0
-      let nextSndx = nextValid;
-      while ((sndx = staticMatches.shift()) !== undefined) {
-        if (sndx < nextSndx) {
-          const keypress = new $.Event("_checkval");
-          validPos = maskset.validPositions[sndx];
-          validPos.generatedInput = true;
-          keypress.key = validPos.input;
-          result = _keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .processKeypress */ .g.call(inputmask, keypress, true, false, strict, nextSndx);
-          if (result && result.pos !== undefined && result.pos !== sndx && maskset.validPositions[result.pos] && maskset.validPositions[result.pos].match.static === true) {
-            staticMatches.push(result.pos);
-          } else if (!result) break;
-          nextSndx++;
-        }
-      }
-    } else {
-      // delete all free statics
-      while (sndx = staticMatches.pop()) {
-        validPos = maskset.validPositions[sndx];
-        if (validPos && maskset.validPositions[sndx + 1] === undefined) {
-          delete maskset.validPositions[sndx];
-        }
-      }
-    }
-  }
-  if (writeOut) {
-    writeBuffer.call(inputmask, input, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), result ? result.forwardPosition : inputmask.caretPos.begin, initiatingEvent || new $.Event("checkval"), initiatingEvent && (initiatingEvent.type === "input" && inputmask.undoValue !== _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).join("") || initiatingEvent.type === "paste"));
-    // for (var vndx in maskset.validPositions) {
-    // 	if (maskset.validPositions[vndx].match.generated !== true) { //only remove non forced generated
-    // 		delete maskset.validPositions[vndx].generatedInput; //clear generated markings ~ consider initializing with a  value as fully typed
-    // 	}
-    // }
-  }
-  inputmask._displayValueCache = undefined;
-  opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
-}
-function HandleNativePlaceholder(npt, value) {
-  if (npt.placeholder !== value) {
-    npt.placeholder = value;
-    if (npt.placeholder === "") npt.removeAttribute("placeholder");
-  }
-}
-function unmaskedvalue(input) {
-  const inputmask = input ? input.inputmask : this,
-    opts = inputmask.opts,
-    maskset = inputmask.maskset;
-  if (input) {
-    if (input.inputmask === undefined) {
-      return input.value;
-    }
-    if (input.inputmask && input.inputmask.refreshValue) {
-      // forced refresh from the value form.reset
-      applyInputValue(input, input.inputmask._valueGet(true));
-    }
-  }
-  const umValue = [],
-    vps = maskset.validPositions;
-  for (let pndx = 0, vpl = vps.length; pndx < vpl; pndx++) {
-    if (vps[pndx] && vps[pndx].match && (vps[pndx].match.static !== true || opts.keepStatic !== true && Array.isArray(maskset.metadata) && vps[pndx].generatedInput !== true)) {
-      // only include non generated input with multiple masks (check on metadata) and without keepStatic true
-      umValue.push(vps[pndx].input);
-    }
-  }
-  let unmaskedValue = umValue.length === 0 ? "" : (inputmask.isRTL ? umValue.reverse() : umValue).join("");
-  if (typeof opts.onUnMask === "function") {
-    const bufferValue = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)).join("");
-    unmaskedValue = opts.onUnMask.call(inputmask, bufferValue, unmaskedValue, opts);
-  }
-  if (opts.outputMask && unmaskedValue.length > 0) {
-    return _inputmask_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Ay.format(unmaskedValue, {
-      ...opts,
-      mask: opts.outputMask,
-      alias: null
-    });
-  }
-  return unmaskedValue;
-}
-function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
-  let onBeforeWriteResult;
-  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
-    opts = inputmask.opts,
-    $ = inputmask.dependencyLib;
-  if (event && typeof opts.onBeforeWrite === "function") {
-    //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
-    onBeforeWriteResult = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
-    if (onBeforeWriteResult) {
-      if (onBeforeWriteResult.refreshFromBuffer) {
-        const refresh = onBeforeWriteResult.refreshFromBuffer;
-        _validation__WEBPACK_IMPORTED_MODULE_4__/* .refreshFromBuffer */ .m5.call(inputmask, refresh === true ? refresh : refresh.start, refresh.end, onBeforeWriteResult.buffer || buffer);
-        buffer = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true);
-      }
-      if (caretPos !== undefined) caretPos = onBeforeWriteResult.caret !== undefined ? onBeforeWriteResult.caret : caretPos;
-    }
-  }
-  inputmask._valueSet(buffer.join(""));
-  if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
-    // console.log(caretPos);
-    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos, undefined, undefined, event !== undefined && event.type === "keydown" && (event.key === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete || event.key === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace));
-  }
-  if (input !== undefined && input.inputmask) {
-    input.inputmask.writeBufferHook === undefined || input.inputmask.writeBufferHook(caretPos);
-  } else if (inputmask.writeBufferHook) {
-    inputmask.writeBufferHook(caretPos);
-  }
-  if (triggerEvents === true && input !== undefined && input.nodeName) {
-    const $input = $(input),
-      nptVal = input.inputmask ? input.inputmask._valueGet() : inputmask._valueGet();
-    if (input.inputmask) input.inputmask.skipInputEvent = true;
-    $input.trigger("input");
-    if (inputmask.undoValue !== nptVal) {
-      inputmask.undoValue = nptVal;
-      $input.trigger("change");
-    }
-    setTimeout(function () {
-      // timeout needed for IE
-      if (nptVal === _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).join("")) {
-        $input.trigger("cleared");
-      } else if (_validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, buffer) === true) {
-        $input.trigger("complete");
-      }
-    }, 0);
-  }
-  const result = {
-    buffer,
-    caret: caretPos,
-    value: buffer.join(""),
-    onBeforeWrite: onBeforeWriteResult
-  };
-  return event && event.type === "_checkval" ? onBeforeWriteResult : result;
-}
-
-/***/ },
-
-/***/ 272
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
+/******/ var __webpack_modules__ = ([
+/* 0 */,
+/* 1 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 
 // EXPORTS
-__inputmask_require.d(__webpack_exports__, {
-  Ay: () => (/* binding */ inputmask)
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ inputmask)
 });
 
 // UNUSED EXPORTS: aliases, masksCache
 
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __inputmask_require(123);
+var inputmask_dependencyLib = __webpack_require__(2);
 // EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __inputmask_require(266);
+var global_window = __webpack_require__(3);
 // EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __inputmask_require(466);
+var cache = __webpack_require__(4);
 ;// ./lib/core/defaults.js
 /**
  * fromAlternate tells whether the current validation runs as part of an alternation
@@ -569,21 +221,19 @@ const defaults = {
 };
 /* harmony default export */ const core_defaults = (defaults);
 // EXTERNAL MODULE: ./lib/core/definitions.js
-var definitions = __inputmask_require(542);
+var definitions = __webpack_require__(5);
 // EXTERNAL MODULE: ./lib/core/inputHandling.js
-var inputHandling = __inputmask_require(749);
+var inputHandling = __webpack_require__(6);
 // EXTERNAL MODULE: ./lib/core/keycode.js
-var keycode = __inputmask_require(462);
-// EXTERNAL MODULE: ./lib/core/keyProcessing.js
-var keyProcessing = __inputmask_require(648);
+var keycode = __webpack_require__(9);
 // EXTERNAL MODULE: ./lib/core/mask-lexer.js + 1 modules
-var mask_lexer = __inputmask_require(152);
+var mask_lexer = __webpack_require__(11);
 // EXTERNAL MODULE: ./lib/core/positioning.js
-var positioning = __inputmask_require(173);
+var positioning = __webpack_require__(7);
+// EXTERNAL MODULE: ./lib/core/rule-engine.js
+var rule_engine = __webpack_require__(8);
 // EXTERNAL MODULE: ./lib/core/validation.js
-var validation = __inputmask_require(841);
-// EXTERNAL MODULE: ./lib/core/validation-tests.js
-var validation_tests = __inputmask_require(217);
+var validation = __webpack_require__(10);
 ;// ./lib/core/inputmask.js
 /*
  * Input Mask Core
@@ -591,7 +241,6 @@ var validation_tests = __inputmask_require(217);
  * Copyright (c) Robin Herbots
  * Licensed under the MIT license
  */
-
 
 
 
@@ -658,7 +307,7 @@ function Inputmask(alias, options, internal) {
   if (!(this instanceof Inputmask)) {
     return new Inputmask(alias, options, internal);
   }
-  this.dependencyLib = inputmask_dependencyLib/* default */.A;
+  this.dependencyLib = inputmask_dependencyLib["default"];
   this.el = undefined;
   this.events = {};
   this.maskset = undefined;
@@ -670,10 +319,10 @@ function Inputmask(alias, options, internal) {
       options = options || {};
       if (alias) options.alias = alias;
     }
-    this.opts = inputmask_dependencyLib/* default */.A.extend(true, {}, core_defaults, options);
+    this.opts = inputmask_dependencyLib["default"].extend(true, {}, core_defaults, options);
     this.noMasksCache = options && options.definitions !== undefined;
     this.userOptions = options || {}; // user passed options
-    (0,cache/* resolveAlias */.Zg)(this.opts.alias, options, this.opts);
+    (0,cache.resolveAlias)(this.opts.alias, options, this.opts);
   }
 
   // maskscope properties
@@ -708,7 +357,7 @@ Inputmask.prototype = {
     if (typeof options === "string") {
       return this.opts[options];
     } else if (typeof options === "object") {
-      inputmask_dependencyLib/* default */.A.extend(this.userOptions, options); // user passed options
+      inputmask_dependencyLib["default"].extend(this.userOptions, options); // user passed options
       // remask
       if (this.el && noremask !== true) {
         this.mask(this.el);
@@ -717,32 +366,32 @@ Inputmask.prototype = {
     }
   },
   unmaskedvalue: function (value) {
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
     if (value !== undefined) {
       const valueBuffer = (typeof this.opts.onBeforeMask === "function" ? this.opts.onBeforeMask.call(this, value, this.opts) || value : value).split("");
-      inputHandling/* checkVal */.eP.call(this, undefined, false, false, valueBuffer);
-      if (typeof this.opts.onBeforeWrite === "function") this.opts.onBeforeWrite.call(this, undefined, positioning/* getBuffer */.Zo.call(this), 0, this.opts);
+      inputHandling.checkVal.call(this, undefined, false, false, valueBuffer);
+      if (typeof this.opts.onBeforeWrite === "function") this.opts.onBeforeWrite.call(this, undefined, positioning.getBuffer.call(this), 0, this.opts);
     }
-    return inputHandling/* unmaskedvalue */.q4.call(this, this.el);
+    return inputHandling.unmaskedvalue.call(this, this.el);
   },
   getemptymask: function () {
     // return the default (empty) mask value, usefull for setting the default value in validation
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
-    return (this.isRTL ? positioning/* getBufferTemplate */.Tc.call(this).reverse() : positioning/* getBufferTemplate */.Tc.call(this)).join("");
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
+    return (this.isRTL ? positioning.getBufferTemplate.call(this).reverse() : positioning.getBufferTemplate.call(this)).join("");
   },
   hasMaskedValue: function () {
     // check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
     return !this.opts.autoUnmask;
   },
   isComplete: function () {
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
-    return validation/* isComplete */.As.call(this, positioning/* getBuffer */.Zo.call(this));
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
+    return validation.isComplete.call(this, positioning.getBuffer.call(this));
   },
   getmetadata: function () {
     // return mask metadata if exists
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
     if (Array.isArray(this.maskset.metadata)) {
-      let maskTarget = validation_tests/* getMaskTemplate */.XR.call(this, true, 0, false).join("");
+      let maskTarget = rule_engine.getMaskTemplate.call(this, true, 0, false).join("");
       this.maskset.metadata.forEach(function (mtdt) {
         if (mtdt.mask === maskTarget) {
           maskTarget = mtdt;
@@ -755,21 +404,21 @@ Inputmask.prototype = {
     return this.maskset.metadata;
   },
   isValid: function (value) {
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
     if (value) {
       const valueBuffer = (typeof this.opts.onBeforeMask === "function" ? this.opts.onBeforeMask.call(this, value, this.opts) || value : value).split("");
-      inputHandling/* checkVal */.eP.call(this, undefined, true, false, valueBuffer);
+      inputHandling.checkVal.call(this, undefined, true, false, valueBuffer);
     }
-    const buffer = inputHandling/* clearOptionalTail */.ys.call(this, []),
-      isC = validation/* isComplete */.As.call(this, buffer),
+    const buffer = inputHandling.clearOptionalTail.call(this, []),
+      isC = validation.isComplete.call(this, buffer),
       isc2 = value === (this.isRTL ? buffer.reverse().join("") : buffer.join(""));
     return isC && (value === undefined || isc2);
   },
   format: function (value, metadata) {
-    this.maskset = this.maskset || (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
+    this.maskset = this.maskset || (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
     const valueBuffer = (typeof this.opts.onBeforeMask === "function" ? this.opts.onBeforeMask.call(this, value, this.opts) || value : value).split("");
-    inputHandling/* checkVal */.eP.call(this, undefined, true, false, valueBuffer);
-    const formattedValue = this.isRTL ? positioning/* getBuffer */.Zo.call(this).slice().reverse().join("") : positioning/* getBuffer */.Zo.call(this).join("");
+    inputHandling.checkVal.call(this, undefined, true, false, valueBuffer);
+    const formattedValue = this.isRTL ? positioning.getBuffer.call(this).slice().reverse().join("") : positioning.getBuffer.call(this).join("");
     return metadata ? {
       value: formattedValue,
       metadata: this.getmetadata()
@@ -777,12 +426,12 @@ Inputmask.prototype = {
   },
   setValue: function (value, caretPos) {
     if (this.el) {
-      (0,inputmask_dependencyLib/* default */.A)(this.el).trigger("setvalue", [value, caretPos]);
+      (0,inputmask_dependencyLib["default"])(this.el).trigger("setvalue", [value, caretPos]);
     } else {
       this.ensureInitialized();
-      inputHandling/* applyInputValue */.gc.call(this, undefined, value);
+      inputHandling.applyInputValue.call(this, undefined, value);
       if (caretPos !== undefined) {
-        positioning/* caret */.OW.call(this, undefined, caretPos);
+        positioning.caret.call(this, undefined, caretPos);
       }
     }
     return this;
@@ -791,7 +440,7 @@ Inputmask.prototype = {
     if (this.el && this.el.inputmask && this.el.inputmask.__valueGet) {
       return this.isRTL && overruleRTL !== true ? this.el.inputmask.__valueGet.call(this.el).split("").reverse().join("") : this.el.inputmask.__valueGet.call(this.el);
     }
-    const val = this.displayValue !== undefined ? this.displayValue : this.maskset ? positioning/* getBuffer */.Zo.call(this).join("") : "";
+    const val = this.displayValue !== undefined ? this.displayValue : this.maskset ? positioning.getBuffer.call(this).join("") : "";
     return this.isRTL && overruleRTL !== true ? val.split("").reverse().join("") : val;
   },
   _valueSet: function (value, overruleRTL) {
@@ -803,9 +452,9 @@ Inputmask.prototype = {
   },
   ensureInitialized: function (initialValue) {
     if (this.maskset === undefined) {
-      this.maskset = (0,mask_lexer/* generateMaskSet */._)(this.opts, this.noMasksCache);
-      positioning/* getBufferTemplate */.Tc.call(this).join("");
-      const initialPos = positioning/* seekNext */.u4.call(this, -1);
+      this.maskset = (0,mask_lexer.generateMaskSet)(this.opts, this.noMasksCache);
+      positioning.getBufferTemplate.call(this).join("");
+      const initialPos = rule_engine.seekNext.call(this, -1);
       this.caretPos = {
         begin: initialPos,
         end: initialPos
@@ -827,19 +476,19 @@ Inputmask.prototype = {
         key: str.charAt(i),
         preventDefault: () => {}
       };
-      keyProcessing/* processKeypress */.g.call(this, keypress, false, true);
+      validation.processKeypress.call(this, keypress, false, true);
     }
     return this;
   },
   delete: function (direction) {
     this.ensureInitialized();
-    const key = direction === "delete" || direction === "forward" ? keycode/* keys */.HP.Delete : keycode/* keys */.HP.Backspace,
+    const key = direction === "delete" || direction === "forward" ? keycode.keys.Delete : keycode.keys.Backspace,
       keydown = {
         type: "keydown",
         key,
         preventDefault: () => {}
       };
-    keyProcessing/* handleRemoveKey */.G.call(this, this.el, key, positioning/* caret */.OW.call(this, this.el), keydown);
+    validation.handleRemoveKey.call(this, this.el, key, positioning.caret.call(this, this.el), keydown);
     return this;
   },
   backspace: function () {
@@ -849,7 +498,7 @@ Inputmask.prototype = {
     this.ensureInitialized();
     if (text === undefined || text === null) return this;
     const currentVal = this._valueGet(true),
-      caretPos = positioning/* caret */.OW.call(this, undefined, undefined, undefined, true),
+      caretPos = positioning.caret.call(this, undefined, undefined, undefined, true),
       valueBefore = currentVal.substr(0, caretPos.begin),
       valueAfter = currentVal.substr(caretPos.end);
     let pasteVal = valueBefore + text + valueAfter;
@@ -858,17 +507,17 @@ Inputmask.prototype = {
       if (pasteVal === false) return this;
       if (!pasteVal) pasteVal = currentVal;
     }
-    inputHandling/* checkVal */.eP.call(this, undefined, true, false, pasteVal.toString().split(""));
+    inputHandling.checkVal.call(this, undefined, true, false, pasteVal.toString().split(""));
     return this;
   },
   setSelection: function (begin, end) {
     this.ensureInitialized();
-    positioning/* caret */.OW.call(this, this.el, begin, end);
+    positioning.caret.call(this, this.el, begin, end);
     return this;
   },
   getSelection: function () {
     this.ensureInitialized();
-    return positioning/* caret */.OW.call(this, this.el);
+    return positioning.caret.call(this, this.el);
   },
   getValue: function () {
     this.ensureInitialized();
@@ -891,21 +540,21 @@ Inputmask.prototype = {
  * @returns {void}
  */
 Inputmask.extendDefaults = function (options) {
-  inputmask_dependencyLib/* default */.A.extend(true, core_defaults, options);
+  inputmask_dependencyLib["default"].extend(true, core_defaults, options);
 };
 /**
  * @param {Record<string, any>} definition
  * @returns {void}
  */
 Inputmask.extendDefinitions = function (definition) {
-  inputmask_dependencyLib/* default */.A.extend(true, definitions/* default */.A, definition);
+  inputmask_dependencyLib["default"].extend(true, definitions["default"], definition);
 };
 /**
  * @param {Record<string, InputmaskOptions>} alias
  * @returns {void}
  */
 Inputmask.extendAliases = function (alias) {
-  inputmask_dependencyLib/* default */.A.extend(true, cache/* aliases */.z2, alias);
+  inputmask_dependencyLib["default"].extend(true, cache.aliases, alias);
 };
 /**
  * @param {string} value
@@ -932,979 +581,639 @@ Inputmask.unmask = function (value, options) {
 Inputmask.isValid = function (value, options) {
   return Inputmask(options).isValid(value);
 };
-Inputmask.dependencyLib = inputmask_dependencyLib/* default */.A;
+Inputmask.dependencyLib = inputmask_dependencyLib["default"];
 
 // make inputmask available
-global_window/* default */.A.Inputmask = Inputmask;
+global_window["default"].Inputmask = Inputmask;
 const InputmaskExport = /** @type {InputmaskStatic} */Inputmask;
 /* harmony default export */ const inputmask = (InputmaskExport);
 
-/***/ },
-
-/***/ 648
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   G: () => (/* binding */ handleRemoveKey),
-/* harmony export */   g: () => (/* binding */ processKeypress)
-/* harmony export */ });
-/* harmony import */ var _inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(749);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(841);
-
-
-
-
-
-// core keystroke evaluation ~ shared by the DOM keypress handler, checkVal and
-// the headless session api. this = inputmask instance
-function processKeypress(e, checkval, writeOut, strict, ndx) {
-  const inputmask = this,
-    opts = inputmask.opts,
-    maskset = inputmask.maskset,
-    input = inputmask.el;
-  let c = e.key;
-  if (c && c.length === 1 && !e.ctrlKey && !e.metaKey) {
-    inputmask.ignorable = false;
-  }
-  if (checkval !== true && !(e.ctrlKey && e.altKey && !inputmask.ignorable) && (e.ctrlKey || e.metaKey || inputmask.ignorable)) {
-    return undefined;
-  }
-  if (!c) return undefined;
-
-  // special treat the decimal separator
-  // if ((k === 44 || k === 46) && e.location === 3 && opts.radixPoint !== "") k = opts.radixPoint.charCodeAt(0);
-  const pos = checkval ? {
-    begin: ndx,
-    end: ndx
-  } : _positioning__WEBPACK_IMPORTED_MODULE_1__/* .caret */ .OW.call(inputmask, input);
-  let forwardPosition;
-
-  // allow for character substitution
-  if (!checkval) c = opts.substitutes[c] || c;
-  maskset.writeOutBuffer = true;
-  const valResult = _validation__WEBPACK_IMPORTED_MODULE_2__/* .isValid */ .fn.call(inputmask, pos, c, strict, undefined, undefined, undefined, checkval);
-  if (valResult !== false) {
-    _positioning__WEBPACK_IMPORTED_MODULE_1__/* .resetMaskSet */ .eo.call(inputmask, true);
-    forwardPosition = valResult.caret !== undefined ? valResult.caret : _positioning__WEBPACK_IMPORTED_MODULE_1__/* .seekNext */ .u4.call(inputmask, valResult.pos.begin ? valResult.pos.begin : valResult.pos);
-    maskset.p = forwardPosition; // needed for checkval
-  }
-  forwardPosition = opts.numericInput && valResult.caret === undefined ? _positioning__WEBPACK_IMPORTED_MODULE_1__/* .seekPrevious */ .Ef.call(inputmask, forwardPosition) : forwardPosition;
-  if (writeOut !== false) {
-    if (input) {
-      setTimeout(function () {
-        opts.onKeyValidation.call(input, c, valResult);
-      }, 0);
-    } else if (typeof opts.onKeyValidation === "function") {
-      opts.onKeyValidation.call(inputmask, c, valResult);
-    }
-    if (maskset.writeOutBuffer && valResult !== false) {
-      const buffer = _positioning__WEBPACK_IMPORTED_MODULE_1__/* .getBuffer */ .Zo.call(inputmask);
-      _inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au.call(inputmask, input, buffer, forwardPosition, e, checkval !== true);
-    }
-  }
-  if (e && e.preventDefault) e.preventDefault();
-  if (checkval) {
-    if (valResult !== false) valResult.forwardPosition = forwardPosition;
-    return valResult;
-  }
-  return valResult !== false ? valResult : false;
-}
-
-// core backspace/delete handling ~ shared by the DOM keydown handler and the
-// headless session api. this = inputmask instance
-function handleRemoveKey(input, c, pos, e) {
-  const inputmask = this;
-  if (e && e.preventDefault) e.preventDefault(); // stop default action but allow propagation
-  _validation__WEBPACK_IMPORTED_MODULE_2__/* .handleRemove */ .Nr.call(inputmask, input, c, pos);
-  const currentVal = input && input.inputmask ? input.inputmask._valueGet() : inputmask._valueGet();
-  _inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au.call(inputmask, input, _positioning__WEBPACK_IMPORTED_MODULE_1__/* .getBuffer */ .Zo.call(inputmask, true), pos, e, currentVal !== _positioning__WEBPACK_IMPORTED_MODULE_1__/* .getBuffer */ .Zo.call(inputmask).join(""));
-}
-
-/***/ },
-
-/***/ 462
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   HP: () => (/* binding */ keys),
-/* harmony export */   tS: () => (/* binding */ keyCode)
-/* harmony export */ });
-/* unused harmony exports toKey, toKeyCode */
-
-const ignorables = {
-    Alt: 18,
-    AltGraph: 18,
-    ArrowDown: 40,
-    ArrowLeft: 37,
-    ArrowRight: 39,
-    ArrowUp: 38,
-    Backspace: 8,
-    CapsLock: 20,
-    Control: 17,
-    ContextMenu: 93,
-    Dead: 221,
-    Delete: 46,
-    End: 35,
-    Escape: 27,
-    F1: 112,
-    F2: 113,
-    F3: 114,
-    F4: 115,
-    F5: 116,
-    F6: 117,
-    F7: 118,
-    F8: 119,
-    F9: 120,
-    F10: 121,
-    F11: 122,
-    F12: 123,
-    Home: 36,
-    Insert: 45,
-    NumLock: 144,
-    PageDown: 34,
-    PageUp: 33,
-    Pause: 19,
-    PrintScreen: 44,
-    Process: 229,
-    Shift: 16,
-    ScrollLock: 145,
-    Tab: 9,
-    Unidentified: 229
-  },
-  keyCode = {
-    c: 67,
-    x: 88,
-    z: 90,
-    BACKSPACE_SAFARI: 127,
-    Enter: 13,
-    Meta_LEFT: 91,
-    Meta_RIGHT: 92,
-    Space: 32,
-    ...ignorables
-  },
-  keyCodeRev = Object.entries(keyCode).reduce((acc, [key, value]) => (
-  // eslint-disable-next-line no-sequences
-  acc[value] = acc[value] === undefined ? key : acc[value], acc), {}),
-  keys = Object.entries(keyCode).reduce(
-  // eslint-disable-next-line no-sequences
-  (acc, [key, value]) => (acc[key] = key === "Space" ? " " : key, acc), {});
-function toKey(keyCode, shiftKey) {
-  return keyCodeRev[keyCode] || (shiftKey ? String.fromCharCode(keyCode) : String.fromCharCode(keyCode).toLowerCase());
-}
-function toKeyCode(key) {
-  return keyCode[key];
-}
-
-/***/ },
-
-/***/ 152
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 
 // EXPORTS
-__inputmask_require.d(__webpack_exports__, {
-  _: () => (/* binding */ generateMaskSet)
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ inputmask_dependencyLib)
 });
 
-// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __inputmask_require(123);
-// EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __inputmask_require(466);
-// EXTERNAL MODULE: ./lib/core/definitions.js
-var definitions = __inputmask_require(542);
-// EXTERNAL MODULE: ./lib/core/escapeRegex.js
-var escapeRegex = __inputmask_require(30);
-;// ./lib/core/masktoken.js
-/**
- * A token of a parsed mask tree.
- *
- * @typedef {Object} MaskToken
- * @property {Array<MaskToken | import("./mask-lexer").MaskTest>} matches
- * @property {boolean} openGroup
- * @property {boolean} alternatorGroup
- * @property {boolean} isGroup
- * @property {boolean} isOptional
- * @property {boolean} isQuantifier
- * @property {boolean} isAlternator
- * @property {{ min: number | string; max: number | string; jit?: number | string }} quantifier
- */
-
-/* harmony default export */ function masktoken(isGroup, isOptional, isQuantifier, isAlternator) {
-  this.matches = [];
-  this.openGroup = isGroup || false;
-  this.alternatorGroup = false;
-  this.isGroup = isGroup || false;
-  this.isOptional = isOptional || false;
-  this.isQuantifier = isQuantifier || false;
-  this.isAlternator = isAlternator || false;
-  this.quantifier = {
-    min: 1,
-    max: 1
-  };
-}
-;// ./lib/core/mask-lexer.js
-
-
-
-
-
-
-const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g,
-  // Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
-  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?(?:[:=!]|<[\w$][^>]*>|<[=!])?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
-
-/**
- * A single test definition of the mask.
- *
- * @typedef {Object} MaskTest
- * @property {RegExp | { test: (char: string) => boolean } | null} fn
- * @property {boolean} static
- * @property {boolean} optionality
- * @property {boolean} [defOptionality] indicator for an optional from the definition
- * @property {"master" | boolean} newBlockMarker
- * @property {"upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string)} [casing]
- * @property {string} def
- * @property {string} [placeholder]
- * @property {string} [displayChar]
- * @property {string} nativeDef
- * @property {boolean} [generated]
- */
-
-/**
- * The generated maskset for a mask.
- *
- * @typedef {Object} Maskset
- * @property {string} mask
- * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
- * @property {boolean} [positionIndependent] true when the mask is one definition with an unlimited quantifier, so every position shares the same test
- * @property {import("./masktoken").MaskToken[]} maskToken
- * @property {any[]} validPositions
- * @property {string[] | undefined} _buffer
- * @property {string[] | undefined} buffer
- * @property {Record<number, any>} tests
- * @property {Record<number, any[]>} excludes excluded alternations
- * @property {any} metadata
- * @property {number | undefined} maskLength
- * @property {Record<number, number>} jitOffset
- */
-
-/**
- * Whether the placeholder option is a per-position placeholder map (supplied by
- * an alias, see the datetime alias) rather than a plain string.
- *
- * A map is indexed per position, so it counts as "supplied" even when empty,
- * and the generated testdefinitions differ.
- *
- * A null placeholder counts as "no map" ~ typeof null === "object" would
- * otherwise classify it as a map and index into null.
- *
- * @param {import("./defaults").InputmaskOptions} opts
- * @returns {boolean}
- */
-function isPlaceholderMap(opts) {
-  return typeof opts.placeholder === "object" && opts.placeholder !== null;
-}
-
-/**
- * Whether the parsed token tree contains an alternator (regex "|").
- *
- * Recurses through group and quantifier tokens; mask tests are leaves.
- *
- * @param {import("./masktoken").MaskToken | MaskTest} token
- * @returns {boolean}
- */
-function containsAlternator(token) {
-  if (token.isAlternator === true || token.alternatorGroup === true) {
-    return true;
+// EXTERNAL MODULE: ./lib/global/window.js
+var global_window = __webpack_require__(3);
+;// ./lib/dependencyLibs/data.js
+/* harmony default export */ function data(owner, key, value) {
+  if (value === undefined) {
+    return owner.__data ? owner.__data[key] : null;
+  } else {
+    owner.__data = owner.__data || {};
+    owner.__data[key] = value;
   }
-  if (Array.isArray(token.matches)) {
-    for (let i = 0; i < token.matches.length; i++) {
-      if (containsAlternator(token.matches[i])) return true;
+}
+;// ./lib/dependencyLibs/extend.js
+function isWritable(target, name) {
+  let descriptor = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(target, name);
+  if (descriptor) {
+    if ("value" in descriptor) {
+      return descriptor.writable !== false;
     }
+    // an accessor property is only writable when it carries a setter
+    return typeof descriptor.set === "function";
+  }
+
+  // no own property: an assignment only throws when a non-configurable accessor
+  // without a setter (or a non-writable data prop) blocks it on the prototype chain
+  let proto = Object.getPrototypeOf && Object.getPrototypeOf(target);
+  while (proto) {
+    descriptor = Object.getOwnPropertyDescriptor(proto, name);
+    if (descriptor) {
+      if ("value" in descriptor) {
+        return descriptor.writable !== false;
+      }
+      return typeof descriptor.set === "function" || descriptor.configurable;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return true;
+}
+function extend() {
+  let options,
+    name,
+    src,
+    copy,
+    copyIsArray,
+    clone,
+    target = arguments[0] || {},
+    i = 1,
+    deep = false;
+  const length = arguments.length;
+
+  // Handle a deep copy situation
+  if (typeof target === "boolean") {
+    deep = target;
+
+    // Skip the boolean and the target
+    target = arguments[i] || {};
+    i++;
+  }
+
+  // Handle case when target is a string or something (possible in deep copy)
+  if (typeof target !== "object" && typeof target !== "function") {
+    target = {};
+  }
+  for (; i < length; i++) {
+    // Only deal with non-null/undefined values
+    if ((options = arguments[i]) != null) {
+      // Extend the base object
+      for (name in options) {
+        // "__proto__" would resolve through the prototype chain: src comes back
+        // as Object.prototype and the deep merge below writes into it. Inherited
+        // keys are not ours to copy either.
+        if (name === "__proto__" || !Object.prototype.hasOwnProperty.call(options, name)) {
+          continue;
+        }
+        src = target[name];
+        copy = options[name];
+
+        // Prevent never-ending loop
+        if (target === copy) {
+          continue;
+        }
+
+        // Never overwrite a non-writable target property (e.g. the read-only
+        // isTrusted accessor on DOM events): assigning to it would throw
+        if (!isWritable(target, name)) {
+          continue;
+        }
+
+        // Recurse if we're merging plain objects or arrays
+        if (deep && copy && (Object.prototype.toString.call(copy) === "[object Object]" || (copyIsArray = Array.isArray(copy)))) {
+          if (copyIsArray) {
+            copyIsArray = false;
+            clone = src && Array.isArray(src) ? src : [];
+          } else {
+            clone = src && Object.prototype.toString.call(src) === "[object Object]" ? src : {};
+          }
+
+          // Never move original objects, clone them
+          target[name] = extend(deep, clone, copy);
+
+          // Don't bring in undefined values
+        } else if (copy !== undefined) {
+          target[name] = copy;
+        }
+      }
+    }
+  }
+
+  // Return the modified object
+  return target;
+}
+;// ./lib/dependencyLibs/events.js
+
+
+
+
+const events_document = global_window["default"].document;
+function isValidElement(elem) {
+  return elem instanceof Element && data(elem, "events");
+}
+let Evnt;
+if (typeof global_window["default"].CustomEvent === "function") {
+  Evnt = global_window["default"].CustomEvent;
+} else if (global_window["default"].Event && events_document && events_document.createEvent) {
+  Evnt = function (event, params) {
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      composed: true,
+      detail: undefined
+    };
+    const evt = events_document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  };
+  Evnt.prototype = global_window["default"].Event.prototype;
+} else if (typeof Event !== "undefined") {
+  // nodejs
+  Evnt = Event;
+}
+function on(events, handler) {
+  if (!this[0] || !isValidElement(this[0])) {
+    return this; // Early return if no valid element
+  }
+  const elem = this[0],
+    eventRegistry = data(elem, "events"),
+    addEvent = (ev, namespace) => {
+      // register domevent
+      elem.addEventListener(ev, handler, false);
+      eventRegistry[ev] = eventRegistry[ev] || {};
+      eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
+      eventRegistry[ev][namespace].push(handler);
+    };
+  events.split(" ").forEach(event => {
+    const [ev, namespace = "global"] = event.split(".");
+    addEvent(ev, namespace);
+  });
+  return this;
+}
+function off(events, handler) {
+  let eventRegistry, elem;
+  function removeEvent(ev, namespace, handler) {
+    if (ev in eventRegistry === true) {
+      // unbind to dom events
+      elem.removeEventListener(ev, handler, false);
+      // when the namespace is not defined (global namespace), we need to clean up all events in all namespaces
+      if (namespace === "global") {
+        for (const nmsp in eventRegistry[ev]) {
+          eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1);
+        }
+      } else {
+        eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
+      }
+    }
+  }
+  function resolveNamespace(ev, namespace) {
+    const evts = [];
+    let hndx, hndL;
+    if (ev.length > 0) {
+      const namespaces = namespace ? [namespace] : Object.keys(eventRegistry[ev]);
+      for (let nsi = 0; nsi < namespaces.length; nsi++) {
+        namespace = namespaces[nsi];
+        if (handler === undefined) {
+          for (hndx = 0, hndL = eventRegistry[ev][namespace]?.length || 0; hndx < hndL; hndx++) {
+            evts.push({
+              ev,
+              namespace,
+              handler: eventRegistry[ev][namespace][hndx]
+            });
+          }
+        } else {
+          evts.push({
+            ev,
+            namespace,
+            handler
+          });
+        }
+      }
+    } else if (namespace.length > 0) {
+      for (const evNdx in eventRegistry) {
+        if (eventRegistry[evNdx][namespace]) {
+          if (handler === undefined) {
+            for (hndx = 0, hndL = eventRegistry[evNdx][namespace].length; hndx < hndL; hndx++) {
+              evts.push({
+                ev: evNdx,
+                namespace,
+                handler: eventRegistry[evNdx][namespace][hndx]
+              });
+            }
+          } else {
+            evts.push({
+              ev: evNdx,
+              namespace,
+              handler
+            });
+          }
+        }
+      }
+    }
+    return evts;
+  }
+  if (isValidElement(this[0])) {
+    eventRegistry = data(this[0], "events");
+    elem = this[0];
+    // if no events defined, remove all events
+    events = events || Object.keys(eventRegistry).join(" ");
+    if (events !== "") {
+      events.split(" ").forEach(event => {
+        const [ev, namespace] = event.split(".");
+        resolveNamespace(ev, namespace).forEach(({
+          ev: ev1,
+          handler: handler1,
+          namespace: namespace1
+        }) => {
+          removeEvent(ev1, namespace1, handler1);
+        });
+      });
+    }
+  }
+  return this;
+}
+function trigger(events /* , args... */) {
+  if (isValidElement(this[0])) {
+    const eventRegistry = data(this[0], "events"),
+      elem = this[0],
+      _events = typeof events === "string" ? events.split(" ") : [events.type];
+    for (let endx = 0; endx < _events.length; endx++) {
+      const nsEvent = _events[endx].split("."),
+        ev = nsEvent[0],
+        namespace = nsEvent[1] || "global";
+      if (events_document !== undefined) {
+        // trigger domevent
+        let evnt;
+        const params = {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          detail: arguments[1]
+        };
+        // The custom event that will be created
+        try {
+          switch (ev) {
+            case "input":
+              params.inputType = "insertText";
+              evnt = new InputEvent(ev, params);
+              break;
+            default:
+              evnt = new CustomEvent(ev, params);
+          }
+        } catch (e) {
+          evnt = events_document.createEvent("CustomEvent");
+          evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
+        }
+        if (events.type) extend(evnt, events);
+        elem.dispatchEvent(evnt);
+      } else if (eventRegistry[ev] !== undefined) {
+        arguments[0] = arguments[0].type ? arguments[0] : Evnt(arguments[0]);
+        arguments[0].detail = arguments.slice(1);
+        const registry = eventRegistry[ev],
+          handlers = namespace === "global" ? Object.values(registry).flat() : registry[namespace];
+        handlers.forEach(handler => handler.apply(elem, arguments));
+      }
+    }
+  }
+  return this;
+}
+;// ./lib/dependencyLibs/inputmask.dependencyLib.js
+/*
+ Input Mask plugin dependencyLib
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+
+
+
+
+const inputmask_dependencyLib_document = global_window["default"].document;
+function DependencyLib(elem) {
+  if (elem instanceof DependencyLib) {
+    return elem;
+  }
+  if (!(this instanceof DependencyLib)) {
+    return new DependencyLib(elem);
+  }
+  if (elem !== undefined && elem !== null && elem !== global_window["default"]) {
+    this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : inputmask_dependencyLib_document.querySelector(elem);
+    if (this[0] !== undefined && this[0] !== null) {
+      data(this[0], "events", data(this[0], "events") || {});
+    }
+  }
+}
+DependencyLib.prototype = {
+  on: on,
+  off: off,
+  trigger: trigger
+};
+
+// static
+DependencyLib.extend = extend;
+DependencyLib.data = data;
+DependencyLib.Event = Evnt;
+/* harmony default export */ const inputmask_dependencyLib = (DependencyLib);
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (canUseDOM ? window : {});
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   aliases: () => (/* binding */ aliases),
+/* harmony export */   masksCache: () => (/* binding */ masksCache),
+/* harmony export */   resolveAlias: () => (/* binding */ resolveAlias)
+/* harmony export */ });
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+
+const aliases = {},
+  masksCache = {};
+
+// resolve a plain alias name (or an alias chain) into concrete mask options;
+// used by the instance constructor and by the data-attribute option import
+function resolveAlias(aliasStr, options, opts) {
+  const aliasDefinition = aliases[aliasStr];
+  if (aliasDefinition) {
+    if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); // alias is another alias
+    _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__["default"].extend(true, opts, aliasDefinition); // merge alias definition in the options
+    _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_0__["default"].extend(true, opts, options); // reapply extra given options
+    return true;
+  } // alias not found => treat as mask
+  else if (opts.mask === null) {
+    opts.mask = aliasStr;
   }
   return false;
 }
 
-/**
- * @param {import("./defaults").InputmaskOptions} opts
- * @param {boolean} nocache
- * @returns {Maskset}
- */
-function generateMaskSet(opts, nocache) {
-  let /** @type {Maskset} */ms;
 
-  /**
-   * @param {string} mask
-   * @param {{ repeat: number | string; groupmarker: string[] | [string, string]; quantifiermarker: string[] | [string, string]; keepStatic: boolean | null }} opts
-   * @returns {string}
-   */
-  function preProcessMask(mask, {
-    repeat,
-    groupmarker,
-    quantifiermarker,
-    keepStatic
-  }) {
-    if (repeat > 0 || repeat === "*" || repeat === "+") {
-      const repeatStart = repeat === "*" ? 0 : repeat === "+" ? 1 : repeat;
-      if (repeatStart !== repeat) {
-        mask = groupmarker[0] + mask + groupmarker[1] + quantifiermarker[0] + repeatStart + "," + repeat + quantifiermarker[1];
-      } else {
-        // repeat the mask n times
-        const msk = mask;
-        for (let i = 1; i < repeatStart; i++) {
-          mask += msk;
-        }
-      }
-    }
-    if (keepStatic === true) {
-      const optionalRegex = "(.)\\[([^\\]]*)\\]",
-        // "(?<p1>.)\\[(?<p2>[^\\]]*)\\]", remove named capture group @2428
-        maskMatches = mask.match(new RegExp(optionalRegex, "g"));
-      maskMatches && maskMatches.forEach((m, i) => {
-        let [p1, p2] = m.split("[");
-        p2 = p2.replace("]", "");
-        mask = mask.replace(new RegExp(`${(0,escapeRegex/* escapeRegex */.$)(p1)}\\[${(0,escapeRegex/* escapeRegex */.$)(p2)}\\]`), p1.charAt(0) === p2.charAt(0) ? `(${p1}|${p1}${p2})` : `${p1}[${p2}]`);
-        // console.log(mask);
-      });
-    }
-    return mask;
-  }
+/***/ }),
+/* 5 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-  /**
-   * @param {string} mask
-   * @param {any} metadata
-   * @param {import("./defaults").InputmaskOptions} opts
-   * @returns {Maskset}
-   */
-  function generateMask(mask, metadata, opts) {
-    let regexMask = false;
-    if (mask === null || mask === "") {
-      regexMask = opts.regex !== null;
-      if (regexMask) {
-        opts.regex = opts.regex.replace(/^(\^)(.*)(\$)$/, "$2");
-        mask = opts.regex;
-      } else {
-        regexMask = true;
-        mask = ".*";
-      }
-    }
-    if (mask.length === 1 && opts.greedy === false && opts.repeat !== 0) {
-      opts.placeholder = "";
-    } // hide placeholder with single non-greedy mask
-    mask = preProcessMask(mask, opts);
-
-    // console.log(mask);
-    let masksetDefinition, maskdefKey;
-    maskdefKey = regexMask ? "regex_" + opts.regex : opts.numericInput ? mask.split("").reverse().join("") : mask;
-    if (opts.keepStatic !== null) {
-      // keepstatic modifies the output from the testdefinitions ~ so differentiate in the maskcache
-      maskdefKey = "ks_" + opts.keepStatic + maskdefKey;
-    }
-    if (opts.placeholder !== undefined) {
-      // the placeholder is baked into the testdefinitions (see
-      // resolvePlaceholder) ~ so differentiate in the maskcache
-      maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
-    }
-    if (cache/* masksCache */.st[maskdefKey] === undefined || nocache === true) {
-      const maskToken = analyseMask(mask, regexMask, opts);
-      /** @type {Maskset} */
-      masksetDefinition = {
-        mask,
-        maskToken,
-        validPositions: [],
-        _buffer: undefined,
-        buffer: undefined,
-        tests: {},
-        excludes: {},
-        // excluded alternations
-        metadata,
-        maskLength: undefined,
-        jitOffset: {},
-        wholeRegex: undefined,
-        positionIndependent: undefined
-      };
-
-      // one definition carrying an unlimited quantifier (e.g. "[^<|>]*"): the
-      // same test applies at every position, so resolving it once is enough.
-      // A "+" quantifier is excluded: position 0 requires a character while
-      // later positions do not, so the tests are not position-independent.
-      // Alternation (e.g. "(a|b)*") is excluded: its branch tests differ per
-      // position and must be built by the standard walk.
-      masksetDefinition.positionIndependent = maskToken.length === 1 && maskToken[0].matches.length === 2 && maskToken[0].matches[1].isQuantifier === true && maskToken[0].matches[1].quantifier.max === "*" && !containsAlternator(maskToken[0]);
-      if (regexMask) {
-        // compile the full-string regex once
-        try {
-          masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$", "u");
-        } catch (e) {
-          try {
-            masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$");
-          } catch (e2) {
-            // broken regex => don't gate completeness
-            masksetDefinition.wholeRegex = null;
-          }
-        }
-      }
-      if (opts.validateOnly === true && (!masksetDefinition.wholeRegex || masksetDefinition.positionIndependent !== true)) {
-        console.warn("Inputmask: validateOnly is ignored for this mask - it needs a regex mask of one character class with an unlimited quantifier, such as opts.regex = " + '"[^<|>]*". Standard validation is used instead.');
-      }
-      if (nocache !== true) {
-        cache/* masksCache */.st[maskdefKey] = masksetDefinition;
-        masksetDefinition = inputmask_dependencyLib/* default */.A.extend(true, {}, cache/* masksCache */.st[maskdefKey]);
-      }
-    } else {
-      masksetDefinition = inputmask_dependencyLib/* default */.A.extend(true, {}, cache/* masksCache */.st[maskdefKey]);
-    }
-    return masksetDefinition;
-  }
-  if (typeof opts.mask === "function") {
-    // allow mask to be a preprocessing fn - should return a valid mask
-    opts.mask = opts.mask(opts);
-  }
-  if (Array.isArray(opts.mask)) {
-    if (opts.mask.length > 1) {
-      if (opts.keepStatic === null) {
-        // enable by default when passing multiple masks when the option is not explicitly specified
-        opts.keepStatic = true;
-      }
-      let altMask = opts.groupmarker[0];
-      (opts.isRTL ? opts.mask.reverse() : opts.mask).forEach(function (msk) {
-        if (altMask.length > 1) {
-          altMask += opts.alternatormarker;
-        }
-        if (msk.mask !== undefined && typeof msk.mask !== "function") {
-          altMask += msk.mask;
-        } else {
-          altMask += msk;
-        }
-      });
-      altMask += opts.groupmarker[1];
-      // console.log(altMask);
-      return generateMask(altMask, opts.mask, opts);
-    } else {
-      opts.mask = opts.mask.pop();
-    }
-  }
-  if (opts.mask && opts.mask.mask !== undefined && typeof opts.mask.mask !== "function") {
-    ms = generateMask(opts.mask.mask, opts.mask, opts);
-  } else {
-    ms = generateMask(opts.mask, opts.mask, opts);
-  }
-  if (opts.keepStatic === null) {
-    opts.keepStatic = false;
-  }
-  return ms;
-}
-
-/**
- * @param {string} mask
- * @param {boolean} regexMask
- * @param {import("./defaults").InputmaskOptions} opts
- * @returns {import("./masktoken").MaskToken[]}
- */
-function analyseMask(mask, regexMask, opts) {
-  const currentToken = new masktoken(),
-    /** @type {import("./masktoken").MaskToken[]} */openenings = [],
-    /** @type {import("./masktoken").MaskToken[]} */maskTokens = [];
-  let escaped = false,
-    /** @type {RegExpExecArray} */match,
-    /** @type {string} */m,
-    /** @type {import("./masktoken").MaskToken} */openingToken,
-    /** @type {import("./masktoken").MaskToken} */currentOpeningToken,
-    /** @type {import("./masktoken").MaskToken} */alternator,
-    /** @type {import("./masktoken").MaskToken | MaskTest} */lastMatch,
-    closeRegexGroup = false;
-
-  // test definition => {fn: RegExp/function, static: true/false optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
-
-  /**
-   * Resolve the placeholder of a test at the current top-level token index.
-   *
-   * Precedence is a placeholder map first, then a placeholder that a registered
-   * definition asked for, then a string placeholder, then the prototype
-   * placeholder of the definition.
-   *
-   * Only a registered definition (opts.definitions) outranks the global string.
-   * An alias registers a placeholder per definition on purpose ~ numeric puts
-   * the radixPoint and the groupSeparator on their own definitions, and letting
-   * the global placeholder win would render a numeric mask as a row of digits. A
-   * prototype definition is only the last resort, so that {mask: "999",
-   * placeholder: "0"} still renders zeroes rather than underscores.
-   *
-   * A map is indexed per position, so a missing entry falls through. A string is
-   * cycled over the token index ~ for a mask without groups or quantifiers the
-   * token index is the buffer position, so a format-shaped placeholder lines up
-   * ("99/99/9999" <- "dd/MM/yyyy"); for grouped masks every token inside a group
-   * shares the group index, which is why multi-char strings are discouraged in
-   * favour of a map.
-   *
-   * Always returns a string. That is what lets getPlaceholder read the
-   * placeholder off the test instead of re-deriving it, and it is why a
-   * definition without one of its own ends up on the prototype placeholder ~ an
-   * empty position still has to render something.
-   *
-   * @param {string | undefined} [definitionPlaceholder] placeholder of the definition the test is built from
-   * @param {boolean} [registered] the definition came from opts.definitions rather than the prototypes
-   * @returns {string}
-   */
-  function resolvePlaceholder(definitionPlaceholder, registered) {
-    if (isPlaceholderMap(opts)) {
-      return opts.placeholder[currentToken.matches.length] ?? definitionPlaceholder ?? (/* inlined export .DEFAULT_PLACEHOLDER */"_");
-    } else if (registered && definitionPlaceholder !== undefined) {
-      return definitionPlaceholder;
-    } else if (typeof opts.placeholder === "string") {
-      return opts.placeholder.length > 1 ? opts.placeholder.charAt(currentToken.matches.length % opts.placeholder.length) : opts.placeholder;
-    }
-    return definitionPlaceholder ?? (/* inlined export .DEFAULT_PLACEHOLDER */"_");
-  }
-
-  /**
-   * @param {import("./masktoken").MaskToken} mtoken
-   * @param {string} element
-   * @param {number} [position]
-   */
-  function insertTestDefinition(mtoken, element, position) {
-    position = position !== undefined ? position : mtoken.matches.length;
-    let prevMatch = mtoken.matches[position - 1],
-      flag = opts.casing ? "i" : "";
-    if (regexMask) {
-      if (element.indexOf("[") === 0 || escaped && /\\(?:[dDsSwWpPnrtfv]|0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z])/.test(element) || element === ".") {
-        if (/\\p\{.*}/i.test(element)) flag += "u";
-        mtoken.matches.splice(position++, 0, {
-          fn: new RegExp(element, flag),
-          static: false,
-          optionality: false,
-          newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element,
-          casing: null,
-          def: element,
-          // a regex mask has no definition to inherit a placeholder from, so it
-          // gets the prototype one baked in
-          placeholder: resolvePlaceholder((/* inlined export .DEFAULT_PLACEHOLDER */"_")),
-          nativeDef: element
-        });
-      } else {
-        if (escaped) element = element[element.length - 1];
-        element.split("").forEach(function (lmnt) {
-          prevMatch = mtoken.matches[position - 1];
-          mtoken.matches.splice(position++, 0, createStaticTest(lmnt, prevMatch, flag,
-          // a static displays its own character, so it outranks a string
-          // placeholder ~ a map still wins over it
-          resolvePlaceholder(lmnt, true)));
-        });
-      }
-      escaped = false;
-    } else {
-      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && definitions/* default */.A[element];
-      if (maskdef && !escaped) {
-        if (typeof maskdef.validator === "string" && /\\p\{.*}/i.test(maskdef.validator)) flag += "u";
-        mtoken.matches.splice(position++, 0, {
-          fn: maskdef.validator ? typeof maskdef.validator === "string" ? new RegExp(maskdef.validator, flag) : new function () {
-            this.test = maskdef.validator;
-          }() : /./,
-          static: maskdef.static || false,
-          optionality: maskdef.optional || false,
-          defOptionality: maskdef.optional || false,
-          // indicator for an optional from the definition
-          newBlockMarker: prevMatch === undefined || maskdef.optional ? "master" : prevMatch.def !== (maskdef.definitionSymbol || element),
-          casing: maskdef.casing,
-          def: maskdef.definitionSymbol || element,
-          placeholder: resolvePlaceholder(maskdef.placeholder, !!(opts.definitions && opts.definitions[element])),
-          displayChar: maskdef.displayChar,
-          nativeDef: element,
-          generated: maskdef.generated
-        });
-      } else {
-        mtoken.matches.splice(position++, 0, createStaticTest(element, prevMatch, flag,
-        // a static displays its own character, so it outranks a string
-        // placeholder ~ a map still wins over it
-        resolvePlaceholder(element, true)));
-        escaped = false;
-      }
-    }
-  }
-
-  /**
-   * @param {string} element
-   * @param {MaskTest | import("./masktoken").MaskToken | undefined} prevMatch
-   * @param {string} flag
-   * @param {string} placeholder always defined, resolvePlaceholder fills the gap
-   * @returns {MaskTest}
-   */
-  function createStaticTest(element, prevMatch, flag, placeholder) {
-    return {
-      fn: /[a-z]/i.test(opts.staticDefinitionSymbol || element) ? new RegExp("[" + (opts.staticDefinitionSymbol || element) + "]", flag) : null,
-      static: true,
-      optionality: false,
-      newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element && prevMatch.static !== true,
-      casing: null,
-      def: opts.staticDefinitionSymbol || element,
-      placeholder,
-      nativeDef: (escaped ? "'" : "") + element
-    };
-  }
-
-  /**
-   * @param {import("./masktoken").MaskToken} maskToken
-   */
-  function verifyGroupMarker(maskToken) {
-    if (maskToken && maskToken.matches) {
-      maskToken.matches.forEach(function (token, ndx) {
-        const nextToken = maskToken.matches[ndx + 1];
-        if ((nextToken === undefined || nextToken.matches === undefined || nextToken.isQuantifier === false) && token && token.isGroup) {
-          // this is not a group but a normal mask => convert
-          token.isGroup = false;
-          if (!regexMask) {
-            insertTestDefinition(token, opts.groupmarker[0], 0);
-            if (token.openGroup !== true) {
-              insertTestDefinition(token, opts.groupmarker[1]);
-            }
-          }
-        }
-        verifyGroupMarker(token);
-      });
-    }
-  }
-
-  /**
-   * @param {import("./masktoken").MaskToken} alternator
-   * @param {boolean} unsetAlternatorGroup
-   */
-  function pushAlternator(alternator, unsetAlternatorGroup) {
-    alternator.matches.forEach(function (token) {
-      token.isGroup = false;
-      if (unsetAlternatorGroup) token.alternatorGroup = false;
-    });
-    if (openenings.length > 0) {
-      currentOpeningToken = openenings[openenings.length - 1];
-      currentOpeningToken.matches.push(alternator);
-    } else {
-      currentToken.matches.push(alternator);
-    }
-  }
-  function defaultCase() {
-    if (openenings.length > 0) {
-      currentOpeningToken = openenings[openenings.length - 1];
-      insertTestDefinition(currentOpeningToken, m);
-      if (currentOpeningToken.isAlternator) {
-        // handle alternator a | b case
-        pushAlternator(openenings.pop(), false);
-      }
-    } else {
-      insertTestDefinition(currentToken, m);
-    }
-  }
-
-  /**
-   * @param {import("./masktoken").MaskToken} maskToken
-   * @returns {import("./masktoken").MaskToken}
-   */
-  function reverseTokens(maskToken) {
-    function reverseStatic(st) {
-      if (st === opts.optionalmarker[0]) {
-        st = opts.optionalmarker[1];
-      } else if (st === opts.optionalmarker[1]) {
-        st = opts.optionalmarker[0];
-      } else if (st === opts.groupmarker[0]) {
-        st = opts.groupmarker[1];
-      } else if (st === opts.groupmarker[1]) st = opts.groupmarker[0];
-      return st;
-    }
-    maskToken.matches = maskToken.matches.reverse();
-    for (const match in maskToken.matches) {
-      if (Object.prototype.hasOwnProperty.call(maskToken.matches, match)) {
-        const intMatch = parseInt(match);
-        if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) {
-          // reposition quantifier
-          const qt = maskToken.matches[match];
-          maskToken.matches.splice(match, 1);
-          maskToken.matches.splice(intMatch + 1, 0, qt);
-        }
-        if (maskToken.matches[match].matches !== undefined) {
-          maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
-        } else {
-          maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
-        }
-      }
-    }
-    return maskToken;
-  }
-
-  /**
-   * @param {Array<import("./masktoken").MaskToken | MaskTest>} matches
-   * @returns {import("./masktoken").MaskToken}
-   */
-  function groupify(matches) {
-    const groupToken = new masktoken(true);
-    groupToken.openGroup = false;
-    groupToken.matches = matches;
-    return groupToken;
-  }
-
-  /**
-   * @param {string} m
-   * @returns {{ min: number | string; max: number | string; jit: number | string }}
-   */
-  function parseQuantifier(m) {
-    m = m.replace(/[{}?]/g, ""); // ? matches lazy quantifiers
-    const mqj = m.split("|"),
-      mq = mqj[0].split(",");
-    let min = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]);
-    const max = mq.length === 1 ? min : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]),
-      jit = isNaN(mqj[1]) ? mqj[1] : parseInt(mqj[1]);
-    if (min === "*" || min === "+") {
-      min = max === "*" ? 0 : 1;
-    }
-    return {
-      min,
-      max,
-      jit
-    };
-  }
-  function closeGroup() {
-    // Group closing
-    openingToken = openenings.pop();
-    openingToken.openGroup = false; // mark group as complete
-    if (openingToken !== undefined) {
-      if (openenings.length > 0) {
-        currentOpeningToken = openenings[openenings.length - 1];
-        currentOpeningToken.matches.push(openingToken);
-        if (currentOpeningToken.isAlternator) {
-          // handle alternator (a) | (b) case
-          pushAlternator(openenings.pop(), true);
-        }
-      } else {
-        currentToken.matches.push(openingToken);
-      }
-    } else {
-      defaultCase();
-    }
-  }
-
-  /**
-   * @param {Array<import("./masktoken").MaskToken | MaskTest>} matches
-   * @returns {import("./masktoken").MaskToken | MaskTest}
-   */
-  function groupQuantifier(matches) {
-    let lastMatch = matches.pop();
-    if (lastMatch.isQuantifier) {
-      lastMatch = groupify([matches.pop(), lastMatch]);
-    }
-    return lastMatch;
-  }
-  function skipAssertion() {
-    // consume the balanced content of an inline regex assertion
-    // (?= (?! (?<= (?<! so it leaks no characters into the mask template
-    let depth = 1;
-    do {
-      const assertionToken = regexTokenizer.exec(mask);
-      if (assertionToken === null) break;
-      if (assertionToken[0].charAt(0) === "(") depth++;else if (assertionToken[0] === ")") depth--;
-    } while (depth > 0);
-    if (depth === 0) {
-      // drop a quantifier that would otherwise attach to the token before the assertion
-      const quantToken = regexTokenizer.exec(mask);
-      if (quantToken && !/^[?*+]|\{[0-9]+(?:,[0-9]*)?\}/.test(quantToken[0])) {
-        regexTokenizer.lastIndex = quantToken.index;
-      }
-    }
-  }
-  if (regexMask) {
-    opts.optionalmarker[0] = undefined;
-    opts.optionalmarker[1] = undefined;
-  }
-  tokenizer.lastIndex = 0;
-  regexTokenizer.lastIndex = 0;
-  // console.log(mask);
-  while (match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask)) {
-    // console.log(match);
-    m = match[0];
-    if (regexMask) {
-      switch (m.charAt(0)) {
-        // Quantifier
-        case "?":
-          m = "{0,1}";
-          break;
-        case "+":
-        case "*":
-          m = "{" + m + "}";
-          break;
-        case "|":
-          // regex mask alternator  ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
-          if (openenings.length === 0) {
-            // wrap the mask in a group to form a regex alternator  ([01][0-9]|2[0-3])
-            const altRegexGroup = groupify(currentToken.matches);
-            altRegexGroup.openGroup = true;
-            openenings.push(altRegexGroup);
-            currentToken.matches = [];
-            closeRegexGroup = true;
-          }
-          break;
-      }
-      switch (m) {
-        case "\\d":
-          m = "[0-9]";
-          break;
-        case "\\p": // Unicode Categories
-        case "\\P":
-          {
-            // consume the property part { ... } of the escape
-            const prop = regexTokenizer.exec(mask);
-            if (prop && prop[0] === "{") {
-              const rest = regexTokenizer.exec(mask);
-              if (rest && rest[0].charAt(rest[0].length - 1) === "}") {
-                m += "{" + rest[0];
-              } else {
-                // incomplete property => put the tokens back
-                regexTokenizer.lastIndex = rest ? rest.index : prop.index;
-              }
-            } else if (prop) {
-              // not a property => put the token back
-              regexTokenizer.lastIndex = prop.index;
-            }
-            break;
-          }
-        case "(?:":
-          // non capturing group
-          // treat as group
-          break;
-        case "(?=": // lookahead
-        case "(?!":
-          // negative lookahead
-          // skip the assertion so it leaks no characters into the mask template
-          skipAssertion();
-          continue;
-        case "(?<=": // lookbehind
-        case "(?<!":
-          // negative lookbehind
-          // treat as group (lookbehind content is typed in the template)
-          break;
-      }
-    }
-    if (escaped) {
-      defaultCase();
-      continue;
-    }
-    switch (m.charAt(0)) {
-      case "$":
-      case "^":
-        // ignore beginswith and endswith as in masking this makes no point
-        if (!regexMask) {
-          defaultCase();
-        }
-        break;
-      case opts.escapeChar:
-        escaped = true;
-        if (regexMask) defaultCase();
-        break;
-      // optional closing
-      case opts.optionalmarker[1]:
-      case opts.groupmarker[1]:
-        closeGroup();
-        break;
-      case opts.optionalmarker[0]:
-        // optional opening
-        openenings.push(new masktoken(false, true));
-        break;
-      case opts.groupmarker[0]:
-        // Group opening
-        openenings.push(new masktoken(true));
-        break;
-      case opts.quantifiermarker[0]:
-        {
-          // Quantifier
-          const quantifier = new masktoken(false, false, true);
-          quantifier.quantifier = parseQuantifier(m);
-          if (isNaN(quantifier.quantifier.min) && isNaN(quantifier.quantifier.max)) {
-            // a "{" that is not a quantifier is a literal character
-            defaultCase();
-            break;
-          }
-          const matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
-          match = matches.pop();
-          if (!match.isGroup) {
-            match = groupify([match]);
-          }
-          matches.push(match);
-          matches.push(quantifier);
-        }
-        break;
-      case opts.alternatormarker:
-        if (openenings.length > 0) {
-          currentOpeningToken = openenings[openenings.length - 1];
-          const subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
-          if (currentOpeningToken.openGroup && (
-          // regexp alt syntax
-          subToken.matches === undefined || subToken.isGroup === false && subToken.isAlternator === false)) {
-            // alternations within group
-            lastMatch = openenings.pop();
-          } else {
-            lastMatch = groupQuantifier(currentOpeningToken.matches);
-          }
-        } else {
-          lastMatch = groupQuantifier(currentToken.matches);
-        }
-        if (lastMatch.isAlternator) {
-          openenings.push(lastMatch);
-        } else {
-          if (lastMatch.alternatorGroup) {
-            alternator = openenings.pop();
-            lastMatch.alternatorGroup = false;
-          } else {
-            alternator = new masktoken(false, false, false, true);
-          }
-          alternator.matches.push(lastMatch);
-          openenings.push(alternator);
-          if (lastMatch.openGroup) {
-            // regexp alt syntax
-            lastMatch.openGroup = false;
-            const alternatorGroup = new masktoken(true);
-            alternatorGroup.alternatorGroup = true;
-            openenings.push(alternatorGroup);
-          }
-        }
-        break;
-      default:
-        defaultCase();
-    }
-  }
-  if (closeRegexGroup) closeGroup();
-  while (openenings.length > 0) {
-    openingToken = openenings.pop();
-    currentToken.matches.push(openingToken);
-  }
-  if (currentToken.matches.length > 0) {
-    verifyGroupMarker(currentToken);
-    maskTokens.push(currentToken);
-  }
-  if (opts.numericInput || opts.isRTL) {
-    reverseTokens(maskTokens[0]);
-  }
-  // console.log(JSON.stringify(maskTokens));
-  return maskTokens;
-}
-
-/***/ },
-
-/***/ 173
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   $b: () => (/* binding */ isMask),
-/* harmony export */   Ef: () => (/* binding */ seekPrevious),
-/* harmony export */   Mu: () => (/* binding */ translatePosition),
-/* harmony export */   OW: () => (/* binding */ caret),
-/* harmony export */   SE: () => (/* binding */ getLastValidPosition),
-/* harmony export */   Tc: () => (/* binding */ getBufferTemplate),
-/* harmony export */   Zo: () => (/* binding */ getBuffer),
-/* harmony export */   c1: () => (/* binding */ determineLastRequiredPosition),
-/* harmony export */   eo: () => (/* binding */ resetMaskSet),
-/* harmony export */   u4: () => (/* binding */ seekNext),
-/* harmony export */   wD: () => (/* binding */ determineNewCaretPosition)
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DEFAULT_PLACEHOLDER: () => (/* binding */ DEFAULT_PLACEHOLDER),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(266);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(841);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(217);
+// Placeholder of the prototype definitions below. A regex mask has no
+// definition to inherit it from, so the lexer falls back to this one.
+const DEFAULT_PLACEHOLDER = "_";
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  9: {
+    validator: "\\p{N}",
+    definitionSymbol: "*",
+    placeholder: "_"
+  },
+  a: {
+    validator: "\\p{L}",
+    definitionSymbol: "*",
+    placeholder: "_"
+  },
+  "*": {
+    validator: "[\\p{L}\\p{N}]",
+    placeholder: "_"
+  }
+});
 
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HandleNativePlaceholder: () => (/* binding */ HandleNativePlaceholder),
+/* harmony export */   applyInputValue: () => (/* binding */ applyInputValue),
+/* harmony export */   checkVal: () => (/* binding */ checkVal),
+/* harmony export */   clearOptionalTail: () => (/* binding */ clearOptionalTail),
+/* harmony export */   unmaskedvalue: () => (/* binding */ unmaskedvalue)
+/* harmony export */ });
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
+/* harmony import */ var _rule_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(10);
+
+
+
+
+function applyInputValue(input, value, initialEvent, strict) {
+  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
+    opts = inputmask.opts;
+  if (input && input.inputmask) input.inputmask.refreshValue = false;else inputmask.refreshValue = false;
+  if (strict !== true && typeof opts.onBeforeMask === "function") value = opts.onBeforeMask.call(inputmask, value, opts) || value;
+  value = (value || "").toString().split("");
+  checkVal.call(inputmask, input, true, false, value, initialEvent);
+  inputmask.undoValue = inputmask._valueGet(true);
+  if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && inputmask._valueGet() === _positioning__WEBPACK_IMPORTED_MODULE_0__.getBufferTemplate.call(inputmask).join("") && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask) === -1) {
+    inputmask._valueSet("");
+  }
+}
+
+// todo put on prototype?
+function clearOptionalTail(buffer) {
+  const inputmask = this;
+  buffer.length = 0;
+  const template = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getMaskTemplate.call(inputmask, true, 0, true, undefined, true);
+  let lmnt;
+  while ((lmnt = template.shift()) !== undefined) buffer.push(lmnt);
+  return buffer;
+}
+function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
+  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
+    maskset = inputmask.maskset,
+    opts = inputmask.opts,
+    $ = inputmask.dependencyLib,
+    inputValue = nptvl.slice(),
+    skipOptionalPartCharacter = opts.skipOptionalPartCharacter;
+  let charCodes = "",
+    initialNdx = -1,
+    result;
+  opts.skipOptionalPartCharacter = ""; // see issue #2311
+
+  function isTemplateMatch(ndx, charCodes) {
+    if (opts.validateOnly === true && maskset.positionIndependent === true && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, ndx) && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, ndx, false, true)) {
+      // every position holds the mask definition, so the static template can
+      // never start with the typed characters; skip rebuilding it per character
+      return false;
+    }
+    const targetTemplate = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getMaskTemplate.call(inputmask, true, 0).slice(ndx, _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, ndx, false, false)).join("").replace(/'/g, "");
+    let charCodeNdx = targetTemplate.indexOf(charCodes);
+    // strip spaces from targetTemplate
+    while (charCodeNdx > 0 && targetTemplate[charCodeNdx - 1] === " ") charCodeNdx--;
+    const match = charCodeNdx === 0 && !_rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, ndx) && (_rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx).match.nativeDef === charCodes.charAt(0) || _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx).match.static === true && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx).match.nativeDef === "'" + charCodes.charAt(0) || _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx).match.nativeDef === " " && (_rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx + 1).match.nativeDef === charCodes.charAt(0) || _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx + 1).match.static === true && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
+    if (!match && charCodeNdx > 0 && !_rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, ndx, false, true)) {
+      const nextPos = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, ndx);
+      if (inputmask.caretPos.begin < nextPos) {
+        inputmask.caretPos = {
+          begin: nextPos
+        };
+      }
+    }
+    return match;
+  }
+  inputmask._displayValueCache = maskset.validPositions.slice();
+  _positioning__WEBPACK_IMPORTED_MODULE_0__.resetMaskSet.call(inputmask, false);
+  inputmask.clicked = 0; // reset click counter to correctly determine the caretposition in checkval
+  initialNdx = opts.radixPoint ? _positioning__WEBPACK_IMPORTED_MODULE_0__.determineNewCaretPosition.call(inputmask, {
+    begin: 0,
+    end: 0
+  }, false, opts.__financeInput === false ? "radixFocus" : undefined).begin : 0;
+  maskset.p = initialNdx;
+  inputmask.caretPos = {
+    begin: initialNdx
+  };
+  const staticMatches = [];
+  let prevCaretPos = inputmask.caretPos;
+  inputValue.forEach(function (charCode, ndx) {
+    if (charCode !== undefined) {
+      // inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
+      /* if (maskset.validPositions[ndx] === undefined && inputValue[ndx] === getPlaceholder.call(inputmask, ndx) && isMask.call(inputmask, ndx, true) &&
+      isValid.call(inputmask, ndx, inputValue[ndx], true, undefined, true, true) === false) {
+      inputmask.caretPos.begin++;
+      } else */
+      // console.log("caret " + inputmask.caretPos.begin);
+      const keypress = new $.Event("_checkval");
+      keypress.key = charCode;
+      charCodes += charCode;
+      const lvp = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask, undefined, true);
+      if (!isTemplateMatch(initialNdx, charCodes)) {
+        result = _validation__WEBPACK_IMPORTED_MODULE_2__.processKeypress.call(inputmask, keypress, true, false, strict, inputmask.caretPos.begin);
+        if (result) {
+          initialNdx = inputmask.caretPos.begin + 1;
+          charCodes = "";
+        }
+      } else {
+        result = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, ndx).match.static === true ? _validation__WEBPACK_IMPORTED_MODULE_2__.processKeypress.call(inputmask, keypress, true, false, strict, lvp + 1) : false;
+      }
+      if (result) {
+        if (result.pos !== undefined && maskset.validPositions[result.pos] && maskset.validPositions[result.pos].match.static === true && maskset.validPositions[result.pos].alternation === undefined) {
+          staticMatches.push(result.pos);
+          if (!inputmask.isRTL) {
+            result.forwardPosition = result.pos + 1;
+          }
+        }
+        const onbeforeWriteResult = _validation__WEBPACK_IMPORTED_MODULE_2__.writeBuffer.call(inputmask, undefined, _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask), result.forwardPosition, keypress, false);
+        inputmask.caretPos = {
+          begin: onbeforeWriteResult?.caret || result.forwardPosition,
+          end: onbeforeWriteResult?.caret || result.forwardPosition
+        };
+        prevCaretPos = inputmask.caretPos;
+      } else {
+        if (maskset.validPositions[ndx] === undefined && inputValue[ndx] === _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getPlaceholder.call(inputmask, ndx) && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, ndx, true)) {
+          inputmask.caretPos.begin++;
+        } else inputmask.caretPos = prevCaretPos; // restore the caret position from before the failed validation
+      }
+    }
+  });
+  if (staticMatches.length > 0) {
+    let sndx, validPos;
+    const nextValid = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, -1, undefined, false);
+    if (!_validation__WEBPACK_IMPORTED_MODULE_2__.isComplete.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask)) && staticMatches.length <= nextValid || _validation__WEBPACK_IMPORTED_MODULE_2__.isComplete.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask)) && staticMatches.length > 0 && staticMatches.length !== nextValid && staticMatches[0] === 0) {
+      // should check if is sequence starting from 0
+      let nextSndx = nextValid;
+      while ((sndx = staticMatches.shift()) !== undefined) {
+        if (sndx < nextSndx) {
+          const keypress = new $.Event("_checkval");
+          validPos = maskset.validPositions[sndx];
+          validPos.generatedInput = true;
+          keypress.key = validPos.input;
+          result = _validation__WEBPACK_IMPORTED_MODULE_2__.processKeypress.call(inputmask, keypress, true, false, strict, nextSndx);
+          if (result && result.pos !== undefined && result.pos !== sndx && maskset.validPositions[result.pos] && maskset.validPositions[result.pos].match.static === true) {
+            staticMatches.push(result.pos);
+          } else if (!result) break;
+          nextSndx++;
+        }
+      }
+    } else {
+      // delete all free statics
+      while (sndx = staticMatches.pop()) {
+        validPos = maskset.validPositions[sndx];
+        if (validPos && maskset.validPositions[sndx + 1] === undefined) {
+          delete maskset.validPositions[sndx];
+        }
+      }
+    }
+  }
+  if (writeOut) {
+    _validation__WEBPACK_IMPORTED_MODULE_2__.writeBuffer.call(inputmask, input, _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask), result ? result.forwardPosition : inputmask.caretPos.begin, initiatingEvent || new $.Event("checkval"), initiatingEvent && (initiatingEvent.type === "input" && inputmask.undoValue !== _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask).join("") || initiatingEvent.type === "paste"));
+    // for (var vndx in maskset.validPositions) {
+    // 	if (maskset.validPositions[vndx].match.generated !== true) { //only remove non forced generated
+    // 		delete maskset.validPositions[vndx].generatedInput; //clear generated markings ~ consider initializing with a  value as fully typed
+    // 	}
+    // }
+  }
+  inputmask._displayValueCache = undefined;
+  opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
+}
+function HandleNativePlaceholder(npt, value) {
+  if (npt.placeholder !== value) {
+    npt.placeholder = value;
+    if (npt.placeholder === "") npt.removeAttribute("placeholder");
+  }
+}
+function unmaskedvalue(input) {
+  const inputmask = input ? input.inputmask : this,
+    opts = inputmask.opts,
+    maskset = inputmask.maskset;
+  if (input) {
+    if (input.inputmask === undefined) {
+      return input.value;
+    }
+    if (input.inputmask && input.inputmask.refreshValue) {
+      // forced refresh from the value form.reset
+      applyInputValue(input, input.inputmask._valueGet(true));
+    }
+  }
+  const umValue = [],
+    vps = maskset.validPositions;
+  for (let pndx = 0, vpl = vps.length; pndx < vpl; pndx++) {
+    if (vps[pndx] && vps[pndx].match && (vps[pndx].match.static !== true || opts.keepStatic !== true && Array.isArray(maskset.metadata) && vps[pndx].generatedInput !== true)) {
+      // only include non generated input with multiple masks (check on metadata) and without keepStatic true
+      umValue.push(vps[pndx].input);
+    }
+  }
+  let unmaskedValue = umValue.length === 0 ? "" : (inputmask.isRTL ? umValue.reverse() : umValue).join("");
+  if (typeof opts.onUnMask === "function") {
+    const bufferValue = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_0__.getBuffer.call(inputmask)).join("");
+    unmaskedValue = opts.onUnMask.call(inputmask, bufferValue, unmaskedValue, opts);
+  }
+  if (opts.outputMask && unmaskedValue.length > 0) {
+    return inputmask.options({
+      mask: opts.outputMask,
+      alias: null
+    }).format(unmaskedValue, opts.metadata);
+  }
+  return unmaskedValue;
+}
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   caret: () => (/* binding */ caret),
+/* harmony export */   determineLastRequiredPosition: () => (/* binding */ determineLastRequiredPosition),
+/* harmony export */   determineNewCaretPosition: () => (/* binding */ determineNewCaretPosition),
+/* harmony export */   getBuffer: () => (/* binding */ getBuffer),
+/* harmony export */   getBufferTemplate: () => (/* binding */ getBufferTemplate),
+/* harmony export */   resetMaskSet: () => (/* binding */ resetMaskSet),
+/* harmony export */   translatePosition: () => (/* binding */ translatePosition)
+/* harmony export */ });
+/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _rule_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
 
 
 
@@ -1946,7 +1255,7 @@ function caret(input, begin, end, notranslate, isDelete) {
       }
       const isDOM = !!(input && input.nodeName && input.ownerDocument);
       if (isDOM) {
-        const scrollCalc = parseInt((input.ownerDocument.defaultView || _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A).getComputedStyle(input, null).fontSize) * end;
+        const scrollCalc = parseInt((input.ownerDocument.defaultView || _global_window__WEBPACK_IMPORTED_MODULE_0__["default"]).getComputedStyle(input, null).fontSize) * end;
         input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
         if (opts.insertModeVisual && opts.insertMode === false && begin === end) {
           if (!isDelete) {
@@ -1956,7 +1265,7 @@ function caret(input, begin, end, notranslate, isDelete) {
         if (input === input.getRootNode().activeElement) {
           if ("setSelectionRange" in input) {
             input.setSelectionRange(begin, end);
-          } else if (_global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.getSelection) {
+          } else if (_global_window__WEBPACK_IMPORTED_MODULE_0__["default"].getSelection) {
             range = document.createRange();
             if (input.firstChild === undefined || input.firstChild === null) {
               const textNode = document.createTextNode("");
@@ -1965,7 +1274,7 @@ function caret(input, begin, end, notranslate, isDelete) {
             range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length);
             range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length);
             range.collapse(true);
-            const sel = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.getSelection();
+            const sel = _global_window__WEBPACK_IMPORTED_MODULE_0__["default"].getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
             // input.focus();
@@ -1998,8 +1307,8 @@ function caret(input, begin, end, notranslate, isDelete) {
     if (isDOM && "selectionStart" in input && "selectionEnd" in input) {
       begin = input.selectionStart;
       end = input.selectionEnd;
-    } else if (isDOM && _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.getSelection) {
-      range = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.getSelection().getRangeAt(0);
+    } else if (isDOM && _global_window__WEBPACK_IMPORTED_MODULE_0__["default"].getSelection) {
+      range = _global_window__WEBPACK_IMPORTED_MODULE_0__["default"].getSelection().getRangeAt(0);
       if (range.commonAncestorContainer.parentNode === input || range.commonAncestorContainer === input) {
         begin = range.startOffset;
         end = range.endOffset;
@@ -2027,22 +1336,45 @@ function caret(input, begin, end, notranslate, isDelete) {
 }
 
 // tobe put on prototype?
+function checkAlternationMatch(altArr1, altArr2, na) {
+  const opts = this.opts,
+    altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
+    naArr = na !== undefined ? na.split(",") : [];
+  let isMatch = false,
+    naNdx;
+
+  // remove no alternate indexes from alternation array
+  for (let i = 0; i < naArr.length; i++) {
+    if ((naNdx = altArr1.indexOf(naArr[i])) !== -1) {
+      altArr1.splice(naNdx, 1);
+    }
+  }
+  for (let alndx = 0; alndx < altArr1.length; alndx++) {
+    if (altArrC.includes(altArr1[alndx])) {
+      isMatch = true;
+      break;
+    }
+  }
+  return isMatch;
+}
+
+// tobe put on prototype?
 function determineLastRequiredPosition(returnDefinition) {
   const inputmask = this,
     {
       maskset,
       dependencyLib: $
     } = inputmask,
-    lvp = getLastValidPosition.call(inputmask),
+    lvp = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask),
     positions = {},
     lvTest = maskset.validPositions[lvp],
-    buffer = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getMaskTemplate */ .XR.call(inputmask, true, getLastValidPosition.call(inputmask), true, true);
+    buffer = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getMaskTemplate.call(inputmask, true, _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask), true, true);
   let bl = buffer.length,
     pos,
     ndxIntlzr = lvTest !== undefined ? lvTest.locator.slice() : undefined,
     testPos;
   for (pos = lvp + 1; pos < buffer.length; pos++) {
-    testPos = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTestTemplate */ .t.call(inputmask, pos, ndxIntlzr, pos - 1);
+    testPos = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTestTemplate.call(inputmask, pos, ndxIntlzr, pos - 1);
     ndxIntlzr = testPos.locator.slice();
     positions[pos] = $.extend(true, {}, testPos);
   }
@@ -2051,7 +1383,7 @@ function determineLastRequiredPosition(returnDefinition) {
     lvOptionality = lvTest !== undefined ? lvTest.match.optionality || 0 : 0;
   for (pos = bl - 1; pos > lvp; pos--) {
     testPos = positions[pos];
-    if ((testPos.match.optionality || testPos.match.optionalQuantifier && testPos.match.newBlockMarker || lvTestAlt && (lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.static !== true || testPos.match.static === true && testPos.locator[lvTest.alternation] && _validation__WEBPACK_IMPORTED_MODULE_1__/* .checkAlternationMatch */ .Nl.call(inputmask, testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTests */ .eQ.call(inputmask, pos)[0].def !== "")) && buffer[pos] === _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos, testPos.match)) {
+    if ((testPos.match.optionality || testPos.match.optionalQuantifier && testPos.match.newBlockMarker || lvTestAlt && (lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.static !== true || testPos.match.static === true && testPos.locator[lvTest.alternation] && checkAlternationMatch.call(inputmask, testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTests.call(inputmask, pos)[0].def !== "")) && buffer[pos] === _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getPlaceholder.call(inputmask, pos, testPos.match)) {
       // only optional positions in a deeper optional block than the last valid
       // position can be trimmed ~ an optional block that is entered is required
       if (testPos.match.optionality - lvOptionality < 1) {
@@ -2062,7 +1394,7 @@ function determineLastRequiredPosition(returnDefinition) {
         // find the last position that is not optional ~ isoptional and newblockmarker == "master"
         let prevPos = pos;
         while (prevPos > 0) {
-          const test = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTest */ .bm.call(inputmask, prevPos);
+          const test = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTest.call(inputmask, prevPos);
           if (test.match.newBlockMarker === "master" || test.match.newBlockMarker === true) {
             break;
           }
@@ -2100,12 +1432,12 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
     if (opts.radixPoint !== "" && opts.digits !== 0) {
       const vps = maskset.validPositions;
       if (vps[clickPos] === undefined || vps[clickPos].input === undefined) {
-        if (clickPos < seekNext.call(inputmask, -1)) return true;
+        if (clickPos < _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, -1)) return true;
         const radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
         if (radixPos !== -1) {
           for (const vp in vps) {
             const pos = Number(vp);
-            if (radixPos < pos && vps[vp] !== undefined && vps[vp].input !== _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos)) {
+            if (radixPos < pos && vps[vp] !== undefined && vps[vp].input !== _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getPlaceholder.call(inputmask, pos)) {
               return false;
             }
           }
@@ -2134,13 +1466,13 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
         };
         break;
       case "ignore":
-        selectedCaret.end = selectedCaret.begin = seekNext.call(inputmask, getLastValidPosition.call(inputmask));
+        selectedCaret.end = selectedCaret.begin = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask));
         break;
       case "radixFocus":
         if (inputmask.clicked > 1 && maskset.validPositions.length === 0) break;
         if (doRadixFocus(selectedCaret.begin)) {
           const radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
-          selectedCaret.end = selectedCaret.begin = opts.numericInput ? seekNext.call(inputmask, radixPos) : radixPos;
+          selectedCaret.end = selectedCaret.begin = opts.numericInput ? _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, radixPos) : radixPos;
           break;
         } else if (inputmask.clicked > 0 &&
         // only react to a click, not to checkVal /
@@ -2159,16 +1491,16 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
       default:
         // lvp:
         clickPosition = selectedCaret.begin;
-        lvclickPosition = getLastValidPosition.call(inputmask, clickPosition, true);
-        lastPosition = seekNext.call(inputmask, lvclickPosition === -1 && !isMask.call(inputmask, 0) ? -1 : lvclickPosition);
+        lvclickPosition = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask, clickPosition, true);
+        lastPosition = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, lvclickPosition === -1 && !_rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, 0) ? -1 : lvclickPosition);
         if (clickPosition <= lastPosition) {
-          selectedCaret.end = selectedCaret.begin = !isMask.call(inputmask, clickPosition, false, true) ? seekNext.call(inputmask, clickPosition) : clickPosition;
+          selectedCaret.end = selectedCaret.begin = !_rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, clickPosition, false, true) ? _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, clickPosition) : clickPosition;
         } else {
           const lvp = maskset.validPositions[lvclickPosition],
-            tt = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTestTemplate */ .t.call(inputmask, lastPosition, lvp ? lvp.match.locator : undefined, lvp),
-            placeholder = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, lastPosition, tt.match);
-          if (placeholder !== "" && getBuffer.call(inputmask)[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true || !isMask.call(inputmask, lastPosition, opts.keepStatic, true) && tt.match.def === placeholder) {
-            const newPos = seekNext.call(inputmask, lastPosition);
+            tt = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getTestTemplate.call(inputmask, lastPosition, lvp ? lvp.match.locator : undefined, lvp),
+            placeholder = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getPlaceholder.call(inputmask, lastPosition, tt.match);
+          if (placeholder !== "" && getBuffer.call(inputmask)[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true || !_rule_engine__WEBPACK_IMPORTED_MODULE_1__.isMask.call(inputmask, lastPosition, opts.keepStatic, true) && tt.match.def === placeholder) {
+            const newPos = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.seekNext.call(inputmask, lastPosition);
             if (clickPosition >= newPos || clickPosition === lastPosition) {
               lastPosition = newPos;
             }
@@ -2187,7 +1519,7 @@ function getBuffer(noCache) {
       maskset
     } = inputmask;
   if (maskset.buffer === undefined || noCache === true) {
-    maskset.buffer = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getMaskTemplate */ .XR.call(inputmask, true, getLastValidPosition.call(inputmask), true);
+    maskset.buffer = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getMaskTemplate.call(inputmask, true, _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getLastValidPosition.call(inputmask), true);
     if (maskset._buffer === undefined) maskset._buffer = maskset.buffer.slice();
   }
   return maskset.buffer;
@@ -2199,13 +1531,96 @@ function getBufferTemplate() {
     maskset = this.maskset;
   if (maskset._buffer === undefined) {
     // generate template
-    maskset._buffer = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getMaskTemplate */ .XR.call(inputmask, false, 1);
+    maskset._buffer = _rule_engine__WEBPACK_IMPORTED_MODULE_1__.getMaskTemplate.call(inputmask, false, 1);
     if (maskset.buffer === undefined) maskset.buffer = maskset._buffer.slice();
   }
   return maskset._buffer;
 }
 
-// tobe put on prototype?
+// soft ~ undefined reset validpositions; soft = false also reset tests; soft = true only reset the maskset
+function resetMaskSet(soft) {
+  const maskset = this.maskset;
+  maskset.buffer = undefined;
+  if (soft !== true) {
+    maskset.validPositions = [];
+    maskset.p = 0;
+  }
+  if (soft === false) {
+    maskset.tests = {};
+    maskset.jitOffset = {};
+  }
+}
+function translatePosition(pos) {
+  const inputmask = this,
+    opts = this.opts,
+    el = this.el;
+  if (inputmask.isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "") && el) {
+    pos = inputmask._valueGet().length - pos;
+    if (pos < 0) pos = 0;
+  }
+  return pos;
+}
+
+/***/ }),
+/* 8 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   casing: () => (/* binding */ casing),
+/* harmony export */   determineTestTemplate: () => (/* binding */ determineTestTemplate),
+/* harmony export */   getDecisionTaker: () => (/* binding */ getDecisionTaker),
+/* harmony export */   getLastValidPosition: () => (/* binding */ getLastValidPosition),
+/* harmony export */   getMaskTemplate: () => (/* binding */ getMaskTemplate),
+/* harmony export */   getPlaceholder: () => (/* binding */ getPlaceholder),
+/* harmony export */   getTest: () => (/* binding */ getTest),
+/* harmony export */   getTestTemplate: () => (/* binding */ getTestTemplate),
+/* harmony export */   getTests: () => (/* binding */ getTests),
+/* harmony export */   isMask: () => (/* binding */ isMask),
+/* harmony export */   seekNext: () => (/* binding */ seekNext),
+/* harmony export */   seekPrevious: () => (/* binding */ seekPrevious)
+/* harmony export */ });
+/* unused harmony export isSubsetOf */
+/* harmony import */ var _definitions_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+
+
+
+function casing(elem, test, pos) {
+  const opts = this.opts,
+    maskset = this.maskset;
+  switch (opts.casing || test.casing) {
+    case "upper":
+      elem = elem.toLocaleUpperCase();
+      break;
+    case "lower":
+      elem = elem.toLocaleLowerCase();
+      break;
+    case "title":
+      {
+        const posBefore = maskset.validPositions[pos - 1];
+        if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_1__.keyCode.Space)) {
+          elem = elem.toLocaleUpperCase();
+        } else {
+          elem = elem.toLocaleLowerCase();
+        }
+        break;
+      }
+    case "follow":
+      if (test.def && test.def !== test.def.toLocaleLowerCase()) {
+        elem = elem.toLocaleUpperCase();
+      } else if (test.def && test.def !== test.def.toLocaleUpperCase()) {
+        elem = elem.toLocaleLowerCase();
+      }
+      break;
+    default:
+      if (typeof opts.casing === "function") {
+        const args = Array.prototype.slice.call(arguments);
+        args.push(maskset.validPositions);
+        elem = opts.casing.apply(this, args);
+      }
+  }
+  return elem;
+}
 function getLastValidPosition(closestTo, strict, validPositions) {
   const maskset = this.maskset;
   let before = -1,
@@ -2220,104 +1635,6 @@ function getLastValidPosition(closestTo, strict, validPositions) {
   }
   return before === -1 || before === closestTo ? after : after === -1 ? before : closestTo - before < after - closestTo ? before : after;
 }
-
-// tobe put on prototype?
-function isMask(pos, strict, fuzzy) {
-  const inputmask = this,
-    maskset = this.maskset;
-  let test = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTestTemplate */ .t.call(inputmask, pos).match;
-  if (test.def === "") test = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTest */ .bm.call(inputmask, pos).match;
-  if (test.static !== true) {
-    return test.fn;
-  }
-  if (fuzzy === true && maskset.validPositions[pos] !== undefined && maskset.validPositions[pos].generatedInput !== true) {
-    return true;
-  }
-  if (strict !== true && pos > -1) {
-    if (fuzzy) {
-      // check on the number of tests
-      const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTests */ .eQ.call(inputmask, pos);
-      return tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0);
-    }
-    // else based on the template
-    const testTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .determineTestTemplate */ .WW.call(inputmask, pos, _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTests */ .eQ.call(inputmask, pos)),
-      testPlaceHolder = _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos, testTemplate.match);
-    return testTemplate.match.def !== testPlaceHolder;
-  }
-  return false;
-}
-
-// tobe put on prototype?
-// soft ~ undefined reset validpositions; soft = false also reset tests; soft = true only reset the maskset
-function resetMaskSet(soft) {
-  const maskset = this.maskset;
-  maskset.buffer = undefined;
-  if (soft !== true) {
-    maskset.validPositions = [];
-    maskset.p = 0;
-  }
-  if (soft === false) {
-    maskset.tests = {};
-    maskset.jitOffset = {};
-  }
-}
-
-// tobe put on prototype?
-function seekNext(pos, newBlock, fuzzy) {
-  const inputmask = this;
-  if (fuzzy === undefined) fuzzy = true;
-  let position = pos + 1;
-  while (_validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTest */ .bm.call(inputmask, position).match.def !== "" && (newBlock === true && (_validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTest */ .bm.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, fuzzy))) {
-    position++;
-  }
-  return position;
-}
-
-// tobe put on prototype?
-function seekPrevious(pos, newBlock) {
-  const inputmask = this;
-  let position = pos - 1;
-  if (pos <= 0) return 0;
-  while (position > 0 && (newBlock === true && (_validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getTest */ .bm.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, true))) {
-    position--;
-  }
-  return position;
-}
-
-// tobe put on prototype?
-function translatePosition(pos) {
-  const inputmask = this,
-    opts = this.opts,
-    el = this.el;
-  if (inputmask.isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "") && el) {
-    pos = inputmask._valueGet().length - pos;
-    if (pos < 0) pos = 0;
-  }
-  return pos;
-}
-
-/***/ },
-
-/***/ 217
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   G_: () => (/* binding */ getPlaceholder),
-/* harmony export */   WW: () => (/* binding */ determineTestTemplate),
-/* harmony export */   XR: () => (/* binding */ getMaskTemplate),
-/* harmony export */   bm: () => (/* binding */ getTest),
-/* harmony export */   eQ: () => (/* binding */ getTests),
-/* harmony export */   gb: () => (/* binding */ getDecisionTaker),
-/* harmony export */   t: () => (/* binding */ getTestTemplate)
-/* harmony export */ });
-/* unused harmony export isSubsetOf */
-/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(542);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(173);
-/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(841);
-
-
-
-
 function getLocator(tst, align) {
   // need to align the locators to be correct
   let locator = (tst.alternation != null ? tst.mloc[`${getDecisionTaker(tst)}:${tst.alternation}`] || tst.locator : tst.locator).join("");
@@ -2345,7 +1662,7 @@ function getPlaceholder(pos, test, returnPL) {
 
   // Only for the alternation placeholder below: a baked placeholder indexes by
   // token, while that one answers a display position.
-  const phStr = typeof opts.placeholder === "string" ? opts.placeholder : (/* inlined export .DEFAULT_PLACEHOLDER */"_"),
+  const phStr = typeof opts.placeholder === "string" ? opts.placeholder : _definitions_js__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_PLACEHOLDER,
     isPhMap = typeof opts.placeholder === "object";
 
   // The lexer resolves the placeholder of every test when it builds it, so this
@@ -2362,10 +1679,10 @@ function getPlaceholder(pos, test, returnPL) {
       const ph = staticAlternationPlaceholder.call(inputmask, pos, phStr);
       if (ph !== undefined) return ph;
     }
-    const lvp = _positioning__WEBPACK_IMPORTED_MODULE_1__/* .getLastValidPosition */ .SE.call(inputmask, pos),
-      nextPos = _positioning__WEBPACK_IMPORTED_MODULE_1__/* .seekNext */ .u4.call(inputmask, lvp);
+    const lvp = getLastValidPosition.call(inputmask, pos),
+      nextPos = seekNext.call(inputmask, lvp);
     if (returnPL ? pos <= nextPos : pos < nextPos) {
-      return _validation__WEBPACK_IMPORTED_MODULE_2__/* .casing */ .Of.call(inputmask, opts.staticDefinitionSymbol && test.static ? test.nativeDef : test.def, test, pos);
+      return casing.call(inputmask, opts.staticDefinitionSymbol && test.static ? test.nativeDef : test.def, test, pos);
     }
   }
   return typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
@@ -2981,7 +2298,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
           quantifierNdx: quantifierStack.length ? quantifierStack[quantifierStack.length - 1] : 0,
           quantifierDepth: quantifierStack.length
         });
-        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef] && _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef].optional)) {
+        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _definitions_js__WEBPACK_IMPORTED_MODULE_0__["default"][match.nativeDef] && _definitions_js__WEBPACK_IMPORTED_MODULE_0__["default"][match.nativeDef].optional)) {
           // prevent loop see #698
           insertStop = true; // insert a stop
           testPos = pos; // match the position after the group
@@ -3120,26 +2437,146 @@ function getTests(pos, ndxIntlzr, tstPs) {
   return result;
 }
 
-/***/ },
+// tobe put on prototype?
+function seekNext(pos, newBlock, fuzzy) {
+  const inputmask = this;
+  if (fuzzy === undefined) fuzzy = true;
+  let position = pos + 1;
+  while (getTest.call(inputmask, position).match.def !== "" && (newBlock === true && (getTest.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, fuzzy))) {
+    position++;
+  }
+  return position;
+}
 
-/***/ 841
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
+// tobe put on prototype?
+function seekPrevious(pos, newBlock) {
+  const inputmask = this;
+  let position = pos - 1;
+  if (pos <= 0) return 0;
+  while (position > 0 && (newBlock === true && (getTest.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, true))) {
+    position--;
+  }
+  return position;
+}
 
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   As: () => (/* binding */ isComplete),
-/* harmony export */   Nl: () => (/* binding */ checkAlternationMatch),
-/* harmony export */   Nr: () => (/* binding */ handleRemove),
-/* harmony export */   Of: () => (/* binding */ casing),
-/* harmony export */   X9: () => (/* binding */ isSelection),
-/* harmony export */   fn: () => (/* binding */ isValid),
-/* harmony export */   m5: () => (/* binding */ refreshFromBuffer)
+// tobe put on prototype?
+function isMask(pos, strict, fuzzy) {
+  const inputmask = this,
+    maskset = this.maskset;
+  let test = getTestTemplate.call(inputmask, pos).match;
+  if (test.def === "") test = getTest.call(inputmask, pos).match;
+  if (test.static !== true) {
+    return test.fn;
+  }
+  if (fuzzy === true && maskset.validPositions[pos] !== undefined && maskset.validPositions[pos].generatedInput !== true) {
+    return true;
+  }
+  if (strict !== true && pos > -1) {
+    if (fuzzy) {
+      // check on the number of tests
+      const tests = getTests.call(inputmask, pos);
+      return tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0);
+    }
+    // else based on the template
+    const testTemplate = determineTestTemplate.call(inputmask, pos, getTests.call(inputmask, pos)),
+      testPlaceHolder = getPlaceholder.call(inputmask, pos, testTemplate.match);
+    return testTemplate.match.def !== testPlaceHolder;
+  }
+  return false;
+}
+
+/***/ }),
+/* 9 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   keyCode: () => (/* binding */ keyCode),
+/* harmony export */   keys: () => (/* binding */ keys)
 /* harmony export */ });
-/* unused harmony exports alternate, revalidateMask */
-/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
-/* harmony import */ var _keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
-/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
-/* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(217);
+/* unused harmony exports toKey, toKeyCode */
 
+const ignorables = {
+    Alt: 18,
+    AltGraph: 18,
+    ArrowDown: 40,
+    ArrowLeft: 37,
+    ArrowRight: 39,
+    ArrowUp: 38,
+    Backspace: 8,
+    CapsLock: 20,
+    Control: 17,
+    ContextMenu: 93,
+    Dead: 221,
+    Delete: 46,
+    End: 35,
+    Escape: 27,
+    F1: 112,
+    F2: 113,
+    F3: 114,
+    F4: 115,
+    F5: 116,
+    F6: 117,
+    F7: 118,
+    F8: 119,
+    F9: 120,
+    F10: 121,
+    F11: 122,
+    F12: 123,
+    Home: 36,
+    Insert: 45,
+    NumLock: 144,
+    PageDown: 34,
+    PageUp: 33,
+    Pause: 19,
+    PrintScreen: 44,
+    Process: 229,
+    Shift: 16,
+    ScrollLock: 145,
+    Tab: 9,
+    Unidentified: 229
+  },
+  keyCode = {
+    c: 67,
+    x: 88,
+    z: 90,
+    BACKSPACE_SAFARI: 127,
+    Enter: 13,
+    Meta_LEFT: 91,
+    Meta_RIGHT: 92,
+    Space: 32,
+    ...ignorables
+  },
+  keyCodeRev = Object.entries(keyCode).reduce((acc, [key, value]) => (
+  // eslint-disable-next-line no-sequences
+  acc[value] = acc[value] === undefined ? key : acc[value], acc), {}),
+  keys = Object.entries(keyCode).reduce(
+  // eslint-disable-next-line no-sequences
+  (acc, [key, value]) => (acc[key] = key === "Space" ? " " : key, acc), {});
+function toKey(keyCode, shiftKey) {
+  return keyCodeRev[keyCode] || (shiftKey ? String.fromCharCode(keyCode) : String.fromCharCode(keyCode).toLowerCase());
+}
+function toKeyCode(key) {
+  return keyCode[key];
+}
+
+/***/ }),
+/* 10 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleRemove: () => (/* binding */ handleRemove),
+/* harmony export */   handleRemoveKey: () => (/* binding */ handleRemoveKey),
+/* harmony export */   isComplete: () => (/* binding */ isComplete),
+/* harmony export */   isSelection: () => (/* binding */ isSelection),
+/* harmony export */   isValid: () => (/* binding */ isValid),
+/* harmony export */   processKeypress: () => (/* binding */ processKeypress),
+/* harmony export */   writeBuffer: () => (/* binding */ writeBuffer)
+/* harmony export */ });
+/* unused harmony exports alternate, revalidateMask, refreshFromBuffer */
+/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
 
 
 
@@ -3165,7 +2602,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     i,
     validPos,
     decisionPos,
-    lAltPos = rAltPos !== undefined ? rAltPos : _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask),
+    lAltPos = rAltPos !== undefined ? rAltPos : _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask),
     nextPos,
     input,
     begin,
@@ -3181,12 +2618,12 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
   if (lAltPos === -1 && rAltPos === undefined) {
     // do not recurse when already passed the beginning
     lastAlt = 0;
-    prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, lastAlt);
+    prevAltPos = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, lastAlt);
     alternation = prevAltPos.alternation;
   } else {
     // find last modified alternation
     for (; lAltPos >= 0; lAltPos--) {
-      altPos = lAltPos === 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, 0) : maskset.validPositions[lAltPos];
+      altPos = lAltPos === 0 ? _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, 0) : maskset.validPositions[lAltPos];
       if (altPos && altPos.alternation !== undefined) {
         if (lAltPos <= (maskPos || 0) && prevAltPos && prevAltPos.locator[altPos.alternation] !== altPos.locator[altPos.alternation]) {
           break;
@@ -3202,11 +2639,11 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     maskset.excludes[decisionPos] = maskset.excludes[decisionPos] || [];
     // generalize
     if (maskPos !== true) {
-      maskset.excludes[decisionPos].push((0,_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getDecisionTaker */ .gb)(prevAltPos) + ":" + prevAltPos.alternation);
+      maskset.excludes[decisionPos].push((0,_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getDecisionTaker)(prevAltPos) + ":" + prevAltPos.alternation);
     }
     const validInputs = [];
     let resultPos = -1;
-    for (i = decisionPos; decisionPos < _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) {
+    for (i = decisionPos; decisionPos < _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, undefined, true) + 1; i++) {
       if (resultPos === -1 && maskPos <= i && c !== undefined) {
         validInputs.push(c);
         resultPos = validInputs.length - 1;
@@ -3225,25 +2662,25 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     while (maskset.excludes[decisionPos] !== undefined && maskset.excludes[decisionPos].length < 10) {
       // maskset.tests[decisionPos] = undefined; //clear decisionPos
       maskset.tests = {}; // clear all
-      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true); // clear getbuffer
+      _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true); // clear getbuffer
       isValidRslt = true;
       nextPos = decisionPos - 1;
-      const targetTemplate = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getMaskTemplate */ .XR.call(inputmask, true, 0);
+      const targetTemplate = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getMaskTemplate.call(inputmask, true, 0);
       for (i = 0; i < validInputs.length; i++) {
         input = validInputs[i];
         if (targetTemplate[nextPos + 1] === input && opts.numericInput !== true) {
           nextPos++;
         } else if (nextPos === -1 && i === 0 && opts.digitsOptional === false) {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__.determineNewCaretPosition.call(inputmask, {
             begin: nextPos,
             end: nextPos
           }, false, opts.positionCaretOnClick).begin;
 
           // console.log("nextPos " + nextPos);
         } else if (i === 0 || returnRslt.caretPos !== undefined || opts.insertMode === false) {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, nextPos);
+          nextPos = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, nextPos);
         } else {
-          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, nextPos, true) + 1;
+          nextPos = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, nextPos, true) + 1;
         }
 
         // nextPos = translatePosition.call(inputmask, nextPos);
@@ -3275,21 +2712,21 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         }
       }
       if (!isValidRslt) {
-        _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask);
-        prevAltPos = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
+        _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask);
+        prevAltPos = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
         // reset & revert (copy: execution continues and mutates the live array below)
         maskset.validPositions = validPsClone.slice();
         maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
         returnRslt = false;
         if (maskset.excludes[decisionPos]) {
           if (prevAltPos.alternation != null) {
-            const decisionTaker = (0,_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getDecisionTaker */ .gb)(prevAltPos);
+            const decisionTaker = (0,_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getDecisionTaker)(prevAltPos);
             if (maskset.excludes[decisionPos].indexOf(decisionTaker + ":" + prevAltPos.alternation) !== -1) {
               returnRslt = alternate.call(inputmask, maskPos, c, strict, fromIsValid, decisionPos - 1, selection);
               break;
             }
             maskset.excludes[decisionPos].push(decisionTaker + ":" + prevAltPos.alternation);
-            for (i = decisionPos; i < _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) + 1; i++) maskset.validPositions.splice(decisionPos);
+            for (i = decisionPos; i < _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, undefined, true) + 1; i++) maskset.validPositions.splice(decisionPos);
           } else delete maskset.excludes[decisionPos];
         } else {
           // latest alternation
@@ -3312,65 +2749,6 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
   }
   return returnRslt;
 }
-function casing(elem, test, pos) {
-  const opts = this.opts,
-    maskset = this.maskset;
-  switch (opts.casing || test.casing) {
-    case "upper":
-      elem = elem.toLocaleUpperCase();
-      break;
-    case "lower":
-      elem = elem.toLocaleLowerCase();
-      break;
-    case "title":
-      {
-        const posBefore = maskset.validPositions[pos - 1];
-        if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keyCode */ .tS.Space)) {
-          elem = elem.toLocaleUpperCase();
-        } else {
-          elem = elem.toLocaleLowerCase();
-        }
-        break;
-      }
-    case "follow":
-      if (test.def && test.def !== test.def.toLocaleLowerCase()) {
-        elem = elem.toLocaleUpperCase();
-      } else if (test.def && test.def !== test.def.toLocaleUpperCase()) {
-        elem = elem.toLocaleLowerCase();
-      }
-      break;
-    default:
-      if (typeof opts.casing === "function") {
-        const args = Array.prototype.slice.call(arguments);
-        args.push(maskset.validPositions);
-        elem = opts.casing.apply(this, args);
-      }
-  }
-  return elem;
-}
-
-// tobe put on prototype?
-function checkAlternationMatch(altArr1, altArr2, na) {
-  const opts = this.opts,
-    altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
-    naArr = na !== undefined ? na.split(",") : [];
-  let isMatch = false,
-    naNdx;
-
-  // remove no alternate indexes from alternation array
-  for (let i = 0; i < naArr.length; i++) {
-    if ((naNdx = altArr1.indexOf(naArr[i])) !== -1) {
-      altArr1.splice(naNdx, 1);
-    }
-  }
-  for (let alndx = 0; alndx < altArr1.length; alndx++) {
-    if (altArrC.includes(altArr1[alndx])) {
-      isMatch = true;
-      break;
-    }
-  }
-  return isMatch;
-}
 
 // tobe put on prototype?
 function handleRemove(input, c, pos, strict, fromIsValid) {
@@ -3378,10 +2756,10 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
     maskset = this.maskset,
     opts = this.opts;
   if (opts.numericInput || inputmask.isRTL) {
-    if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace) {
-      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete;
-    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete) {
-      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace;
+    if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace) {
+      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Delete;
+    } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Delete) {
+      c = _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace;
     }
     if (inputmask.isRTL) {
       const pend = pos.end;
@@ -3389,40 +2767,40 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       pos.begin = pend;
     }
   }
-  if (opts.numericInput && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace && pos.begin === 0 && pos.end === 0 && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, 0, true, true)) {
+  if (opts.numericInput && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace && pos.begin === 0 && pos.end === 0 && _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.isMask.call(inputmask, 0, true, true)) {
     pos.end = 1;
   }
-  const lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
-  if (pos.end >= _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).length && lvp >= pos.end) {
+  const lvp = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, undefined, true);
+  if (pos.end >= _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask).length && lvp >= pos.end) {
     // handle numeric negate symbol offset, due to  dynamic jit masking
     pos.end = lvp + 1;
   }
-  if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace) {
+  if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace) {
     if (pos.end - pos.begin < 1) {
-      pos.begin = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, pos.begin);
+      pos.begin = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekPrevious.call(inputmask, pos.begin);
     }
-  } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete) {
+  } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Delete) {
     if (pos.begin === pos.end) {
-      pos.end = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, pos.end, true, true) ? pos.end + 1 : _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, pos.end) + 1;
+      pos.end = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.isMask.call(inputmask, pos.end, true, true) ? pos.end + 1 : _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, pos.end) + 1;
     }
   }
   let offset;
   if ((offset = revalidateMask.call(inputmask, pos)) !== false) {
-    if (strict !== true && opts.keepStatic !== false || opts.regex !== null && _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, pos.begin).match.def.indexOf("|") !== -1) {
+    if (strict !== true && opts.keepStatic !== false || opts.regex !== null && _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, pos.begin).match.def.indexOf("|") !== -1) {
       // TODO NEEDS BETTER CHECK WHEN TO ALTERNATE  ~ opts regex isn"t good enough
       alternate.call(inputmask, true);
     }
-    if (_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1) {
+    if (_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask) === -1) {
       // full clear: reset the tests cache so dynamic mask definitions
       // (numeric radix/negation) don't leave a stale residue in the template #2890
-      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
+      _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, false);
     }
     if (strict !== true) {
-      pos.begin = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
-      maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+      pos.begin = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Delete ? pos.begin + offset : pos.begin;
+      maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_2__.determineNewCaretPosition.call(inputmask, {
         begin: pos.begin,
         end: pos.begin
-      }, false, opts.insertMode === false && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace ? "none" : undefined).begin;
+      }, false, opts.insertMode === false && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace ? "none" : undefined).begin;
     }
   }
 }
@@ -3441,7 +2819,7 @@ function isComplete(buffer) {
     // A regex mask carries the prototype placeholder on its dynamic tests, but a
     // static one has none ~ getPlaceholder hands back its own definition there,
     // which is not what an untouched position shows.
-    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : typeof opts.placeholder === "object" ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, i).match) : (/* inlined export .DEFAULT_PLACEHOLDER */"_");
+    const phChar = i => typeof opts.placeholder === "string" ? opts.placeholder.charAt(i % opts.placeholder.length) : typeof opts.placeholder === "object" ? _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getPlaceholder.call(inputmask, i, _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTestTemplate.call(inputmask, i).match) : _definitions__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_PLACEHOLDER;
     let filledValue = "";
     for (let i = 0; i < buffer.length; i++) {
       if (maskset.validPositions[i] !== undefined || buffer[i] !== phChar(i)) {
@@ -3451,17 +2829,17 @@ function isComplete(buffer) {
     return maskset.wholeRegex.test(filledValue);
   }
   let complete = false;
-  const lrp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineLastRequiredPosition */ .c1.call(inputmask, true),
+  const lrp = _positioning__WEBPACK_IMPORTED_MODULE_2__.determineLastRequiredPosition.call(inputmask, true),
     aml = lrp.l; // seekPrevious.call(inputmask, lrp.l);
 
   if (lrp.def === undefined || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
     complete = true;
     for (let i = 0; i <= aml; i++) {
-      const test = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTestTemplate */ .t.call(inputmask, i).match;
+      const test = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTestTemplate.call(inputmask, i).match;
       if (test.static !== true && maskset.validPositions[i] === undefined && (test.optionality === false || test.optionality === undefined || test.optionality && test.newBlockMarker === false ||
       // an optional position in the same optional block as the last valid
       // position is required ~ the optional block is entered
-      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def !== "" && buffer[i] !== _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, i, test)) {
+      test.optionality && test.optionality - lrp.lvOptionality < 1) && (test.optionalQuantifier === false || test.optionalQuantifier === undefined) || test.static === true && test.def !== "" && buffer[i] !== _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getPlaceholder.call(inputmask, i, test)) {
         complete = false;
         break;
       }
@@ -3532,15 +2910,15 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   }
   function _isValid(position, c, strict) {
     let rslt = false;
-    _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, position).every(function (tst, ndx) {
+    _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTests.call(inputmask, position).every(function (tst, ndx) {
       const test = tst.match;
       // make sure the buffer is set and correct; a validateOnly mask is one
       // character class at every position, so its tests never read the buffer
       // and the forced refresh is a pure O(n) rebuild per test entry
       if (opts.validateOnly !== true || maskset.positionIndependent !== true) {
-        _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true);
+        _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask, true);
       }
-      if (test.jit && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, position)] === undefined) {
+      if (test.jit && maskset.validPositions[_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekPrevious.call(inputmask, position)] === undefined) {
         // ignore if jit is not desirable
         rslt = false;
       } else {
@@ -3555,7 +2933,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
         } else {
           rslt = test.fn != null ? test.fn.test(c, maskset, position, strict, opts, isSelection.call(inputmask, pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" // non mask
           ? {
-            c: _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def,
+            c: _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getPlaceholder.call(inputmask, position, test, true) || test.def,
             pos: position
           } : false;
         }
@@ -3563,7 +2941,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       if (rslt !== false) {
         let elem = rslt.c !== undefined ? rslt.c : c,
           validatedPos = position;
-        elem = elem === opts.skipOptionalPartCharacter && test.static === true ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def : elem;
+        elem = elem === opts.skipOptionalPartCharacter && test.static === true ? _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getPlaceholder.call(inputmask, position, test, true) || test.def : elem;
         rslt = processCommandObject(rslt);
         if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) {
           // their is a position offset
@@ -3573,7 +2951,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           return false; // breakout if nothing to insert
         }
         if (revalidateMask.call(inputmask, pos, $.extend({}, tst, {
-          input: casing.call(inputmask, elem, test, validatedPos)
+          input: _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.casing.call(inputmask, elem, test, validatedPos)
         }), fromIsValid, validatedPos) === false) {
           rslt = false;
         }
@@ -3595,7 +2973,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     }
   }
   if (typeof opts.preValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
+    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
     result = processCommandObject(result);
   }
   if (result === true) {
@@ -3605,13 +2983,13 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       const currentPosValid = maskset.validPositions[maskPos];
       if (currentPosValid && currentPosValid.match.static === true && (currentPosValid.match.def === c || c === opts.skipOptionalPartCharacter)) {
         result = {
-          caret: _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)
+          caret: _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, maskPos)
         };
       } else {
-        if (opts.insertMode || maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined || pos.end > maskPos) {
+        if (opts.insertMode || maskset.validPositions[_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, maskPos)] === undefined || pos.end > maskPos) {
           // does the input match on a further position?
           let skip = false;
-          if (maskset.jitOffset[maskPos] && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined) {
+          if (maskset.jitOffset[maskPos] && maskset.validPositions[_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, maskPos)] === undefined) {
             result = isValid.call(inputmask, maskPos + maskset.jitOffset[maskPos], c, true, true);
             if (result !== false) {
               if (fromAlternate !== true && typeof fromAlternate !== "number") result.caret = maskPos;
@@ -3621,8 +2999,8 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           if (pos.end > maskPos) {
             maskset.validPositions[maskPos] = undefined;
           }
-          if (!skip && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, maskPos, opts.keepStatic && maskPos === 0)) {
-            for (let nPos = maskPos + 1, snPos = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, maskPos, false, maskPos !== 0); nPos <= snPos; nPos++) {
+          if (!skip && !_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.isMask.call(inputmask, maskPos, opts.keepStatic && maskPos === 0)) {
+            for (let nPos = maskPos + 1, snPos = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, maskPos, false, maskPos !== 0); nPos <= snPos; nPos++) {
               // if (!isMask(nPos, true)) {
               // 	continue;
               // }
@@ -3653,7 +3031,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           result = alternate.call(inputmask, true) || result;
         }
         // alternate by adding extra input in between
-        else if (opts.numericInput !== true && maskset.tests[maskPos] && maskset.tests[maskPos].length > 1 && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true) > maskPos) {
+        else if (opts.numericInput !== true && maskset.tests[maskPos] && maskset.tests[maskPos].length > 1 && _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, undefined, true) > maskPos) {
           // console.log("alternate 2");
           result = alternate.call(inputmask, true) || result;
         }
@@ -3665,7 +3043,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       };
     }
     if (typeof opts.postValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
+      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
       if (postResult !== undefined) {
         result = postResult === true ? result : postResult;
       }
@@ -3675,7 +3053,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     result.pos = maskPos;
   }
   if (result === false || validateOnly === true) {
-    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
+    _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true);
     // revert validation changes (copy: processCommandObject below may still mutate the live array)
     maskset.validPositions = positionsClone.slice();
   } else {
@@ -3684,9 +3062,9 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   let endResult = processCommandObject(result);
   // console.log("returned result " + JSON.stringify(endResult));
   if (inputmask.maxLength !== undefined) {
-    const buffer = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask);
+    const buffer = _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask);
     if (buffer.length > inputmask.maxLength && !fromIsValid) {
-      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
+      _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true);
       maskset.validPositions = positionsClone; // revert validation changes
       endResult = false;
     }
@@ -3699,7 +3077,7 @@ function positionCanMatchDefinition(pos, testDefinition, opts) {
   const inputmask = this,
     maskset = this.maskset;
   let valid = false;
-  const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, pos);
+  const tests = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTests.call(inputmask, pos);
   for (let tndx = 0; tndx < tests.length; tndx++) {
     if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] && (!opts.shiftPositions || !testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef || opts.regex && !tests[tndx].match.static && tests[tndx].match.fn.test(testDefinition.input, maskset, pos, false, opts))) {
       valid = true;
@@ -3717,44 +3095,6 @@ function positionCanMatchDefinition(pos, testDefinition, opts) {
   return valid;
 }
 
-// tobe put on prototype?
-function refreshFromBuffer(start, end, buffer) {
-  const inputmask = this,
-    maskset = this.maskset,
-    opts = this.opts,
-    $ = this.dependencyLib;
-  // checkVal.call(inputmask, el, false, true, isRTL ? buffer.reverse() : buffer);
-  let i, p;
-  const skipOptionalPartCharacter = opts.skipOptionalPartCharacter,
-    bffr = inputmask.isRTL ? buffer.slice().reverse() : buffer;
-  opts.skipOptionalPartCharacter = "";
-  if (start === true) {
-    _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
-    start = 0;
-    end = buffer.length;
-    p = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, {
-      begin: 0,
-      end: 0
-    }, false).begin;
-  } else {
-    for (i = start; i < end; i++) {
-      delete maskset.validPositions[i];
-    }
-    p = start;
-  }
-  const keypress = new $.Event("keypress");
-  for (i = start; i < end; i++) {
-    keypress.key = bffr[i].toString();
-    inputmask.ignorable = false; // make sure ignorable is ignored ;-)
-    const valResult = _keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .processKeypress */ .g.call(inputmask, keypress, true, false, false, p);
-    if (valResult !== false && valResult !== undefined) {
-      p = valResult.forwardPosition;
-    }
-  }
-  opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
-}
-
-// tobe put on prototype?
 // fill in best positions according the current input
 function trackbackPositions(originalPos, newPos, fillOnly) {
   const inputmask = this,
@@ -3769,16 +3109,16 @@ function trackbackPositions(originalPos, newPos, fillOnly) {
     }
   }
   for (let ps = originalPos; ps < newPos; ps++) {
-    if (maskset.validPositions[ps] === undefined && !_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, ps, false)) {
-      const vp = ps === 0 ? _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, ps) : maskset.validPositions[ps - 1];
+    if (maskset.validPositions[ps] === undefined && !_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.isMask.call(inputmask, ps, false)) {
+      const vp = ps === 0 ? _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, ps) : maskset.validPositions[ps - 1];
       if (vp) {
-        const tests = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTests */ .eQ.call(inputmask, ps).slice();
+        const tests = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTests.call(inputmask, ps).slice();
         if (tests[tests.length - 1].match.def === "") tests.pop();
-        let bestMatch = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .determineTestTemplate */ .WW.call(inputmask, ps, tests),
+        let bestMatch = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.determineTestTemplate.call(inputmask, ps, tests),
           np;
         if (bestMatch && (bestMatch.match.jit !== true || bestMatch.match.newBlockMarker === "master" && (np = maskset.validPositions[ps + 1]) && np.match.optionalQuantifier === true)) {
           bestMatch = $.extend({}, bestMatch, {
-            input: _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getPlaceholder */ .G_.call(inputmask, ps, bestMatch.match, true) || bestMatch.match.def
+            input: _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getPlaceholder.call(inputmask, ps, bestMatch.match, true) || bestMatch.match.def
           });
           bestMatch.generatedInput = true;
           revalidateMask.call(inputmask, ps, bestMatch, true);
@@ -3822,7 +3162,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
   if (fromIsValid === undefined && (begin !== end || opts.insertMode && maskset.validPositions[validatedPos] !== undefined || validTest === undefined || validTest.match.optionalQuantifier || validTest.match.optionality)) {
     // reposition & revalidate others
     const positionsClone = maskset.validPositions.slice(),
-      lvp = _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
+      lvp = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getLastValidPosition.call(inputmask, undefined, true);
     let i;
     maskset.p = begin; // needed for alternated position after overtype selection
 
@@ -3864,11 +3204,11 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
         begin,
         end
       }))) {
-        while (test = _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch), test.match.def !== "") {
+        while (test = _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, posMatch), test.match.def !== "") {
           // loop needed to match further positions
           if ((canMatch = positionCanMatchDefinition.call(inputmask, posMatch, t, opts)) !== false || t.match.def === "+") {
             // validated match //we still need some hackery for the + validator (numeric alias)
-            if (t.match.def === "+") _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask, true);
+            if (t.match.def === "+") _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask, true);
             const result = isValid.call(inputmask, posMatch, t.input, true,
             // t.match.def !== "+",
             true // t.match.def !== "+"
@@ -3883,12 +3223,12 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
             if (validTest === undefined && t.match.static && i === pos.begin) offset++;
             break;
           }
-          if (!valid && _positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), posMatch > maskset.maskLength) {
+          if (!valid && _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask), posMatch > maskset.maskLength) {
             break;
           }
           posMatch++;
         }
-        if (_validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, posMatch).match.def === "") {
+        if (_rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, posMatch).match.def === "") {
           valid = false;
         }
         // restore position
@@ -3898,935 +3238,1109 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
     }
     if (!valid) {
       maskset.validPositions = positionsClone;
-      _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
+      _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true);
       return false;
     }
-  } else if (validTest && _validation_tests__WEBPACK_IMPORTED_MODULE_4__/* .getTest */ .bm.call(inputmask, validatedPos).match.cd === validTest.match.cd) {
+  } else if (validTest && _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.getTest.call(inputmask, validatedPos).match.cd === validTest.match.cd) {
     maskset.validPositions[validatedPos] = $.extend(true, {}, validTest);
   }
-  _positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, true);
+  _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true);
   return offset;
 }
 
-/***/ },
+// tobe put on prototype?
+function refreshFromBuffer(start, end, buffer) {
+  const inputmask = this,
+    maskset = this.maskset,
+    opts = this.opts,
+    $ = this.dependencyLib;
+  // checkVal.call(inputmask, el, false, true, isRTL ? buffer.reverse() : buffer);
+  let i, p;
+  const skipOptionalPartCharacter = opts.skipOptionalPartCharacter,
+    bffr = inputmask.isRTL ? buffer.slice().reverse() : buffer;
+  opts.skipOptionalPartCharacter = "";
+  if (start === true) {
+    _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, false);
+    start = 0;
+    end = buffer.length;
+    p = _positioning__WEBPACK_IMPORTED_MODULE_2__.determineNewCaretPosition.call(inputmask, {
+      begin: 0,
+      end: 0
+    }, false).begin;
+  } else {
+    for (i = start; i < end; i++) {
+      delete maskset.validPositions[i];
+    }
+    p = start;
+  }
+  const keypress = new $.Event("keypress");
+  for (i = start; i < end; i++) {
+    keypress.key = bffr[i].toString();
+    inputmask.ignorable = false; // make sure ignorable is ignored ;-)
+    const valResult = processKeypress.call(inputmask, keypress, true, false, false, p);
+    if (valResult !== false && valResult !== undefined) {
+      p = valResult.forwardPosition;
+    }
+  }
+  opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
+}
 
-/***/ 123
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
+// core keystroke evaluation ~ shared by the DOM keypress handler, checkVal and
+// the headless session api. this = inputmask instance
+function processKeypress(e, checkval, writeOut, strict, ndx) {
+  const inputmask = this,
+    opts = inputmask.opts,
+    maskset = inputmask.maskset,
+    input = inputmask.el;
+  let c = e.key;
+  if (c && c.length === 1 && !e.ctrlKey && !e.metaKey) {
+    inputmask.ignorable = false;
+  }
+  if (checkval !== true && !(e.ctrlKey && e.altKey && !inputmask.ignorable) && (e.ctrlKey || e.metaKey || inputmask.ignorable)) {
+    return undefined;
+  }
+  if (!c) return undefined;
+
+  // special treat the decimal separator
+  // if ((k === 44 || k === 46) && e.location === 3 && opts.radixPoint !== "") k = opts.radixPoint.charCodeAt(0);
+  const pos = checkval ? {
+    begin: ndx,
+    end: ndx
+  } : _positioning__WEBPACK_IMPORTED_MODULE_2__.caret.call(inputmask, input);
+  let forwardPosition;
+
+  // allow for character substitution
+  if (!checkval) c = opts.substitutes[c] || c;
+  maskset.writeOutBuffer = true;
+  const valResult = isValid.call(inputmask, pos, c, strict, undefined, undefined, undefined, checkval);
+  if (valResult !== false) {
+    _positioning__WEBPACK_IMPORTED_MODULE_2__.resetMaskSet.call(inputmask, true);
+    forwardPosition = valResult.caret !== undefined ? valResult.caret : _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekNext.call(inputmask, valResult.pos.begin ? valResult.pos.begin : valResult.pos);
+    maskset.p = forwardPosition; // needed for checkval
+  }
+  forwardPosition = opts.numericInput && valResult.caret === undefined ? _rule_engine_js__WEBPACK_IMPORTED_MODULE_3__.seekPrevious.call(inputmask, forwardPosition) : forwardPosition;
+  if (writeOut !== false) {
+    if (input) {
+      setTimeout(function () {
+        opts.onKeyValidation.call(input, c, valResult);
+      }, 0);
+    } else if (typeof opts.onKeyValidation === "function") {
+      opts.onKeyValidation.call(inputmask, c, valResult);
+    }
+    if (maskset.writeOutBuffer && valResult !== false) {
+      const buffer = _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask);
+      writeBuffer.call(inputmask, input, buffer, forwardPosition, e, checkval !== true);
+    }
+  }
+  if (e && e.preventDefault) e.preventDefault();
+  if (checkval) {
+    if (valResult !== false) valResult.forwardPosition = forwardPosition;
+    return valResult;
+  }
+  return valResult !== false ? valResult : false;
+}
+
+// core backspace/delete handling ~ shared by the DOM keydown handler and the
+// headless session api. this = inputmask instance
+function handleRemoveKey(input, c, pos, e) {
+  const inputmask = this;
+  if (e && e.preventDefault) e.preventDefault(); // stop default action but allow propagation
+  handleRemove.call(inputmask, input, c, pos);
+  const currentVal = input && input.inputmask ? input.inputmask._valueGet() : inputmask._valueGet();
+  writeBuffer.call(inputmask, input, _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask, true), pos, e, currentVal !== _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask).join(""));
+}
+function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
+  let onBeforeWriteResult;
+  const inputmask = input && input.inputmask || (input && input.maskset ? input : this),
+    opts = inputmask.opts,
+    $ = inputmask.dependencyLib;
+  if (event && typeof opts.onBeforeWrite === "function") {
+    //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
+    onBeforeWriteResult = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
+    if (onBeforeWriteResult) {
+      if (onBeforeWriteResult.refreshFromBuffer) {
+        const refresh = onBeforeWriteResult.refreshFromBuffer;
+        refreshFromBuffer.call(inputmask, refresh === true ? refresh : refresh.start, refresh.end, onBeforeWriteResult.buffer || buffer);
+        buffer = _positioning__WEBPACK_IMPORTED_MODULE_2__.getBuffer.call(inputmask, true);
+      }
+      if (caretPos !== undefined) caretPos = onBeforeWriteResult.caret !== undefined ? onBeforeWriteResult.caret : caretPos;
+    }
+  }
+  inputmask._valueSet(buffer.join(""));
+  if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
+    // console.log(caretPos);
+    _positioning__WEBPACK_IMPORTED_MODULE_2__.caret.call(inputmask, input, caretPos, undefined, undefined, event !== undefined && event.type === "keydown" && (event.key === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Delete || event.key === _keycode_js__WEBPACK_IMPORTED_MODULE_1__.keys.Backspace));
+  }
+  if (input !== undefined && input.inputmask) {
+    input.inputmask.writeBufferHook === undefined || input.inputmask.writeBufferHook(caretPos);
+  } else if (inputmask.writeBufferHook) {
+    inputmask.writeBufferHook(caretPos);
+  }
+  if (triggerEvents === true && input !== undefined && input.nodeName) {
+    const $input = $(input),
+      nptVal = input.inputmask ? input.inputmask._valueGet() : inputmask._valueGet();
+    if (input.inputmask) input.inputmask.skipInputEvent = true;
+    $input.trigger("input");
+    if (inputmask.undoValue !== nptVal) {
+      inputmask.undoValue = nptVal;
+      $input.trigger("change");
+    }
+    setTimeout(function () {
+      // timeout needed for IE
+      if (nptVal === _positioning__WEBPACK_IMPORTED_MODULE_2__.getBufferTemplate.call(inputmask).join("")) {
+        $input.trigger("cleared");
+      } else if (isComplete.call(inputmask, buffer) === true) {
+        $input.trigger("complete");
+      }
+    }, 0);
+  }
+  const result = {
+    buffer,
+    caret: caretPos,
+    value: buffer.join(""),
+    onBeforeWrite: onBeforeWriteResult
+  };
+  return event && event.type === "_checkval" ? onBeforeWriteResult : result;
+}
+
+/***/ }),
+/* 11 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 
 // EXPORTS
-__inputmask_require.d(__webpack_exports__, {
-  A: () => (/* binding */ inputmask_dependencyLib)
+__webpack_require__.d(__webpack_exports__, {
+  generateMaskSet: () => (/* binding */ generateMaskSet)
 });
 
-// EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __inputmask_require(266);
-;// ./lib/dependencyLibs/data.js
-/* harmony default export */ function data(owner, key, value) {
-  if (value === undefined) {
-    return owner.__data ? owner.__data[key] : null;
-  } else {
-    owner.__data = owner.__data || {};
-    owner.__data[key] = value;
-  }
-}
-;// ./lib/dependencyLibs/extend.js
-function isWritable(target, name) {
-  let descriptor = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(target, name);
-  if (descriptor) {
-    if ("value" in descriptor) {
-      return descriptor.writable !== false;
-    }
-    // an accessor property is only writable when it carries a setter
-    return typeof descriptor.set === "function";
-  }
+// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
+var inputmask_dependencyLib = __webpack_require__(2);
+// EXTERNAL MODULE: ./lib/core/cache.js
+var cache = __webpack_require__(4);
+// EXTERNAL MODULE: ./lib/core/definitions.js
+var definitions = __webpack_require__(5);
+// EXTERNAL MODULE: ./lib/core/escapeRegex.js
+var escapeRegex = __webpack_require__(12);
+;// ./lib/core/masktoken.js
+/**
+ * A token of a parsed mask tree.
+ *
+ * @typedef {Object} MaskToken
+ * @property {Array<MaskToken | import("./mask-lexer").MaskTest>} matches
+ * @property {boolean} openGroup
+ * @property {boolean} alternatorGroup
+ * @property {boolean} isGroup
+ * @property {boolean} isOptional
+ * @property {boolean} isQuantifier
+ * @property {boolean} isAlternator
+ * @property {{ min: number | string; max: number | string; jit?: number | string }} quantifier
+ */
 
-  // no own property: an assignment only throws when a non-configurable accessor
-  // without a setter (or a non-writable data prop) blocks it on the prototype chain
-  let proto = Object.getPrototypeOf && Object.getPrototypeOf(target);
-  while (proto) {
-    descriptor = Object.getOwnPropertyDescriptor(proto, name);
-    if (descriptor) {
-      if ("value" in descriptor) {
-        return descriptor.writable !== false;
-      }
-      return typeof descriptor.set === "function" || descriptor.configurable;
-    }
-    proto = Object.getPrototypeOf(proto);
-  }
-  return true;
-}
-function extend() {
-  let options,
-    name,
-    src,
-    copy,
-    copyIsArray,
-    clone,
-    target = arguments[0] || {},
-    i = 1,
-    deep = false;
-  const length = arguments.length;
-
-  // Handle a deep copy situation
-  if (typeof target === "boolean") {
-    deep = target;
-
-    // Skip the boolean and the target
-    target = arguments[i] || {};
-    i++;
-  }
-
-  // Handle case when target is a string or something (possible in deep copy)
-  if (typeof target !== "object" && typeof target !== "function") {
-    target = {};
-  }
-  for (; i < length; i++) {
-    // Only deal with non-null/undefined values
-    if ((options = arguments[i]) != null) {
-      // Extend the base object
-      for (name in options) {
-        // "__proto__" would resolve through the prototype chain: src comes back
-        // as Object.prototype and the deep merge below writes into it. Inherited
-        // keys are not ours to copy either.
-        if (name === "__proto__" || !Object.prototype.hasOwnProperty.call(options, name)) {
-          continue;
-        }
-        src = target[name];
-        copy = options[name];
-
-        // Prevent never-ending loop
-        if (target === copy) {
-          continue;
-        }
-
-        // Never overwrite a non-writable target property (e.g. the read-only
-        // isTrusted accessor on DOM events): assigning to it would throw
-        if (!isWritable(target, name)) {
-          continue;
-        }
-
-        // Recurse if we're merging plain objects or arrays
-        if (deep && copy && (Object.prototype.toString.call(copy) === "[object Object]" || (copyIsArray = Array.isArray(copy)))) {
-          if (copyIsArray) {
-            copyIsArray = false;
-            clone = src && Array.isArray(src) ? src : [];
-          } else {
-            clone = src && Object.prototype.toString.call(src) === "[object Object]" ? src : {};
-          }
-
-          // Never move original objects, clone them
-          target[name] = extend(deep, clone, copy);
-
-          // Don't bring in undefined values
-        } else if (copy !== undefined) {
-          target[name] = copy;
-        }
-      }
-    }
-  }
-
-  // Return the modified object
-  return target;
-}
-;// ./lib/dependencyLibs/events.js
-
-
-
-
-
-const events_document = global_window/* default */.A.document;
-function isValidElement(elem) {
-  return elem instanceof Element && data(elem, "events");
-}
-let Evnt;
-if (typeof global_window/* default */.A.CustomEvent === "function") {
-  Evnt = global_window/* default */.A.CustomEvent;
-} else if (global_window/* default */.A.Event && events_document && events_document.createEvent) {
-  Evnt = function (event, params) {
-    params = params || {
-      bubbles: false,
-      cancelable: false,
-      composed: true,
-      detail: undefined
-    };
-    const evt = events_document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
+/* harmony default export */ function masktoken(isGroup, isOptional, isQuantifier, isAlternator) {
+  this.matches = [];
+  this.openGroup = isGroup || false;
+  this.alternatorGroup = false;
+  this.isGroup = isGroup || false;
+  this.isOptional = isOptional || false;
+  this.isQuantifier = isQuantifier || false;
+  this.isAlternator = isAlternator || false;
+  this.quantifier = {
+    min: 1,
+    max: 1
   };
-  Evnt.prototype = global_window/* default */.A.Event.prototype;
-} else if (typeof Event !== "undefined") {
-  // nodejs
-  Evnt = Event;
 }
-function on(events, handler) {
-  if (!this[0] || !isValidElement(this[0])) {
-    return this; // Early return if no valid element
+;// ./lib/core/mask-lexer.js
+
+
+
+
+
+
+const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g,
+  // Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
+  regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?(?:[:=!]|<[\w$][^>]*>|<[=!])?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
+
+/**
+ * A single test definition of the mask.
+ *
+ * @typedef {Object} MaskTest
+ * @property {RegExp | { test: (char: string) => boolean } | null} fn
+ * @property {boolean} static
+ * @property {boolean} optionality
+ * @property {boolean} [defOptionality] indicator for an optional from the definition
+ * @property {"master" | boolean} newBlockMarker
+ * @property {"upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string)} [casing]
+ * @property {string} def
+ * @property {string} [placeholder]
+ * @property {string} [displayChar]
+ * @property {string} nativeDef
+ * @property {boolean} [generated]
+ */
+
+/**
+ * The generated maskset for a mask.
+ *
+ * @typedef {Object} Maskset
+ * @property {string} mask
+ * @property {RegExp | null | undefined} [wholeRegex] compiled full-string regex for the regex mask
+ * @property {boolean} [positionIndependent] true when the mask is one definition with an unlimited quantifier, so every position shares the same test
+ * @property {import("./masktoken").MaskToken[]} maskToken
+ * @property {any[]} validPositions
+ * @property {string[] | undefined} _buffer
+ * @property {string[] | undefined} buffer
+ * @property {Record<number, any>} tests
+ * @property {Record<number, any[]>} excludes excluded alternations
+ * @property {any} metadata
+ * @property {number | undefined} maskLength
+ * @property {Record<number, number>} jitOffset
+ */
+
+/**
+ * Whether the placeholder option is a per-position placeholder map (supplied by
+ * an alias, see the datetime alias) rather than a plain string.
+ *
+ * A map is indexed per position, so it counts as "supplied" even when empty,
+ * and the generated testdefinitions differ.
+ *
+ * A null placeholder counts as "no map" ~ typeof null === "object" would
+ * otherwise classify it as a map and index into null.
+ *
+ * @param {import("./defaults").InputmaskOptions} opts
+ * @returns {boolean}
+ */
+function isPlaceholderMap(opts) {
+  return typeof opts.placeholder === "object" && opts.placeholder !== null;
+}
+
+/**
+ * Whether the parsed token tree contains an alternator (regex "|").
+ *
+ * Recurses through group and quantifier tokens; mask tests are leaves.
+ *
+ * @param {import("./masktoken").MaskToken | MaskTest} token
+ * @returns {boolean}
+ */
+function containsAlternator(token) {
+  if (token.isAlternator === true || token.alternatorGroup === true) {
+    return true;
   }
-  const elem = this[0],
-    eventRegistry = data(elem, "events"),
-    addEvent = (ev, namespace) => {
-      // register domevent
-      elem.addEventListener(ev, handler, false);
-      eventRegistry[ev] = eventRegistry[ev] || {};
-      eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
-      eventRegistry[ev][namespace].push(handler);
-    };
-  events.split(" ").forEach(event => {
-    const [ev, namespace = "global"] = event.split(".");
-    addEvent(ev, namespace);
-  });
-  return this;
+  if (Array.isArray(token.matches)) {
+    for (let i = 0; i < token.matches.length; i++) {
+      if (containsAlternator(token.matches[i])) return true;
+    }
+  }
+  return false;
 }
-function off(events, handler) {
-  let eventRegistry, elem;
-  function removeEvent(ev, namespace, handler) {
-    if (ev in eventRegistry === true) {
-      // unbind to dom events
-      elem.removeEventListener(ev, handler, false);
-      // when the namespace is not defined (global namespace), we need to clean up all events in all namespaces
-      if (namespace === "global") {
-        for (const nmsp in eventRegistry[ev]) {
-          eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1);
-        }
+
+/**
+ * @param {import("./defaults").InputmaskOptions} opts
+ * @param {boolean} nocache
+ * @returns {Maskset}
+ */
+function generateMaskSet(opts, nocache) {
+  let /** @type {Maskset} */ms;
+
+  /**
+   * @param {string} mask
+   * @param {{ repeat: number | string; groupmarker: string[] | [string, string]; quantifiermarker: string[] | [string, string]; keepStatic: boolean | null }} opts
+   * @returns {string}
+   */
+  function preProcessMask(mask, {
+    repeat,
+    groupmarker,
+    quantifiermarker,
+    keepStatic
+  }) {
+    if (repeat > 0 || repeat === "*" || repeat === "+") {
+      const repeatStart = repeat === "*" ? 0 : repeat === "+" ? 1 : repeat;
+      if (repeatStart !== repeat) {
+        mask = groupmarker[0] + mask + groupmarker[1] + quantifiermarker[0] + repeatStart + "," + repeat + quantifiermarker[1];
       } else {
-        eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
+        // repeat the mask n times
+        const msk = mask;
+        for (let i = 1; i < repeatStart; i++) {
+          mask += msk;
+        }
       }
     }
+    if (keepStatic === true) {
+      const optionalRegex = "(.)\\[([^\\]]*)\\]",
+        // "(?<p1>.)\\[(?<p2>[^\\]]*)\\]", remove named capture group @2428
+        maskMatches = mask.match(new RegExp(optionalRegex, "g"));
+      maskMatches && maskMatches.forEach((m, i) => {
+        let [p1, p2] = m.split("[");
+        p2 = p2.replace("]", "");
+        mask = mask.replace(new RegExp(`${(0,escapeRegex.escapeRegex)(p1)}\\[${(0,escapeRegex.escapeRegex)(p2)}\\]`), p1.charAt(0) === p2.charAt(0) ? `(${p1}|${p1}${p2})` : `${p1}[${p2}]`);
+        // console.log(mask);
+      });
+    }
+    return mask;
   }
-  function resolveNamespace(ev, namespace) {
-    const evts = [];
-    let hndx, hndL;
-    if (ev.length > 0) {
-      const namespaces = namespace ? [namespace] : Object.keys(eventRegistry[ev]);
-      for (let nsi = 0; nsi < namespaces.length; nsi++) {
-        namespace = namespaces[nsi];
-        if (handler === undefined) {
-          for (hndx = 0, hndL = eventRegistry[ev][namespace]?.length || 0; hndx < hndL; hndx++) {
-            evts.push({
-              ev,
-              namespace,
-              handler: eventRegistry[ev][namespace][hndx]
-            });
+
+  /**
+   * @param {string} mask
+   * @param {any} metadata
+   * @param {import("./defaults").InputmaskOptions} opts
+   * @returns {Maskset}
+   */
+  function generateMask(mask, metadata, opts) {
+    let regexMask = false;
+    if (mask === null || mask === "") {
+      regexMask = opts.regex !== null;
+      if (regexMask) {
+        opts.regex = opts.regex.replace(/^(\^)(.*)(\$)$/, "$2");
+        mask = opts.regex;
+      } else {
+        regexMask = true;
+        mask = ".*";
+      }
+    }
+    if (mask.length === 1 && opts.greedy === false && opts.repeat !== 0) {
+      opts.placeholder = "";
+    } // hide placeholder with single non-greedy mask
+    mask = preProcessMask(mask, opts);
+
+    // console.log(mask);
+    let masksetDefinition, maskdefKey;
+    maskdefKey = regexMask ? "regex_" + opts.regex : opts.numericInput ? mask.split("").reverse().join("") : mask;
+    if (opts.keepStatic !== null) {
+      // keepstatic modifies the output from the testdefinitions ~ so differentiate in the maskcache
+      maskdefKey = "ks_" + opts.keepStatic + maskdefKey;
+    }
+    if (opts.placeholder !== undefined) {
+      // the placeholder is baked into the testdefinitions (see
+      // resolvePlaceholder) ~ so differentiate in the maskcache
+      maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
+    }
+    if (cache.masksCache[maskdefKey] === undefined || nocache === true) {
+      const maskToken = analyseMask(mask, regexMask, opts);
+      /** @type {Maskset} */
+      masksetDefinition = {
+        mask,
+        maskToken,
+        validPositions: [],
+        _buffer: undefined,
+        buffer: undefined,
+        tests: {},
+        excludes: {},
+        // excluded alternations
+        metadata,
+        maskLength: undefined,
+        jitOffset: {},
+        wholeRegex: undefined,
+        positionIndependent: undefined
+      };
+
+      // one definition carrying an unlimited quantifier (e.g. "[^<|>]*"): the
+      // same test applies at every position, so resolving it once is enough.
+      // A "+" quantifier is excluded: position 0 requires a character while
+      // later positions do not, so the tests are not position-independent.
+      // Alternation (e.g. "(a|b)*") is excluded: its branch tests differ per
+      // position and must be built by the standard walk.
+      masksetDefinition.positionIndependent = maskToken.length === 1 && maskToken[0].matches.length === 2 && maskToken[0].matches[1].isQuantifier === true && maskToken[0].matches[1].quantifier.max === "*" && !containsAlternator(maskToken[0]);
+      if (regexMask) {
+        // compile the full-string regex once
+        try {
+          masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$", "u");
+        } catch (e) {
+          try {
+            masksetDefinition.wholeRegex = new RegExp("^(?:" + opts.regex + ")$");
+          } catch (e2) {
+            // broken regex => don't gate completeness
+            masksetDefinition.wholeRegex = null;
           }
+        }
+      }
+      if (opts.validateOnly === true && (!masksetDefinition.wholeRegex || masksetDefinition.positionIndependent !== true)) {
+        console.warn("Inputmask: validateOnly is ignored for this mask - it needs a regex mask of one character class with an unlimited quantifier, such as opts.regex = " + '"[^<|>]*". Standard validation is used instead.');
+      }
+      if (nocache !== true) {
+        cache.masksCache[maskdefKey] = masksetDefinition;
+        masksetDefinition = inputmask_dependencyLib["default"].extend(true, {}, cache.masksCache[maskdefKey]);
+      }
+    } else {
+      masksetDefinition = inputmask_dependencyLib["default"].extend(true, {}, cache.masksCache[maskdefKey]);
+    }
+    return masksetDefinition;
+  }
+  if (typeof opts.mask === "function") {
+    // allow mask to be a preprocessing fn - should return a valid mask
+    opts.mask = opts.mask(opts);
+  }
+  if (Array.isArray(opts.mask)) {
+    if (opts.mask.length > 1) {
+      if (opts.keepStatic === null) {
+        // enable by default when passing multiple masks when the option is not explicitly specified
+        opts.keepStatic = true;
+      }
+      let altMask = opts.groupmarker[0];
+      (opts.isRTL ? opts.mask.reverse() : opts.mask).forEach(function (msk) {
+        if (altMask.length > 1) {
+          altMask += opts.alternatormarker;
+        }
+        if (msk.mask !== undefined && typeof msk.mask !== "function") {
+          altMask += msk.mask;
         } else {
-          evts.push({
-            ev,
-            namespace,
-            handler
-          });
+          altMask += msk;
         }
+      });
+      altMask += opts.groupmarker[1];
+      // console.log(altMask);
+      return generateMask(altMask, opts.mask, opts);
+    } else {
+      opts.mask = opts.mask.pop();
+    }
+  }
+  if (opts.mask && opts.mask.mask !== undefined && typeof opts.mask.mask !== "function") {
+    ms = generateMask(opts.mask.mask, opts.mask, opts);
+  } else {
+    ms = generateMask(opts.mask, opts.mask, opts);
+  }
+  if (opts.keepStatic === null) {
+    opts.keepStatic = false;
+  }
+  return ms;
+}
+
+/**
+ * @param {string} mask
+ * @param {boolean} regexMask
+ * @param {import("./defaults").InputmaskOptions} opts
+ * @returns {import("./masktoken").MaskToken[]}
+ */
+function analyseMask(mask, regexMask, opts) {
+  const currentToken = new masktoken(),
+    /** @type {import("./masktoken").MaskToken[]} */openenings = [],
+    /** @type {import("./masktoken").MaskToken[]} */maskTokens = [];
+  let escaped = false,
+    /** @type {RegExpExecArray} */match,
+    /** @type {string} */m,
+    /** @type {import("./masktoken").MaskToken} */openingToken,
+    /** @type {import("./masktoken").MaskToken} */currentOpeningToken,
+    /** @type {import("./masktoken").MaskToken} */alternator,
+    /** @type {import("./masktoken").MaskToken | MaskTest} */lastMatch,
+    closeRegexGroup = false;
+
+  // test definition => {fn: RegExp/function, static: true/false optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
+
+  /**
+   * Resolve the placeholder of a test at the current top-level token index.
+   *
+   * Precedence is a placeholder map first, then a placeholder that a registered
+   * definition asked for, then a string placeholder, then the prototype
+   * placeholder of the definition.
+   *
+   * Only a registered definition (opts.definitions) outranks the global string.
+   * An alias registers a placeholder per definition on purpose ~ numeric puts
+   * the radixPoint and the groupSeparator on their own definitions, and letting
+   * the global placeholder win would render a numeric mask as a row of digits. A
+   * prototype definition is only the last resort, so that {mask: "999",
+   * placeholder: "0"} still renders zeroes rather than underscores.
+   *
+   * A map is indexed per position, so a missing entry falls through. A string is
+   * cycled over the token index ~ for a mask without groups or quantifiers the
+   * token index is the buffer position, so a format-shaped placeholder lines up
+   * ("99/99/9999" <- "dd/MM/yyyy"); for grouped masks every token inside a group
+   * shares the group index, which is why multi-char strings are discouraged in
+   * favour of a map.
+   *
+   * Always returns a string. That is what lets getPlaceholder read the
+   * placeholder off the test instead of re-deriving it, and it is why a
+   * definition without one of its own ends up on the prototype placeholder ~ an
+   * empty position still has to render something.
+   *
+   * @param {string | undefined} [definitionPlaceholder] placeholder of the definition the test is built from
+   * @param {boolean} [registered] the definition came from opts.definitions rather than the prototypes
+   * @returns {string}
+   */
+  function resolvePlaceholder(definitionPlaceholder, registered) {
+    if (isPlaceholderMap(opts)) {
+      return opts.placeholder[currentToken.matches.length] ?? definitionPlaceholder ?? definitions.DEFAULT_PLACEHOLDER;
+    } else if (registered && definitionPlaceholder !== undefined) {
+      return definitionPlaceholder;
+    } else if (typeof opts.placeholder === "string") {
+      return opts.placeholder.length > 1 ? opts.placeholder.charAt(currentToken.matches.length % opts.placeholder.length) : opts.placeholder;
+    }
+    return definitionPlaceholder ?? definitions.DEFAULT_PLACEHOLDER;
+  }
+
+  /**
+   * @param {import("./masktoken").MaskToken} mtoken
+   * @param {string} element
+   * @param {number} [position]
+   */
+  function insertTestDefinition(mtoken, element, position) {
+    position = position !== undefined ? position : mtoken.matches.length;
+    let prevMatch = mtoken.matches[position - 1],
+      flag = opts.casing ? "i" : "";
+    if (regexMask) {
+      if (element.indexOf("[") === 0 || escaped && /\\(?:[dDsSwWpPnrtfv]|0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z])/.test(element) || element === ".") {
+        if (/\\p\{.*}/i.test(element)) flag += "u";
+        mtoken.matches.splice(position++, 0, {
+          fn: new RegExp(element, flag),
+          static: false,
+          optionality: false,
+          newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element,
+          casing: null,
+          def: element,
+          // a regex mask has no definition to inherit a placeholder from, so it
+          // gets the prototype one baked in
+          placeholder: resolvePlaceholder(definitions.DEFAULT_PLACEHOLDER),
+          nativeDef: element
+        });
+      } else {
+        if (escaped) element = element[element.length - 1];
+        element.split("").forEach(function (lmnt) {
+          prevMatch = mtoken.matches[position - 1];
+          mtoken.matches.splice(position++, 0, createStaticTest(lmnt, prevMatch, flag,
+          // a static displays its own character, so it outranks a string
+          // placeholder ~ a map still wins over it
+          resolvePlaceholder(lmnt, true)));
+        });
       }
-    } else if (namespace.length > 0) {
-      for (const evNdx in eventRegistry) {
-        if (eventRegistry[evNdx][namespace]) {
-          if (handler === undefined) {
-            for (hndx = 0, hndL = eventRegistry[evNdx][namespace].length; hndx < hndL; hndx++) {
-              evts.push({
-                ev: evNdx,
-                namespace,
-                handler: eventRegistry[evNdx][namespace][hndx]
-              });
-            }
-          } else {
-            evts.push({
-              ev: evNdx,
-              namespace,
-              handler
-            });
-          }
-        }
+      escaped = false;
+    } else {
+      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && definitions["default"][element];
+      if (maskdef && !escaped) {
+        if (typeof maskdef.validator === "string" && /\\p\{.*}/i.test(maskdef.validator)) flag += "u";
+        mtoken.matches.splice(position++, 0, {
+          fn: maskdef.validator ? typeof maskdef.validator === "string" ? new RegExp(maskdef.validator, flag) : new function () {
+            this.test = maskdef.validator;
+          }() : /./,
+          static: maskdef.static || false,
+          optionality: maskdef.optional || false,
+          defOptionality: maskdef.optional || false,
+          // indicator for an optional from the definition
+          newBlockMarker: prevMatch === undefined || maskdef.optional ? "master" : prevMatch.def !== (maskdef.definitionSymbol || element),
+          casing: maskdef.casing,
+          def: maskdef.definitionSymbol || element,
+          placeholder: resolvePlaceholder(maskdef.placeholder, !!(opts.definitions && opts.definitions[element])),
+          displayChar: maskdef.displayChar,
+          nativeDef: element,
+          generated: maskdef.generated
+        });
+      } else {
+        mtoken.matches.splice(position++, 0, createStaticTest(element, prevMatch, flag,
+        // a static displays its own character, so it outranks a string
+        // placeholder ~ a map still wins over it
+        resolvePlaceholder(element, true)));
+        escaped = false;
       }
     }
-    return evts;
   }
-  if (isValidElement(this[0])) {
-    eventRegistry = data(this[0], "events");
-    elem = this[0];
-    // if no events defined, remove all events
-    events = events || Object.keys(eventRegistry).join(" ");
-    if (events !== "") {
-      events.split(" ").forEach(event => {
-        const [ev, namespace] = event.split(".");
-        resolveNamespace(ev, namespace).forEach(({
-          ev: ev1,
-          handler: handler1,
-          namespace: namespace1
-        }) => {
-          removeEvent(ev1, namespace1, handler1);
-        });
+
+  /**
+   * @param {string} element
+   * @param {MaskTest | import("./masktoken").MaskToken | undefined} prevMatch
+   * @param {string} flag
+   * @param {string} placeholder always defined, resolvePlaceholder fills the gap
+   * @returns {MaskTest}
+   */
+  function createStaticTest(element, prevMatch, flag, placeholder) {
+    return {
+      fn: /[a-z]/i.test(opts.staticDefinitionSymbol || element) ? new RegExp("[" + (opts.staticDefinitionSymbol || element) + "]", flag) : null,
+      static: true,
+      optionality: false,
+      newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element && prevMatch.static !== true,
+      casing: null,
+      def: opts.staticDefinitionSymbol || element,
+      placeholder,
+      nativeDef: (escaped ? "'" : "") + element
+    };
+  }
+
+  /**
+   * @param {import("./masktoken").MaskToken} maskToken
+   */
+  function verifyGroupMarker(maskToken) {
+    if (maskToken && maskToken.matches) {
+      maskToken.matches.forEach(function (token, ndx) {
+        const nextToken = maskToken.matches[ndx + 1];
+        if ((nextToken === undefined || nextToken.matches === undefined || nextToken.isQuantifier === false) && token && token.isGroup) {
+          // this is not a group but a normal mask => convert
+          token.isGroup = false;
+          if (!regexMask) {
+            insertTestDefinition(token, opts.groupmarker[0], 0);
+            if (token.openGroup !== true) {
+              insertTestDefinition(token, opts.groupmarker[1]);
+            }
+          }
+        }
+        verifyGroupMarker(token);
       });
     }
   }
-  return this;
-}
-function trigger(events /* , args... */) {
-  if (isValidElement(this[0])) {
-    const eventRegistry = data(this[0], "events"),
-      elem = this[0],
-      _events = typeof events === "string" ? events.split(" ") : [events.type];
-    for (let endx = 0; endx < _events.length; endx++) {
-      const nsEvent = _events[endx].split("."),
-        ev = nsEvent[0],
-        namespace = nsEvent[1] || "global";
-      if (events_document !== undefined) {
-        // trigger domevent
-        let evnt;
-        const params = {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          detail: arguments[1]
-        };
-        // The custom event that will be created
-        try {
-          switch (ev) {
-            case "input":
-              params.inputType = "insertText";
-              evnt = new InputEvent(ev, params);
-              break;
-            default:
-              evnt = new CustomEvent(ev, params);
+
+  /**
+   * @param {import("./masktoken").MaskToken} alternator
+   * @param {boolean} unsetAlternatorGroup
+   */
+  function pushAlternator(alternator, unsetAlternatorGroup) {
+    alternator.matches.forEach(function (token) {
+      token.isGroup = false;
+      if (unsetAlternatorGroup) token.alternatorGroup = false;
+    });
+    if (openenings.length > 0) {
+      currentOpeningToken = openenings[openenings.length - 1];
+      currentOpeningToken.matches.push(alternator);
+    } else {
+      currentToken.matches.push(alternator);
+    }
+  }
+  function defaultCase() {
+    if (openenings.length > 0) {
+      currentOpeningToken = openenings[openenings.length - 1];
+      insertTestDefinition(currentOpeningToken, m);
+      if (currentOpeningToken.isAlternator) {
+        // handle alternator a | b case
+        pushAlternator(openenings.pop(), false);
+      }
+    } else {
+      insertTestDefinition(currentToken, m);
+    }
+  }
+
+  /**
+   * @param {import("./masktoken").MaskToken} maskToken
+   * @returns {import("./masktoken").MaskToken}
+   */
+  function reverseTokens(maskToken) {
+    function reverseStatic(st) {
+      if (st === opts.optionalmarker[0]) {
+        st = opts.optionalmarker[1];
+      } else if (st === opts.optionalmarker[1]) {
+        st = opts.optionalmarker[0];
+      } else if (st === opts.groupmarker[0]) {
+        st = opts.groupmarker[1];
+      } else if (st === opts.groupmarker[1]) st = opts.groupmarker[0];
+      return st;
+    }
+    maskToken.matches = maskToken.matches.reverse();
+    for (const match in maskToken.matches) {
+      if (Object.prototype.hasOwnProperty.call(maskToken.matches, match)) {
+        const intMatch = parseInt(match);
+        if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) {
+          // reposition quantifier
+          const qt = maskToken.matches[match];
+          maskToken.matches.splice(match, 1);
+          maskToken.matches.splice(intMatch + 1, 0, qt);
+        }
+        if (maskToken.matches[match].matches !== undefined) {
+          maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
+        } else {
+          maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
+        }
+      }
+    }
+    return maskToken;
+  }
+
+  /**
+   * @param {Array<import("./masktoken").MaskToken | MaskTest>} matches
+   * @returns {import("./masktoken").MaskToken}
+   */
+  function groupify(matches) {
+    const groupToken = new masktoken(true);
+    groupToken.openGroup = false;
+    groupToken.matches = matches;
+    return groupToken;
+  }
+
+  /**
+   * @param {string} m
+   * @returns {{ min: number | string; max: number | string; jit: number | string }}
+   */
+  function parseQuantifier(m) {
+    m = m.replace(/[{}?]/g, ""); // ? matches lazy quantifiers
+    const mqj = m.split("|"),
+      mq = mqj[0].split(",");
+    let min = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]);
+    const max = mq.length === 1 ? min : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]),
+      jit = isNaN(mqj[1]) ? mqj[1] : parseInt(mqj[1]);
+    if (min === "*" || min === "+") {
+      min = max === "*" ? 0 : 1;
+    }
+    return {
+      min,
+      max,
+      jit
+    };
+  }
+  function closeGroup() {
+    // Group closing
+    openingToken = openenings.pop();
+    openingToken.openGroup = false; // mark group as complete
+    if (openingToken !== undefined) {
+      if (openenings.length > 0) {
+        currentOpeningToken = openenings[openenings.length - 1];
+        currentOpeningToken.matches.push(openingToken);
+        if (currentOpeningToken.isAlternator) {
+          // handle alternator (a) | (b) case
+          pushAlternator(openenings.pop(), true);
+        }
+      } else {
+        currentToken.matches.push(openingToken);
+      }
+    } else {
+      defaultCase();
+    }
+  }
+
+  /**
+   * @param {Array<import("./masktoken").MaskToken | MaskTest>} matches
+   * @returns {import("./masktoken").MaskToken | MaskTest}
+   */
+  function groupQuantifier(matches) {
+    let lastMatch = matches.pop();
+    if (lastMatch.isQuantifier) {
+      lastMatch = groupify([matches.pop(), lastMatch]);
+    }
+    return lastMatch;
+  }
+  function skipAssertion() {
+    // consume the balanced content of an inline regex assertion
+    // (?= (?! (?<= (?<! so it leaks no characters into the mask template
+    let depth = 1;
+    do {
+      const assertionToken = regexTokenizer.exec(mask);
+      if (assertionToken === null) break;
+      if (assertionToken[0].charAt(0) === "(") depth++;else if (assertionToken[0] === ")") depth--;
+    } while (depth > 0);
+    if (depth === 0) {
+      // drop a quantifier that would otherwise attach to the token before the assertion
+      const quantToken = regexTokenizer.exec(mask);
+      if (quantToken && !/^[?*+]|\{[0-9]+(?:,[0-9]*)?\}/.test(quantToken[0])) {
+        regexTokenizer.lastIndex = quantToken.index;
+      }
+    }
+  }
+  if (regexMask) {
+    opts.optionalmarker[0] = undefined;
+    opts.optionalmarker[1] = undefined;
+  }
+  tokenizer.lastIndex = 0;
+  regexTokenizer.lastIndex = 0;
+  // console.log(mask);
+  while (match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask)) {
+    // console.log(match);
+    m = match[0];
+    if (regexMask) {
+      switch (m.charAt(0)) {
+        // Quantifier
+        case "?":
+          m = "{0,1}";
+          break;
+        case "+":
+        case "*":
+          m = "{" + m + "}";
+          break;
+        case "|":
+          // regex mask alternator  ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
+          if (openenings.length === 0) {
+            // wrap the mask in a group to form a regex alternator  ([01][0-9]|2[0-3])
+            const altRegexGroup = groupify(currentToken.matches);
+            altRegexGroup.openGroup = true;
+            openenings.push(altRegexGroup);
+            currentToken.matches = [];
+            closeRegexGroup = true;
           }
-        } catch (e) {
-          evnt = events_document.createEvent("CustomEvent");
-          evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
-        }
-        if (events.type) extend(evnt, events);
-        elem.dispatchEvent(evnt);
-      } else if (eventRegistry[ev] !== undefined) {
-        arguments[0] = arguments[0].type ? arguments[0] : inputmask_dependencyLib.Event(arguments[0]);
-        arguments[0].detail = arguments.slice(1);
-        const registry = eventRegistry[ev],
-          handlers = namespace === "global" ? Object.values(registry).flat() : registry[namespace];
-        handlers.forEach(handler => handler.apply(elem, arguments));
+          break;
       }
-    }
-  }
-  return this;
-}
-;// ./lib/dependencyLibs/inputmask.dependencyLib.js
-/*
- Input Mask plugin dependencyLib
- http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) Robin Herbots
- Licensed under the MIT license
- */
-
-
-
-
-
-const inputmask_dependencyLib_document = global_window/* default */.A.document;
-function DependencyLib(elem) {
-  if (elem instanceof DependencyLib) {
-    return elem;
-  }
-  if (!(this instanceof DependencyLib)) {
-    return new DependencyLib(elem);
-  }
-  if (elem !== undefined && elem !== null && elem !== global_window/* default */.A) {
-    this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : inputmask_dependencyLib_document.querySelector(elem);
-    if (this[0] !== undefined && this[0] !== null) {
-      data(this[0], "events", data(this[0], "events") || {});
-    }
-  }
-}
-DependencyLib.prototype = {
-  on: on,
-  off: off,
-  trigger: trigger
-};
-
-// static
-DependencyLib.extend = extend;
-DependencyLib.data = data;
-DependencyLib.Event = Evnt;
-/* harmony default export */ const inputmask_dependencyLib = (DependencyLib);
-
-/***/ },
-
-/***/ 752
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(266);
-
-const nav = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navigator || {},
-  ua = nav.userAgent || "",
-  mobile = (() => {
-    try {
-      const coarsePointer = typeof _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.matchMedia === "function" ? _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.matchMedia("(pointer:coarse)").matches : false;
-      return !!(nav.userAgentData?.mobile ?? ((coarsePointer || nav.maxTouchPoints) && (_global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.innerWidth || 0) <= 1024 || /Mobi|Android|iPhone/i.test(ua)));
-    } catch (e) {
-      return /Mobi|Android|iPhone/i.test(ua);
-    }
-  })(),
-  iphone = /iphone/i.test(ua);
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, [
-/* harmony export */   "H", 0, /* binding */ mobile,
-/* harmony export */   "Q", 0, /* binding */ iphone
-/* harmony export */ ]);
-
-
-/***/ },
-
-/***/ 800
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
-/* harmony export */ __inputmask_require.d(__webpack_exports__, {
-/* harmony export */   C: () => (/* binding */ EventHandlers)
-/* harmony export */ });
-/* harmony import */ var _core_inputHandling__WEBPACK_IMPORTED_MODULE_0__ = __inputmask_require(749);
-/* harmony import */ var _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__ = __inputmask_require(462);
-/* harmony import */ var _core_keyProcessing__WEBPACK_IMPORTED_MODULE_2__ = __inputmask_require(648);
-/* harmony import */ var _core_positioning__WEBPACK_IMPORTED_MODULE_3__ = __inputmask_require(173);
-/* harmony import */ var _core_validation__WEBPACK_IMPORTED_MODULE_4__ = __inputmask_require(841);
-/* harmony import */ var _core_validation_tests__WEBPACK_IMPORTED_MODULE_5__ = __inputmask_require(217);
-/* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_6__ = __inputmask_require(266);
-/* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_7__ = __inputmask_require(752);
-
-
-
-
-
-
-
-
-
-const EventHandlers = {
-  keyEvent: function (e, checkval, writeOut, strict, ndx) {
-    const inputmask = this.inputmask || this,
-      opts = inputmask.opts,
-      $ = inputmask.dependencyLib,
-      maskset = inputmask.maskset,
-      input = this.nodeName ? this : inputmask.el,
-      $input = input ? $(input) : undefined,
-      c = e.key;
-
-    // Browsers and password managers can fill in a field in a way that fires
-    // a keydown event without any real key attached to it (it isn't an
-    // actual keystroke). If we don't stop here, the code below assumes a
-    // real key was pressed and crashes the page.
-    if (!c) return;
-    const pos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input),
-      kdResult = opts.onKeyDown.call(this, e, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), pos, opts);
-    if (kdResult !== undefined) return kdResult;
-
-    // backspace, delete, and escape get special treatment
-    if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace || c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete || _environment__WEBPACK_IMPORTED_MODULE_7__/* .iphone */ .Q && c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.BACKSPACE_SAFARI || e.ctrlKey && c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.x && (!input || !("oncut" in input))) {
-      // backspace/delete
-      _core_keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .handleRemoveKey */ .G.call(inputmask, input, c, pos, e);
-    } else if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.End || c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.PageDown) {
-      // when END or PAGE_DOWN pressed set position at lastmatch
-      e.preventDefault();
-      const caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask));
-      _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, e.shiftKey ? pos.begin : caretPos, caretPos, true);
-    } else if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Home && !e.shiftKey || c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.PageUp) {
-      // Home or page_up
-      e.preventDefault();
-      _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, 0, e.shiftKey ? pos.begin : 0, true);
-    } else if ((opts.undoOnEscape && c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Escape ||
-    // eslint-disable-next-line no-constant-binary-expression -- TODO: revisit, ctrl+z undo branch is disabled via `false &&`, see #762
-     false && 0) && e.altKey !== true) {
-      // escape && undo && #762
-      (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .checkVal */ .eP)(input, true, false, inputmask.undoValue.split(""));
-      $input.trigger("click");
-    } else if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Insert && !(e.shiftKey || e.ctrlKey) && opts.insertModeToggle === true &&
-    // an explicitly given insertMode wins over the INSERT key toggle
-    inputmask.userOptions.insertMode === undefined) {
-      // insert
-      if (!_core_validation__WEBPACK_IMPORTED_MODULE_4__/* .isSelection */ .X9.call(inputmask, pos)) {
-        opts.insertMode = !opts.insertMode;
-        _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, pos.begin, pos.begin);
-      } else opts.insertMode = !opts.insertMode;
-    } else if (opts.tabThrough === true && c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Tab) {
-      if (e.shiftKey === true) {
-        pos.end = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, pos.end, true);
-        if (_core_validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getTest */ .bm.call(inputmask, pos.end - 1).match.static === true) {
-          pos.end--;
-        }
-        pos.begin = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekPrevious */ .Ef.call(inputmask, pos.end, true);
-        if (pos.begin >= 0 && pos.end > 0) {
-          e.preventDefault();
-          _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, pos.begin, pos.end);
-        }
-      } else {
-        pos.begin = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, pos.begin, true);
-        pos.end = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, pos.begin, true);
-        if (pos.end < maskset.maskLength) pos.end--;
-        if (pos.begin <= maskset.maskLength) {
-          e.preventDefault();
-          _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, pos.begin, pos.end);
-        }
-      }
-    } else if (!e.shiftKey) {
-      if (opts.insertModeVisual && opts.insertMode === false) {
-        if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.ArrowRight) {
-          setTimeout(function () {
-            const caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input);
-            _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos.begin);
-          }, 0);
-        } else if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.ArrowLeft) {
-          setTimeout(function () {
-            const caretPos = {
-              begin: _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, input.inputmask.caretPos.begin),
-              end: _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, input.inputmask.caretPos.end)
-            };
-            if (inputmask.isRTL) {
-              _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos.begin + (caretPos.begin === maskset.maskLength ? 0 : 1));
-            } else {
-              _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos.begin - (caretPos.begin === 0 ? 0 : 1));
-            }
-          }, 0);
-        }
-      } else {
-        inputmask.keyEventHook === undefined || inputmask.keyEventHook(e);
-      }
-    }
-    inputmask.isComposing = c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Process || c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Unidentified;
-    inputmask.ignorable = c === undefined || c.length > 1;
-    return EventHandlers.keypressEvent.call(inputmask, e, checkval, writeOut, strict, ndx);
-  },
-  keypressEvent: function (e, checkval, writeOut, strict, ndx) {
-    const inputmask = this.inputmask || this,
-      $ = inputmask.dependencyLib,
-      input = this.nodeName ? this : inputmask.el,
-      $input = input ? $(input) : undefined,
-      c = e.key;
-    if (c && c.length === 1 && !e.ctrlKey && !e.metaKey) {
-      inputmask.ignorable = false;
-    }
-    if (checkval !== true && !(e.ctrlKey && e.altKey && !inputmask.ignorable) && (e.ctrlKey || e.metaKey || inputmask.ignorable)) {
-      if (c === _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Enter) {
-        if (inputmask.undoValue !== inputmask._valueGet(true)) {
-          inputmask.undoValue = inputmask._valueGet(true);
-          if ($input) {
-            setTimeout(function () {
-              $input.trigger("change");
-            }, 0);
-          }
-        }
-      }
-      return undefined;
-    }
-    return _core_keyProcessing__WEBPACK_IMPORTED_MODULE_2__/* .processKeypress */ .g.call(inputmask, e, checkval, writeOut, strict, ndx);
-  },
-  pasteEvent: function (e) {
-    const input = this,
-      inputmask = this.inputmask,
-      opts = inputmask.opts,
-      inputValue = inputmask._valueGet(true);
-    let pastedValue;
-    if (e.clipboardData && e.clipboardData.getData) {
-      pastedValue = e.clipboardData.getData("text/plain");
-    }
-    if (pastedValue === undefined || pastedValue === "") {
-      // nothing to interpolate, let the browser handle the paste
-      inputmask.pasteValue = undefined;
-      return;
-    }
-
-    // Compute the value the paste should produce, but do not preventDefault the
-    // paste event.  Letting the native paste land and normalizing on the
-    // follow-up input event keeps masked inputs from tripping the Lighthouse /
-    // PageSpeed "preventing users from pasting into input fields" audit (#2823)
-    // and keeps password-manager fills working.  The browser fires an input
-    // event with inputType "insertFromPaste" right after a non-prevented paste.
-    const caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true);
-    let valueBeforeCaret = inputValue.substr(0, caretPos.begin),
-      valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
-    if (valueBeforeCaret === (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-    if (valueAfterCaret === (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
-    let pasteValue = valueBeforeCaret + pastedValue + valueAfterCaret;
-    if (inputmask.isRTL && opts.numericInput !== true) {
-      pasteValue = pasteValue.split("");
-      for (const c of _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)) {
-        if (pasteValue[0] === c) pasteValue.shift();
-      }
-      pasteValue = pasteValue.reverse().join("");
-    }
-    if (typeof opts.onBeforePaste === "function") {
-      pasteValue = opts.onBeforePaste.call(inputmask, pasteValue, opts);
-      if (pasteValue === false) {
-        inputmask.pasteValue = false;
-        inputmask.pasteInputValue = inputValue;
-        return;
-      }
-      if (!pasteValue) {
-        pasteValue = inputValue;
-      }
-    }
-    inputmask.pasteValue = pasteValue;
-  },
-  inputFallBackEvent: function (e) {
-    // fallback when keypress is not triggered
-    const inputmask = this.inputmask,
-      opts = inputmask.opts,
-      $ = inputmask.dependencyLib,
-      charPlaceholder = "\x1F";
-    if (e.inputType === "insertFromPaste" && inputmask.pasteValue !== undefined) {
-      // apply the paste computed in pasteEvent, the native (unprevented) paste
-      // already landed and this normalizes it to the mask
-      const pasteValue = inputmask.pasteValue,
-        pasteInputValue = inputmask.pasteInputValue;
-      inputmask.pasteValue = undefined;
-      inputmask.pasteInputValue = undefined;
-      if (pasteValue === false) {
-        // onBeforePaste rejected the paste -> restore the previous value
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .applyInputValue */ .gc)(this, pasteInputValue);
-      } else {
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .checkVal */ .eP)(this, true, false, pasteValue.toString().split(""), e);
-      }
-      return false;
-    }
-
-    // console.log(e.inputType);
-
-    function analyseChanges(inputValue, buffer, caretPos) {
-      const frontPart = inputValue.substr(0, caretPos.begin).split(""),
-        backPart = inputValue.substr(caretPos.begin).split(""),
-        frontBufferPart = buffer.substr(0, caretPos.begin).split(""),
-        backBufferPart = buffer.substr(caretPos.begin).split(""),
-        fpl = frontPart.length >= frontBufferPart.length ? frontPart.length : frontBufferPart.length,
-        bpl = backPart.length >= backBufferPart.length ? backPart.length : backBufferPart.length,
-        data = [],
-        marker = "\x1E";
-      let bl,
-        i,
-        action = "",
-        placeholder;
-
-      // align buffers
-      while (frontPart.length < fpl) frontPart.push(marker);
-      while (frontBufferPart.length < fpl) frontBufferPart.push(marker);
-      while (backPart.length < bpl) backPart.unshift(marker);
-      while (backBufferPart.length < bpl) backBufferPart.unshift(marker);
-      const newBuffer = frontPart.concat(backPart),
-        oldBuffer = frontBufferPart.concat(backBufferPart);
-
-      // console.log("N " + newBuffer);
-      // console.log("O " + oldBuffer);
-
-      for (i = 0, bl = newBuffer.length; i < bl; i++) {
-        placeholder = _core_validation_tests__WEBPACK_IMPORTED_MODULE_5__/* .getPlaceholder */ .G_.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, i));
-        switch (action) {
-          case "insertText":
-            if (oldBuffer[i - 1] === newBuffer[i] && caretPos.begin === newBuffer.length - 1) {
-              data.push(newBuffer[i]);
-            }
-            i = bl;
-            break;
-          case "insertReplacementText":
-            if (newBuffer[i] === marker) {
-              // extend selection
-              caretPos.end++;
-            } else {
-              // breakout loop
-              i = bl;
-            }
-            break;
-          case "deleteContentBackward":
-            if (newBuffer[i] === marker) {
-              caretPos.end++;
-            } else {
-              // breakout loop
-              i = bl;
-            }
-            break;
-          default:
-            if (newBuffer[i] !== oldBuffer[i]) {
-              if ((newBuffer[i + 1] === marker || newBuffer[i + 1] === placeholder || newBuffer[i + 1] === undefined) && (oldBuffer[i] === placeholder && oldBuffer[i + 1] === marker || oldBuffer[i] === marker)) {
-                // basic insert
-                action = "insertText";
-                data.push(newBuffer[i]);
-                caretPos.begin--;
-                caretPos.end--;
-              } else if (oldBuffer[i + 1] === marker && oldBuffer[i] === newBuffer[i + 1]) {
-                // insert between
-                action = "insertText";
-                data.push(newBuffer[i]);
-                caretPos.begin--;
-                caretPos.end--;
-              } else if (newBuffer[i] !== placeholder && newBuffer[i] !== marker && (newBuffer[i + 1] === marker || oldBuffer[i] !== newBuffer[i] && oldBuffer[i + 1] === newBuffer[i + 1]) /* single char replacement */) {
-                // replace selection
-                action = "insertReplacementText";
-                data.push(newBuffer[i]);
-                caretPos.begin--;
-              } else if (newBuffer[i] === marker && !e.inputType?.startsWith("insert")) {
-                // delete~backspace
-                action = "deleteContentBackward";
-                if (_core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .isMask */ .$b.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .translatePosition */ .Mu.call(inputmask, i), true) || oldBuffer[i] === opts.radixPoint) caretPos.end++;
+      switch (m) {
+        case "\\d":
+          m = "[0-9]";
+          break;
+        case "\\p": // Unicode Categories
+        case "\\P":
+          {
+            // consume the property part { ... } of the escape
+            const prop = regexTokenizer.exec(mask);
+            if (prop && prop[0] === "{") {
+              const rest = regexTokenizer.exec(mask);
+              if (rest && rest[0].charAt(rest[0].length - 1) === "}") {
+                m += "{" + rest[0];
               } else {
-                i = bl;
+                // incomplete property => put the tokens back
+                regexTokenizer.lastIndex = rest ? rest.index : prop.index;
               }
+            } else if (prop) {
+              // not a property => put the token back
+              regexTokenizer.lastIndex = prop.index;
             }
             break;
+          }
+        case "(?:":
+          // non capturing group
+          // treat as group
+          break;
+        case "(?=": // lookahead
+        case "(?!":
+          // negative lookahead
+          // skip the assertion so it leaks no characters into the mask template
+          skipAssertion();
+          continue;
+        case "(?<=": // lookbehind
+        case "(?<!":
+          // negative lookbehind
+          // treat as group (lookbehind content is typed in the template)
+          break;
+      }
+    }
+    if (escaped) {
+      defaultCase();
+      continue;
+    }
+    switch (m.charAt(0)) {
+      case "$":
+      case "^":
+        // ignore beginswith and endswith as in masking this makes no point
+        if (!regexMask) {
+          defaultCase();
         }
-      }
-      return {
-        action,
-        data,
-        caret: caretPos
-      };
-    }
-    const input = this,
-      inputValue = input.inputmask._valueGet(true),
-      buffer = (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)).join(""),
-      caretPos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true);
-    let changes, keydown;
-    if (buffer !== inputValue) {
-      const charBeforeCaret = inputValue.charAt(caretPos.begin - 1),
-        nptValue = inputValue.split("");
-      if (charBeforeCaret !== "" && nptValue.length > buffer.length) {
-        nptValue[caretPos.begin - 1] = charPlaceholder;
-      }
-      changes = analyseChanges(nptValue.join(""), buffer, caretPos);
-      if (input.getRootNode().activeElement !== input) {
-        input.focus();
-      }
-      (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au)(input, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask));
-      _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos.begin, caretPos.end, true);
-
-      // Japanese IME hack #2662
-      if (!_environment__WEBPACK_IMPORTED_MODULE_7__/* .mobile */ .H && inputmask.skipNextInsert && e.inputType === "insertText" && changes.action === "insertText" && inputmask.isComposing) {
-        return false;
-      }
-      if (e.inputType === "insertCompositionText" && changes.action === "insertText" && inputmask.isComposing) {
-        inputmask.skipNextInsert = true;
-      } else {
-        inputmask.skipNextInsert = false;
-      }
-      switch (changes.action) {
-        case "insertText":
-        case "insertReplacementText":
-          changes.data.forEach(function (entry, ndx) {
-            const keypress = new $.Event("keypress");
-            keypress.key = entry === charPlaceholder ? charBeforeCaret : entry;
-            inputmask.ignorable = false; // make sure ignorable is ignored ;-)
-            EventHandlers.keypressEvent.call(input, keypress);
-          });
-          setTimeout(function () {
-            // #2195 trigger keyup to help some other plugins to track changes
-            inputmask.$el.trigger("keyup");
-          }, 0);
-          break;
-        case "deleteContentBackward":
-          keydown = new $.Event("keydown");
-          keydown.key = _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace;
-          EventHandlers.keyEvent.call(input, keydown);
-          break;
-        default:
-          (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .applyInputValue */ .gc)(input, inputValue, e);
-          _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, caretPos.begin, caretPos.end, true);
-          break;
-      }
-      e.preventDefault();
-    }
-  },
-  setValueEvent: function (e) {
-    const inputmask = this.inputmask,
-      $ = inputmask.dependencyLib,
-      input = this;
-    let value = e && e.detail ? e.detail[0] : arguments[1];
-    if (value === undefined) {
-      value = input.inputmask._valueGet(true);
-    } else if (typeof inputmask.opts.onBeforeMask === "function") {
-      value = inputmask.opts.onBeforeMask.call(inputmask, value, inputmask.opts) || value;
-    }
-    (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .applyInputValue */ .gc)(input, value, new $.Event("input"), (e && e.detail ? e.detail[0] : arguments[1]) !== undefined);
-    if (e.detail && e.detail[1] !== undefined || arguments[2] !== undefined) {
-      _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, e.detail ? e.detail[1] : arguments[2]);
-    }
-  },
-  focusEvent: function (e) {
-    const inputmask = this.inputmask,
-      opts = inputmask.opts,
-      input = this,
-      nptValue = inputmask && inputmask._valueGet();
-    if (opts.showMaskOnFocus) {
-      if (nptValue !== _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).join("")) {
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au)(input, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .seekNext */ .u4.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask)));
-      } /* else if (mouseEnter === false) { //only executed on focus without mouseenter
-        caret(input, seekNext(getLastValidPosition()));
-        } */
-    }
-    if (opts.positionCaretOnTab === true && inputmask.mouseEnter === false && (!_core_validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)) || _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1)) {
-      EventHandlers.clickEvent.apply(input, [e, true]);
-    }
-    inputmask.undoValue = inputmask && inputmask._valueGet(true);
-  },
-  invalidEvent: function (e) {
-    this.inputmask.validationEvent = true;
-  },
-  mouseleaveEvent: function () {
-    const inputmask = this.inputmask,
-      opts = inputmask.opts,
-      input = this;
-    inputmask.mouseEnter = false;
-    if (opts.clearMaskOnLostFocus && input.getRootNode().activeElement !== input) {
-      const bufferTemplate = (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
-      if (input.placeholder === bufferTemplate) {
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
-      }
-    }
-  },
-  clickEvent: function (e, tabbed) {
-    const inputmask = this.inputmask;
-    if (e.type === "click") inputmask.clicked++;
-    const input = this;
-    if (input.getRootNode().activeElement === input) {
-      const newCaretPosition = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .determineNewCaretPosition */ .wD.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input), tabbed);
-      if (newCaretPosition !== undefined) {
-        _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input, newCaretPosition);
-      }
-    }
-  },
-  cutEvent: function (e) {
-    const inputmask = this.inputmask,
-      maskset = inputmask.maskset,
-      input = this,
-      pos = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .caret */ .OW.call(inputmask, input),
-      // correct clipboardData
-      clipData = inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).slice(pos.end, pos.begin) : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).slice(pos.begin, pos.end),
-      clipDataText = inputmask.isRTL ? clipData.reverse().join("") : clipData.join("");
-    if (_global_window__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.navigator && _global_window__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.navigator.clipboard) _global_window__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A.navigator.clipboard.writeText(clipDataText);
-    _core_validation__WEBPACK_IMPORTED_MODULE_4__/* .handleRemove */ .Nr.call(inputmask, input, _core_keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete, pos);
-    (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au)(input, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask), maskset.p, e, inputmask.undoValue !== inputmask._valueGet(true));
-  },
-  blurEvent: function (e) {
-    const inputmask = this.inputmask,
-      opts = inputmask.opts,
-      $ = inputmask.dependencyLib;
-    inputmask.clicked = 0;
-    const $input = $(this),
-      input = this;
-    if (input.inputmask) {
-      const bufferTemplate = (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
-      if (input.placeholder === bufferTemplate) {
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .HandleNativePlaceholder */ .b1)(input, inputmask.originalPlaceholder);
-      }
-      let nptValue = input.inputmask._valueGet(),
-        buffer = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask).slice();
-      if (nptValue !== "") {
-        if (opts.clearMaskOnLostFocus) {
-          if (_core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1 && nptValue === _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).join("")) {
-            buffer = [];
+        break;
+      case opts.escapeChar:
+        escaped = true;
+        if (regexMask) defaultCase();
+        break;
+      // optional closing
+      case opts.optionalmarker[1]:
+      case opts.groupmarker[1]:
+        closeGroup();
+        break;
+      case opts.optionalmarker[0]:
+        // optional opening
+        openenings.push(new masktoken(false, true));
+        break;
+      case opts.groupmarker[0]:
+        // Group opening
+        openenings.push(new masktoken(true));
+        break;
+      case opts.quantifiermarker[0]:
+        {
+          // Quantifier
+          const quantifier = new masktoken(false, false, true);
+          quantifier.quantifier = parseQuantifier(m);
+          if (isNaN(quantifier.quantifier.min) && isNaN(quantifier.quantifier.max)) {
+            // a "{" that is not a quantifier is a literal character
+            defaultCase();
+            break;
+          }
+          const matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
+          match = matches.pop();
+          if (!match.isGroup) {
+            match = groupify([match]);
+          }
+          matches.push(match);
+          matches.push(quantifier);
+        }
+        break;
+      case opts.alternatormarker:
+        if (openenings.length > 0) {
+          currentOpeningToken = openenings[openenings.length - 1];
+          const subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
+          if (currentOpeningToken.openGroup && (
+          // regexp alt syntax
+          subToken.matches === undefined || subToken.isGroup === false && subToken.isAlternator === false)) {
+            // alternations within group
+            lastMatch = openenings.pop();
           } else {
-            // clearout optional tail of the mask
-            _core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .clearOptionalTail */ .ys.call(inputmask, buffer);
+            lastMatch = groupQuantifier(currentOpeningToken.matches);
+          }
+        } else {
+          lastMatch = groupQuantifier(currentToken.matches);
+        }
+        if (lastMatch.isAlternator) {
+          openenings.push(lastMatch);
+        } else {
+          if (lastMatch.alternatorGroup) {
+            alternator = openenings.pop();
+            lastMatch.alternatorGroup = false;
+          } else {
+            alternator = new masktoken(false, false, false, true);
+          }
+          alternator.matches.push(lastMatch);
+          openenings.push(alternator);
+          if (lastMatch.openGroup) {
+            // regexp alt syntax
+            lastMatch.openGroup = false;
+            const alternatorGroup = new masktoken(true);
+            alternatorGroup.alternatorGroup = true;
+            openenings.push(alternatorGroup);
           }
         }
-        if (_core_validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, buffer) === false) {
-          setTimeout(function () {
-            $input.trigger("incomplete");
-          }, 0);
-          if (opts.clearIncomplete) {
-            _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .resetMaskSet */ .eo.call(inputmask, false);
-            if (opts.clearMaskOnLostFocus) {
-              buffer = [];
-            } else {
-              buffer = _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice();
-            }
-          }
-        }
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au)(input, buffer, undefined, e);
-      }
-      nptValue = inputmask._valueGet(true);
-      if (inputmask.undoValue !== nptValue) {
-        const bufferTemplateStr = (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
-        if (nptValue !== "" || inputmask.undoValue !== bufferTemplateStr || inputmask.undoValue === bufferTemplateStr && inputmask.maskset.validPositions.length > 0) {
-          inputmask.undoValue = nptValue;
-          $input.trigger("change");
-        }
-      }
+        break;
+      default:
+        defaultCase();
     }
-  },
-  mouseenterEvent: function () {
-    const inputmask = this.inputmask,
-      {
-        showMaskOnHover
-      } = inputmask.opts,
-      input = this;
-    inputmask.mouseEnter = true;
-    if (input.getRootNode().activeElement !== input) {
-      const bufferTemplate = (inputmask.isRTL ? _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).slice().reverse() : _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask)).join("");
-      if (showMaskOnHover) {
-        inputmask.originalPlaceholder = input.placeholder;
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .HandleNativePlaceholder */ .b1)(input, bufferTemplate);
-      }
-    }
-  },
-  submitEvent: function () {
-    // trigger change on submit if any
-    const inputmask = this.inputmask,
-      opts = inputmask.opts;
-    if (inputmask.undoValue !== inputmask._valueGet(true)) {
-      inputmask.$el.trigger("change");
-    }
-    if (/* opts.clearMaskOnLostFocus && */_core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getLastValidPosition */ .SE.call(inputmask) === -1 && inputmask._valueGet && inputmask._valueGet() === _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBufferTemplate */ .Tc.call(inputmask).join("")) {
-      inputmask._valueSet(""); // clear masktemplete on submit and still has focus
-    }
-    if (opts.clearIncomplete && _core_validation__WEBPACK_IMPORTED_MODULE_4__/* .isComplete */ .As.call(inputmask, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask)) === false) {
-      inputmask._valueSet("");
-    }
-    if (opts.removeMaskOnSubmit) {
-      inputmask._valueSet(inputmask.unmaskedvalue(), true);
-      setTimeout(function () {
-        (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .writeBuffer */ .Au)(inputmask.el, _core_positioning__WEBPACK_IMPORTED_MODULE_3__/* .getBuffer */ .Zo.call(inputmask));
-      }, 0);
-    }
-  },
-  resetEvent: function () {
-    const inputmask = this.inputmask;
-    inputmask.refreshValue = true; // indicate a forced refresh when there is a call to the value before leaving the triggering event fn
-    setTimeout(function () {
-      (0,_core_inputHandling__WEBPACK_IMPORTED_MODULE_0__/* .applyInputValue */ .gc)(inputmask.el, inputmask._valueGet(true));
-    }, 0);
   }
-};
+  if (closeRegexGroup) closeGroup();
+  while (openenings.length > 0) {
+    openingToken = openenings.pop();
+    currentToken.matches.push(openingToken);
+  }
+  if (currentToken.matches.length > 0) {
+    verifyGroupMarker(currentToken);
+    maskTokens.push(currentToken);
+  }
+  if (opts.numericInput || opts.isRTL) {
+    reverseTokens(maskTokens[0]);
+  }
+  // console.log(JSON.stringify(maskTokens));
+  return maskTokens;
+}
 
-/***/ },
+/***/ }),
+/* 12 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/***/ 266
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   escapeRegex: () => (/* binding */ escapeRegex)
+/* harmony export */ });
+const escapeRegexRegex = new RegExp("(\\" + ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^"].join("|\\") + ")", "gim");
+function escapeRegex(str) {
+  return str.replace(escapeRegexRegex, "\\$1");
+}
 
-const canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (canUseDOM ? window : {});
-/* harmony export */ __inputmask_require.d(__webpack_exports__, [
-/* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
-/* harmony export */ ]);
-
-
-/***/ },
-
-/***/ 309
-(__unused_webpack_module, __webpack_exports__, __inputmask_require) {
-
+/***/ })
+/******/ ]);
+/************************************************************************/
+/******/ // The module cache
+/******/ const __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __webpack_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	const cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
+/******/ 	}
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	const module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
+/******/ // expose the modules object (__webpack_modules__)
+/******/ __webpack_require__.m = __webpack_modules__;
+/******/ 
+/************************************************************************/
+/******/ /* webpack/runtime/define property getters */
+/******/ (() => {
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/hasOwnProperty shorthand */
+/******/ (() => {
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.hasOwn(obj, prop))
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/export webpack runtime */
+/******/ export { __webpack_require__ };
+/******/ 
+/******/ /* webpack/runtime/import chunk loading */
+/******/ (() => {
+/******/ 	// no baseURI
+/******/ 	
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// [resolve, Promise] = chunk loading, 0 = chunk loaded
+/******/ 	const installedChunks = {
+/******/ 		10: 0
+/******/ 	};
+/******/ 	
+/******/ 	const installChunk = (data) => {
+/******/ 		let {__webpack_esm_ids__, __webpack_esm_modules__, __webpack_esm_runtime__} = data;
+/******/ 		// add "modules" to the modules object,
+/******/ 		// then flag all "ids" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0;
+/******/ 		for(moduleId in __webpack_esm_modules__) {
+/******/ 			if(__webpack_require__.o(__webpack_esm_modules__, moduleId)) {
+/******/ 				__webpack_require__.m[moduleId] = __webpack_esm_modules__[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(__webpack_esm_runtime__) __webpack_esm_runtime__(__webpack_require__);
+/******/ 		for(;i < __webpack_esm_ids__.length; i++) {
+/******/ 			chunkId = __webpack_esm_ids__[i];
+/******/ 			if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				installedChunks[chunkId][0]();
+/******/ 			}
+/******/ 			installedChunks[__webpack_esm_ids__[i]] = 0;
+/******/ 		}
+/******/ 	
+/******/ 	}
+/******/ 	
+/******/ 	// no chunk on demand loading
+/******/ 	
+/******/ 	// no prefetching
+/******/ 	
+/******/ 	// no preloaded
+/******/ 	
+/******/ 	__webpack_require__.C = installChunk;
+/******/ 	
+/******/ 	// no on chunks loaded
+/******/ 	// no HMR
+/******/ 	
+/******/ 	// no HMR manifest
+/******/ })();
+/******/ 
+/************************************************************************/
+let __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
 
 // EXPORTS
-__inputmask_require.d(__webpack_exports__, {
-  z2: () => (/* reexport */ cache/* aliases */.z2),
-  Ay: () => (/* binding */ lib),
-  st: () => (/* reexport */ cache/* masksCache */.st)
+__webpack_require__.d(__webpack_exports__, {
+  aliases: () => (/* reexport */ cache.aliases),
+  "default": () => (/* binding */ lib),
+  masksCache: () => (/* reexport */ cache.masksCache)
 });
 
 // EXTERNAL MODULE: ./lib/core/inputmask.js + 1 modules
-var core_inputmask = __inputmask_require(272);
+var core_inputmask = __webpack_require__(1);
 // EXTERNAL MODULE: ./lib/core/cache.js
-var cache = __inputmask_require(466);
+var cache = __webpack_require__(4);
 // EXTERNAL MODULE: ./lib/core/inputHandling.js
-var inputHandling = __inputmask_require(749);
+var inputHandling = __webpack_require__(6);
 // EXTERNAL MODULE: ./lib/core/mask-lexer.js + 1 modules
-var mask_lexer = __inputmask_require(152);
+var mask_lexer = __webpack_require__(11);
 // EXTERNAL MODULE: ./lib/core/positioning.js
-var positioning = __inputmask_require(173);
+var positioning = __webpack_require__(7);
 // EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __inputmask_require(123);
+var inputmask_dependencyLib = __webpack_require__(2);
 // EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __inputmask_require(266);
+var global_window = __webpack_require__(3);
 // EXTERNAL MODULE: ./lib/core/keycode.js
-var keycode = __inputmask_require(462);
+var keycode = __webpack_require__(9);
 ;// ./lib/dom/eventruler.js
 
 
@@ -4851,9 +4365,9 @@ const EventRuler = {
         const imOpts = $.data(that, "_inputmask_opts");
         $(that).off(); // unbind all events
         if (imOpts) {
-          new core_inputmask/* default */.Ay(imOpts).mask(that);
+          new core_inputmask["default"](imOpts).mask(that);
         }
-      } else if (!["submit", "reset", "setvalue"].includes(e.type) && this.nodeName !== "FORM" && (that.disabled || that.readOnly && !(e.type === "keydown" && e.ctrlKey && e.key === keycode/* keys */.HP.c || opts.tabThrough === false && e.key === keycode/* keys */.HP.Tab))) {
+      } else if (!["submit", "reset", "setvalue"].includes(e.type) && this.nodeName !== "FORM" && (that.disabled || that.readOnly && !(e.type === "keydown" && e.ctrlKey && e.key === keycode.keys.c || opts.tabThrough === false && e.key === keycode.keys.Tab))) {
         e.preventDefault();
       } else {
         switch (e.type) {
@@ -4902,7 +4416,7 @@ const EventRuler = {
               // #841
               inputmask.validationEvent = false;
               input.blur();
-              (0,inputHandling/* HandleNativePlaceholder */.b1)(input, (inputmask.isRTL ? positioning/* getBufferTemplate */.Tc.call(inputmask).slice().reverse() : positioning/* getBufferTemplate */.Tc.call(inputmask)).join(""));
+              (0,inputHandling.HandleNativePlaceholder)(input, (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).join(""));
               setTimeout(function () {
                 input.focus();
               }, opts.validationEventTimeOut);
@@ -4945,12 +4459,525 @@ const EventRuler = {
   }
 };
 // EXTERNAL MODULE: ./lib/core/validation.js
-var validation = __inputmask_require(841);
-// EXTERNAL MODULE: ./lib/dom/environment.js
-var environment = __inputmask_require(752);
-// EXTERNAL MODULE: ./lib/dom/eventhandlers.js
-var eventhandlers = __inputmask_require(800);
+var validation = __webpack_require__(10);
+// EXTERNAL MODULE: ./lib/core/rule-engine.js
+var rule_engine = __webpack_require__(8);
+;// ./lib/dom/environment.js
+
+const nav = global_window["default"].navigator || {},
+  ua = nav.userAgent || "",
+  mobile = (() => {
+    try {
+      const coarsePointer = typeof global_window["default"].matchMedia === "function" ? global_window["default"].matchMedia("(pointer:coarse)").matches : false;
+      return !!(nav.userAgentData?.mobile ?? ((coarsePointer || nav.maxTouchPoints) && (global_window["default"].innerWidth || 0) <= 1024 || /Mobi|Android|iPhone/i.test(ua)));
+    } catch (e) {
+      return /Mobi|Android|iPhone/i.test(ua);
+    }
+  })(),
+  iphone = /iphone/i.test(ua);
+
+;// ./lib/dom/eventhandlers.js
+
+
+
+
+
+
+
+
+const EventHandlers = {
+  keyEvent: function (e, checkval, writeOut, strict, ndx) {
+    const inputmask = this.inputmask || this,
+      opts = inputmask.opts,
+      $ = inputmask.dependencyLib,
+      maskset = inputmask.maskset,
+      input = this.nodeName ? this : inputmask.el,
+      $input = input ? $(input) : undefined,
+      c = e.key;
+
+    // Browsers and password managers can fill in a field in a way that fires
+    // a keydown event without any real key attached to it (it isn't an
+    // actual keystroke). If we don't stop here, the code below assumes a
+    // real key was pressed and crashes the page.
+    if (!c) return;
+    const pos = positioning.caret.call(inputmask, input),
+      kdResult = opts.onKeyDown.call(this, e, positioning.getBuffer.call(inputmask), pos, opts);
+    if (kdResult !== undefined) return kdResult;
+
+    // backspace, delete, and escape get special treatment
+    if (c === keycode.keys.Backspace || c === keycode.keys.Delete || iphone && c === keycode.keys.BACKSPACE_SAFARI || e.ctrlKey && c === keycode.keys.x && (!input || !("oncut" in input))) {
+      // backspace/delete
+      validation.handleRemoveKey.call(inputmask, input, c, pos, e);
+    } else if (c === keycode.keys.End || c === keycode.keys.PageDown) {
+      // when END or PAGE_DOWN pressed set position at lastmatch
+      e.preventDefault();
+      const caretPos = rule_engine.seekNext.call(inputmask, rule_engine.getLastValidPosition.call(inputmask));
+      positioning.caret.call(inputmask, input, e.shiftKey ? pos.begin : caretPos, caretPos, true);
+    } else if (c === keycode.keys.Home && !e.shiftKey || c === keycode.keys.PageUp) {
+      // Home or page_up
+      e.preventDefault();
+      positioning.caret.call(inputmask, input, 0, e.shiftKey ? pos.begin : 0, true);
+    } else if ((opts.undoOnEscape && c === keycode.keys.Escape ||
+    // eslint-disable-next-line no-constant-binary-expression -- TODO: revisit, ctrl+z undo branch is disabled via `false &&`, see #762
+     false && 0) && e.altKey !== true) {
+      // escape && undo && #762
+      (0,inputHandling.checkVal)(input, true, false, inputmask.undoValue.split(""));
+      $input.trigger("click");
+    } else if (c === keycode.keys.Insert && !(e.shiftKey || e.ctrlKey) && opts.insertModeToggle === true &&
+    // an explicitly given insertMode wins over the INSERT key toggle
+    inputmask.userOptions.insertMode === undefined) {
+      // insert
+      if (!validation.isSelection.call(inputmask, pos)) {
+        opts.insertMode = !opts.insertMode;
+        positioning.caret.call(inputmask, input, pos.begin, pos.begin);
+      } else opts.insertMode = !opts.insertMode;
+    } else if (opts.tabThrough === true && c === keycode.keys.Tab) {
+      if (e.shiftKey === true) {
+        pos.end = rule_engine.seekPrevious.call(inputmask, pos.end, true);
+        if (rule_engine.getTest.call(inputmask, pos.end - 1).match.static === true) {
+          pos.end--;
+        }
+        pos.begin = rule_engine.seekPrevious.call(inputmask, pos.end, true);
+        if (pos.begin >= 0 && pos.end > 0) {
+          e.preventDefault();
+          positioning.caret.call(inputmask, input, pos.begin, pos.end);
+        }
+      } else {
+        pos.begin = rule_engine.seekNext.call(inputmask, pos.begin, true);
+        pos.end = rule_engine.seekNext.call(inputmask, pos.begin, true);
+        if (pos.end < maskset.maskLength) pos.end--;
+        if (pos.begin <= maskset.maskLength) {
+          e.preventDefault();
+          positioning.caret.call(inputmask, input, pos.begin, pos.end);
+        }
+      }
+    } else if (!e.shiftKey) {
+      if (opts.insertModeVisual && opts.insertMode === false) {
+        if (c === keycode.keys.ArrowRight) {
+          setTimeout(function () {
+            const caretPos = positioning.caret.call(inputmask, input);
+            positioning.caret.call(inputmask, input, caretPos.begin);
+          }, 0);
+        } else if (c === keycode.keys.ArrowLeft) {
+          setTimeout(function () {
+            const caretPos = {
+              begin: positioning.translatePosition.call(inputmask, input.inputmask.caretPos.begin),
+              end: positioning.translatePosition.call(inputmask, input.inputmask.caretPos.end)
+            };
+            if (inputmask.isRTL) {
+              positioning.caret.call(inputmask, input, caretPos.begin + (caretPos.begin === maskset.maskLength ? 0 : 1));
+            } else {
+              positioning.caret.call(inputmask, input, caretPos.begin - (caretPos.begin === 0 ? 0 : 1));
+            }
+          }, 0);
+        }
+      } else {
+        inputmask.keyEventHook === undefined || inputmask.keyEventHook(e);
+      }
+    }
+    inputmask.isComposing = c === keycode.keys.Process || c === keycode.keys.Unidentified;
+    inputmask.ignorable = c === undefined || c.length > 1;
+    return EventHandlers.keypressEvent.call(inputmask, e, checkval, writeOut, strict, ndx);
+  },
+  keypressEvent: function (e, checkval, writeOut, strict, ndx) {
+    const inputmask = this.inputmask || this,
+      $ = inputmask.dependencyLib,
+      input = this.nodeName ? this : inputmask.el,
+      $input = input ? $(input) : undefined,
+      c = e.key;
+    if (c && c.length === 1 && !e.ctrlKey && !e.metaKey) {
+      inputmask.ignorable = false;
+    }
+    if (checkval !== true && !(e.ctrlKey && e.altKey && !inputmask.ignorable) && (e.ctrlKey || e.metaKey || inputmask.ignorable)) {
+      if (c === keycode.keys.Enter) {
+        if (inputmask.undoValue !== inputmask._valueGet(true)) {
+          inputmask.undoValue = inputmask._valueGet(true);
+          if ($input) {
+            setTimeout(function () {
+              $input.trigger("change");
+            }, 0);
+          }
+        }
+      }
+      return undefined;
+    }
+    return validation.processKeypress.call(inputmask, e, checkval, writeOut, strict, ndx);
+  },
+  pasteEvent: function (e) {
+    const input = this,
+      inputmask = this.inputmask,
+      opts = inputmask.opts,
+      inputValue = inputmask._valueGet(true);
+    let pastedValue;
+    if (e.clipboardData && e.clipboardData.getData) {
+      pastedValue = e.clipboardData.getData("text/plain");
+    }
+    if (pastedValue === undefined || pastedValue === "") {
+      // nothing to interpolate, let the browser handle the paste
+      inputmask.pasteValue = undefined;
+      return;
+    }
+
+    // Compute the value the paste should produce, but do not preventDefault the
+    // paste event.  Letting the native paste land and normalizing on the
+    // follow-up input event keeps masked inputs from tripping the Lighthouse /
+    // PageSpeed "preventing users from pasting into input fields" audit (#2823)
+    // and keeps password-manager fills working.  The browser fires an input
+    // event with inputType "insertFromPaste" right after a non-prevented paste.
+    const caretPos = positioning.caret.call(inputmask, input, undefined, undefined, true);
+    let valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+      valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
+    if (valueBeforeCaret === (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+    if (valueAfterCaret === (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).slice(caretPos.end).join("")) valueAfterCaret = "";
+    let pasteValue = valueBeforeCaret + pastedValue + valueAfterCaret;
+    if (inputmask.isRTL && opts.numericInput !== true) {
+      pasteValue = pasteValue.split("");
+      for (const c of positioning.getBufferTemplate.call(inputmask)) {
+        if (pasteValue[0] === c) pasteValue.shift();
+      }
+      pasteValue = pasteValue.reverse().join("");
+    }
+    if (typeof opts.onBeforePaste === "function") {
+      pasteValue = opts.onBeforePaste.call(inputmask, pasteValue, opts);
+      if (pasteValue === false) {
+        inputmask.pasteValue = false;
+        inputmask.pasteInputValue = inputValue;
+        return;
+      }
+      if (!pasteValue) {
+        pasteValue = inputValue;
+      }
+    }
+    inputmask.pasteValue = pasteValue;
+  },
+  inputFallBackEvent: function (e) {
+    // fallback when keypress is not triggered
+    const inputmask = this.inputmask,
+      opts = inputmask.opts,
+      $ = inputmask.dependencyLib,
+      charPlaceholder = "\x1F";
+    if (e.inputType === "insertFromPaste" && inputmask.pasteValue !== undefined) {
+      // apply the paste computed in pasteEvent, the native (unprevented) paste
+      // already landed and this normalizes it to the mask
+      const pasteValue = inputmask.pasteValue,
+        pasteInputValue = inputmask.pasteInputValue;
+      inputmask.pasteValue = undefined;
+      inputmask.pasteInputValue = undefined;
+      if (pasteValue === false) {
+        // onBeforePaste rejected the paste -> restore the previous value
+        (0,inputHandling.applyInputValue)(this, pasteInputValue);
+      } else {
+        (0,inputHandling.checkVal)(this, true, false, pasteValue.toString().split(""), e);
+      }
+      return false;
+    }
+
+    // console.log(e.inputType);
+
+    function analyseChanges(inputValue, buffer, caretPos) {
+      const frontPart = inputValue.substr(0, caretPos.begin).split(""),
+        backPart = inputValue.substr(caretPos.begin).split(""),
+        frontBufferPart = buffer.substr(0, caretPos.begin).split(""),
+        backBufferPart = buffer.substr(caretPos.begin).split(""),
+        fpl = frontPart.length >= frontBufferPart.length ? frontPart.length : frontBufferPart.length,
+        bpl = backPart.length >= backBufferPart.length ? backPart.length : backBufferPart.length,
+        data = [],
+        marker = "\x1E";
+      let bl,
+        i,
+        action = "",
+        placeholder;
+
+      // align buffers
+      while (frontPart.length < fpl) frontPart.push(marker);
+      while (frontBufferPart.length < fpl) frontBufferPart.push(marker);
+      while (backPart.length < bpl) backPart.unshift(marker);
+      while (backBufferPart.length < bpl) backBufferPart.unshift(marker);
+      const newBuffer = frontPart.concat(backPart),
+        oldBuffer = frontBufferPart.concat(backBufferPart);
+
+      // console.log("N " + newBuffer);
+      // console.log("O " + oldBuffer);
+
+      for (i = 0, bl = newBuffer.length; i < bl; i++) {
+        placeholder = rule_engine.getPlaceholder.call(inputmask, positioning.translatePosition.call(inputmask, i));
+        switch (action) {
+          case "insertText":
+            if (oldBuffer[i - 1] === newBuffer[i] && caretPos.begin === newBuffer.length - 1) {
+              data.push(newBuffer[i]);
+            }
+            i = bl;
+            break;
+          case "insertReplacementText":
+            if (newBuffer[i] === marker) {
+              // extend selection
+              caretPos.end++;
+            } else {
+              // breakout loop
+              i = bl;
+            }
+            break;
+          case "deleteContentBackward":
+            if (newBuffer[i] === marker) {
+              caretPos.end++;
+            } else {
+              // breakout loop
+              i = bl;
+            }
+            break;
+          default:
+            if (newBuffer[i] !== oldBuffer[i]) {
+              if ((newBuffer[i + 1] === marker || newBuffer[i + 1] === placeholder || newBuffer[i + 1] === undefined) && (oldBuffer[i] === placeholder && oldBuffer[i + 1] === marker || oldBuffer[i] === marker)) {
+                // basic insert
+                action = "insertText";
+                data.push(newBuffer[i]);
+                caretPos.begin--;
+                caretPos.end--;
+              } else if (oldBuffer[i + 1] === marker && oldBuffer[i] === newBuffer[i + 1]) {
+                // insert between
+                action = "insertText";
+                data.push(newBuffer[i]);
+                caretPos.begin--;
+                caretPos.end--;
+              } else if (newBuffer[i] !== placeholder && newBuffer[i] !== marker && (newBuffer[i + 1] === marker || oldBuffer[i] !== newBuffer[i] && oldBuffer[i + 1] === newBuffer[i + 1]) /* single char replacement */) {
+                // replace selection
+                action = "insertReplacementText";
+                data.push(newBuffer[i]);
+                caretPos.begin--;
+              } else if (newBuffer[i] === marker && !e.inputType?.startsWith("insert")) {
+                // delete~backspace
+                action = "deleteContentBackward";
+                if (rule_engine.isMask.call(inputmask, positioning.translatePosition.call(inputmask, i), true) || oldBuffer[i] === opts.radixPoint) caretPos.end++;
+              } else {
+                i = bl;
+              }
+            }
+            break;
+        }
+      }
+      return {
+        action,
+        data,
+        caret: caretPos
+      };
+    }
+    const input = this,
+      inputValue = input.inputmask._valueGet(true),
+      buffer = (inputmask.isRTL ? positioning.getBuffer.call(inputmask).slice().reverse() : positioning.getBuffer.call(inputmask)).join(""),
+      caretPos = positioning.caret.call(inputmask, input, undefined, undefined, true);
+    let changes, keydown;
+    if (buffer !== inputValue) {
+      const charBeforeCaret = inputValue.charAt(caretPos.begin - 1),
+        nptValue = inputValue.split("");
+      if (charBeforeCaret !== "" && nptValue.length > buffer.length) {
+        nptValue[caretPos.begin - 1] = charPlaceholder;
+      }
+      changes = analyseChanges(nptValue.join(""), buffer, caretPos);
+      if (input.getRootNode().activeElement !== input) {
+        input.focus();
+      }
+      (0,validation.writeBuffer)(input, positioning.getBuffer.call(inputmask));
+      positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
+
+      // Japanese IME hack #2662
+      if (!mobile && inputmask.skipNextInsert && e.inputType === "insertText" && changes.action === "insertText" && inputmask.isComposing) {
+        return false;
+      }
+      if (e.inputType === "insertCompositionText" && changes.action === "insertText" && inputmask.isComposing) {
+        inputmask.skipNextInsert = true;
+      } else {
+        inputmask.skipNextInsert = false;
+      }
+      switch (changes.action) {
+        case "insertText":
+        case "insertReplacementText":
+          changes.data.forEach(function (entry, ndx) {
+            const keypress = new $.Event("keypress");
+            keypress.key = entry === charPlaceholder ? charBeforeCaret : entry;
+            inputmask.ignorable = false; // make sure ignorable is ignored ;-)
+            EventHandlers.keypressEvent.call(input, keypress);
+          });
+          setTimeout(function () {
+            // #2195 trigger keyup to help some other plugins to track changes
+            inputmask.$el.trigger("keyup");
+          }, 0);
+          break;
+        case "deleteContentBackward":
+          keydown = new $.Event("keydown");
+          keydown.key = keycode.keys.Backspace;
+          EventHandlers.keyEvent.call(input, keydown);
+          break;
+        default:
+          (0,inputHandling.applyInputValue)(input, inputValue, e);
+          positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
+          break;
+      }
+      e.preventDefault();
+    }
+  },
+  setValueEvent: function (e) {
+    const inputmask = this.inputmask,
+      $ = inputmask.dependencyLib,
+      input = this;
+    let value = e && e.detail ? e.detail[0] : arguments[1];
+    if (value === undefined) {
+      value = input.inputmask._valueGet(true);
+    } else if (typeof inputmask.opts.onBeforeMask === "function") {
+      value = inputmask.opts.onBeforeMask.call(inputmask, value, inputmask.opts) || value;
+    }
+    (0,inputHandling.applyInputValue)(input, value, new $.Event("input"), (e && e.detail ? e.detail[0] : arguments[1]) !== undefined);
+    if (e.detail && e.detail[1] !== undefined || arguments[2] !== undefined) {
+      positioning.caret.call(inputmask, input, e.detail ? e.detail[1] : arguments[2]);
+    }
+  },
+  focusEvent: function (e) {
+    const inputmask = this.inputmask,
+      opts = inputmask.opts,
+      input = this,
+      nptValue = inputmask && inputmask._valueGet();
+    if (opts.showMaskOnFocus) {
+      if (nptValue !== positioning.getBuffer.call(inputmask).join("")) {
+        (0,validation.writeBuffer)(input, positioning.getBuffer.call(inputmask), rule_engine.seekNext.call(inputmask, rule_engine.getLastValidPosition.call(inputmask)));
+      } /* else if (mouseEnter === false) { //only executed on focus without mouseenter
+        caret(input, seekNext(getLastValidPosition()));
+        } */
+    }
+    if (opts.positionCaretOnTab === true && inputmask.mouseEnter === false && (!validation.isComplete.call(inputmask, positioning.getBuffer.call(inputmask)) || rule_engine.getLastValidPosition.call(inputmask) === -1)) {
+      EventHandlers.clickEvent.apply(input, [e, true]);
+    }
+    inputmask.undoValue = inputmask && inputmask._valueGet(true);
+  },
+  invalidEvent: function (e) {
+    this.inputmask.validationEvent = true;
+  },
+  mouseleaveEvent: function () {
+    const inputmask = this.inputmask,
+      opts = inputmask.opts,
+      input = this;
+    inputmask.mouseEnter = false;
+    if (opts.clearMaskOnLostFocus && input.getRootNode().activeElement !== input) {
+      const bufferTemplate = (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        (0,inputHandling.HandleNativePlaceholder)(input, inputmask.originalPlaceholder);
+      }
+    }
+  },
+  clickEvent: function (e, tabbed) {
+    const inputmask = this.inputmask;
+    if (e.type === "click") inputmask.clicked++;
+    const input = this;
+    if (input.getRootNode().activeElement === input) {
+      const newCaretPosition = positioning.determineNewCaretPosition.call(inputmask, positioning.caret.call(inputmask, input), tabbed);
+      if (newCaretPosition !== undefined) {
+        positioning.caret.call(inputmask, input, newCaretPosition);
+      }
+    }
+  },
+  cutEvent: function (e) {
+    const inputmask = this.inputmask,
+      maskset = inputmask.maskset,
+      input = this,
+      pos = positioning.caret.call(inputmask, input),
+      // correct clipboardData
+      clipData = inputmask.isRTL ? positioning.getBuffer.call(inputmask).slice(pos.end, pos.begin) : positioning.getBuffer.call(inputmask).slice(pos.begin, pos.end),
+      clipDataText = inputmask.isRTL ? clipData.reverse().join("") : clipData.join("");
+    if (global_window["default"].navigator && global_window["default"].navigator.clipboard) global_window["default"].navigator.clipboard.writeText(clipDataText);
+    validation.handleRemove.call(inputmask, input, keycode.keys.Delete, pos);
+    (0,validation.writeBuffer)(input, positioning.getBuffer.call(inputmask), maskset.p, e, inputmask.undoValue !== inputmask._valueGet(true));
+  },
+  blurEvent: function (e) {
+    const inputmask = this.inputmask,
+      opts = inputmask.opts,
+      $ = inputmask.dependencyLib;
+    inputmask.clicked = 0;
+    const $input = $(this),
+      input = this;
+    if (input.inputmask) {
+      const bufferTemplate = (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).join("");
+      if (input.placeholder === bufferTemplate) {
+        (0,inputHandling.HandleNativePlaceholder)(input, inputmask.originalPlaceholder);
+      }
+      let nptValue = input.inputmask._valueGet(),
+        buffer = positioning.getBuffer.call(inputmask).slice();
+      if (nptValue !== "") {
+        if (opts.clearMaskOnLostFocus) {
+          if (rule_engine.getLastValidPosition.call(inputmask) === -1 && nptValue === positioning.getBufferTemplate.call(inputmask).join("")) {
+            buffer = [];
+          } else {
+            // clearout optional tail of the mask
+            inputHandling.clearOptionalTail.call(inputmask, buffer);
+          }
+        }
+        if (validation.isComplete.call(inputmask, buffer) === false) {
+          setTimeout(function () {
+            $input.trigger("incomplete");
+          }, 0);
+          if (opts.clearIncomplete) {
+            positioning.resetMaskSet.call(inputmask, false);
+            if (opts.clearMaskOnLostFocus) {
+              buffer = [];
+            } else {
+              buffer = positioning.getBufferTemplate.call(inputmask).slice();
+            }
+          }
+        }
+        (0,validation.writeBuffer)(input, buffer, undefined, e);
+      }
+      nptValue = inputmask._valueGet(true);
+      if (inputmask.undoValue !== nptValue) {
+        const bufferTemplateStr = (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).join("");
+        if (nptValue !== "" || inputmask.undoValue !== bufferTemplateStr || inputmask.undoValue === bufferTemplateStr && inputmask.maskset.validPositions.length > 0) {
+          inputmask.undoValue = nptValue;
+          $input.trigger("change");
+        }
+      }
+    }
+  },
+  mouseenterEvent: function () {
+    const inputmask = this.inputmask,
+      {
+        showMaskOnHover
+      } = inputmask.opts,
+      input = this;
+    inputmask.mouseEnter = true;
+    if (input.getRootNode().activeElement !== input) {
+      const bufferTemplate = (inputmask.isRTL ? positioning.getBufferTemplate.call(inputmask).slice().reverse() : positioning.getBufferTemplate.call(inputmask)).join("");
+      if (showMaskOnHover) {
+        inputmask.originalPlaceholder = input.placeholder;
+        (0,inputHandling.HandleNativePlaceholder)(input, bufferTemplate);
+      }
+    }
+  },
+  submitEvent: function () {
+    // trigger change on submit if any
+    const inputmask = this.inputmask,
+      opts = inputmask.opts;
+    if (inputmask.undoValue !== inputmask._valueGet(true)) {
+      inputmask.$el.trigger("change");
+    }
+    if (/* opts.clearMaskOnLostFocus && */rule_engine.getLastValidPosition.call(inputmask) === -1 && inputmask._valueGet && inputmask._valueGet() === positioning.getBufferTemplate.call(inputmask).join("")) {
+      inputmask._valueSet(""); // clear masktemplete on submit and still has focus
+    }
+    if (opts.clearIncomplete && validation.isComplete.call(inputmask, positioning.getBuffer.call(inputmask)) === false) {
+      inputmask._valueSet("");
+    }
+    if (opts.removeMaskOnSubmit) {
+      inputmask._valueSet(inputmask.unmaskedvalue(), true);
+      setTimeout(function () {
+        (0,validation.writeBuffer)(inputmask.el, positioning.getBuffer.call(inputmask));
+      }, 0);
+    }
+  },
+  resetEvent: function () {
+    const inputmask = this.inputmask;
+    inputmask.refreshValue = true; // indicate a forced refresh when there is a call to the value before leaving the triggering event fn
+    setTimeout(function () {
+      (0,inputHandling.applyInputValue)(inputmask.el, inputmask._valueGet(true));
+    }, 0);
+  }
+};
 ;// ./lib/dom/mask.js
+
 
 
 
@@ -4984,7 +5011,7 @@ function mask_mask() {
                   return elem.inputmask.unmaskedvalue();
                 } else {
                   const result = valhookGet(elem);
-                  return positioning/* getLastValidPosition */.SE.call(inputmask, undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
+                  return rule_engine.getLastValidPosition.call(inputmask, undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
                 }
               } else {
                 return valhookGet(elem);
@@ -4993,7 +5020,7 @@ function mask_mask() {
             set: function (elem, value) {
               const result = valhookSet(elem, value);
               if (elem.inputmask) {
-                (0,inputHandling/* applyInputValue */.gc)(elem, value);
+                (0,inputHandling.applyInputValue)(elem, value);
               }
               return result;
             },
@@ -5003,7 +5030,7 @@ function mask_mask() {
       }
       function getter() {
         if (this.inputmask) {
-          return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : positioning/* getLastValidPosition */.SE.call(inputmask) !== -1 || opts.nullable !== true ? this.getRootNode().activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? inputHandling/* clearOptionalTail */.ys.call(inputmask, positioning/* getBuffer */.Zo.call(inputmask).slice()).reverse() : inputHandling/* clearOptionalTail */.ys.call(inputmask, positioning/* getBuffer */.Zo.call(inputmask).slice())).join("") : valueGet.call(this) : "";
+          return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : rule_engine.getLastValidPosition.call(inputmask) !== -1 || opts.nullable !== true ? this.getRootNode().activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? inputHandling.clearOptionalTail.call(inputmask, positioning.getBuffer.call(inputmask).slice()).reverse() : inputHandling.clearOptionalTail.call(inputmask, positioning.getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "";
         } else {
           return valueGet.call(this);
         }
@@ -5011,16 +5038,16 @@ function mask_mask() {
       function setter(value) {
         valueSet.call(this, value);
         if (this.inputmask) {
-          (0,inputHandling/* applyInputValue */.gc)(this, value);
+          (0,inputHandling.applyInputValue)(this, value);
         }
       }
       function installNativeValueSetFallback(npt) {
         EventRuler.on(npt, "mouseenter", function () {
           const input = this,
             value = input.inputmask._valueGet(true),
-            bufferValue = (input.inputmask.isRTL ? positioning/* getBuffer */.Zo.call(input.inputmask).slice().reverse() : positioning/* getBuffer */.Zo.call(input.inputmask)).join("");
+            bufferValue = (input.inputmask.isRTL ? positioning.getBuffer.call(input.inputmask).slice().reverse() : positioning.getBuffer.call(input.inputmask)).join("");
           if (value !== bufferValue) {
-            (0,inputHandling/* applyInputValue */.gc)(input, value);
+            (0,inputHandling.applyInputValue)(input, value);
           }
         });
       }
@@ -5113,7 +5140,7 @@ function mask_mask() {
     }
     if (isSupported === true) {
       opts.showMaskOnFocus = opts.showMaskOnFocus && ["cc-number", "cc-exp"].indexOf(el.autocomplete) === -1;
-      if (environment/* iphone */.Q) {
+      if (iphone) {
         // selecting the caret shows as a selection on iphone
         opts.insertModeVisual = false;
         // disable autocorrect
@@ -5121,58 +5148,58 @@ function mask_mask() {
       }
 
       // bind events
-      EventRuler.on(el, "submit", eventhandlers/* EventHandlers */.C.submitEvent);
-      EventRuler.on(el, "reset", eventhandlers/* EventHandlers */.C.resetEvent);
-      EventRuler.on(el, "blur", eventhandlers/* EventHandlers */.C.blurEvent);
-      EventRuler.on(el, "focus", eventhandlers/* EventHandlers */.C.focusEvent);
-      EventRuler.on(el, "invalid", eventhandlers/* EventHandlers */.C.invalidEvent);
-      EventRuler.on(el, "click", eventhandlers/* EventHandlers */.C.clickEvent);
-      EventRuler.on(el, "mouseleave", eventhandlers/* EventHandlers */.C.mouseleaveEvent);
-      EventRuler.on(el, "mouseenter", eventhandlers/* EventHandlers */.C.mouseenterEvent);
-      EventRuler.on(el, "paste", eventhandlers/* EventHandlers */.C.pasteEvent);
-      EventRuler.on(el, "cut", eventhandlers/* EventHandlers */.C.cutEvent);
+      EventRuler.on(el, "submit", EventHandlers.submitEvent);
+      EventRuler.on(el, "reset", EventHandlers.resetEvent);
+      EventRuler.on(el, "blur", EventHandlers.blurEvent);
+      EventRuler.on(el, "focus", EventHandlers.focusEvent);
+      EventRuler.on(el, "invalid", EventHandlers.invalidEvent);
+      EventRuler.on(el, "click", EventHandlers.clickEvent);
+      EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
+      EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
+      EventRuler.on(el, "paste", EventHandlers.pasteEvent);
+      EventRuler.on(el, "cut", EventHandlers.cutEvent);
       EventRuler.on(el, "complete", opts.oncomplete);
       EventRuler.on(el, "incomplete", opts.onincomplete);
       EventRuler.on(el, "cleared", opts.oncleared);
       if (opts.inputEventOnly !== true) {
-        EventRuler.on(el, "keydown", eventhandlers/* EventHandlers */.C.keyEvent);
+        EventRuler.on(el, "keydown", EventHandlers.keyEvent);
       }
-      if (environment/* mobile */.H || opts.inputEventOnly) {
+      if (mobile || opts.inputEventOnly) {
         el.removeAttribute("maxLength");
       }
-      EventRuler.on(el, "input", eventhandlers/* EventHandlers */.C.inputFallBackEvent);
+      EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
       // EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent); //https://github.com/w3c/input-events - to implement
     }
-    EventRuler.on(el, "setvalue", eventhandlers/* EventHandlers */.C.setValueEvent);
+    EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
 
     // apply mask
     inputmask.applyMaskHook === undefined || inputmask.applyMaskHook();
-    positioning/* getBufferTemplate */.Tc.call(inputmask).join(""); // initialize the buffer and getmasklength
+    positioning.getBufferTemplate.call(inputmask).join(""); // initialize the buffer and getmasklength
     inputmask.undoValue = inputmask._valueGet(true);
     const activeElement = el.getRootNode().activeElement;
     if (el.inputmask._valueGet(true) !== "" || opts.clearMaskOnLostFocus === false || activeElement === el) {
-      (0,inputHandling/* applyInputValue */.gc)(el, el.inputmask._valueGet(true));
-      let buffer = positioning/* getBuffer */.Zo.call(inputmask).slice();
-      if (validation/* isComplete */.As.call(inputmask, buffer) === false) {
+      (0,inputHandling.applyInputValue)(el, el.inputmask._valueGet(true));
+      let buffer = positioning.getBuffer.call(inputmask).slice();
+      if (validation.isComplete.call(inputmask, buffer) === false) {
         if (opts.clearIncomplete) {
-          positioning/* resetMaskSet */.eo.call(inputmask, false);
+          positioning.resetMaskSet.call(inputmask, false);
         }
       }
       if (opts.clearMaskOnLostFocus && activeElement !== el) {
-        if (positioning/* getLastValidPosition */.SE.call(inputmask) === -1) {
+        if (rule_engine.getLastValidPosition.call(inputmask) === -1) {
           buffer = [];
         } else {
-          inputHandling/* clearOptionalTail */.ys.call(inputmask, buffer);
+          inputHandling.clearOptionalTail.call(inputmask, buffer);
         }
       }
       if (opts.clearMaskOnLostFocus === false || opts.showMaskOnFocus && activeElement === el || el.inputmask._valueGet(true) !== "") {
-        (0,inputHandling/* writeBuffer */.Au)(el, buffer);
+        (0,validation.writeBuffer)(el, buffer);
       }
       if (activeElement === el) {
         // position the caret when in focus
-        positioning/* caret */.OW.call(inputmask, el, positioning/* seekNext */.u4.call(inputmask, positioning/* getLastValidPosition */.SE.call(inputmask)));
+        positioning.caret.call(inputmask, el, rule_engine.seekNext.call(inputmask, rule_engine.getLastValidPosition.call(inputmask)));
       } else {
-        positioning/* caret */.OW.call(inputmask, el, 0);
+        positioning.caret.call(inputmask, el, 0);
       }
     }
   }
@@ -5186,7 +5213,7 @@ function mask_mask() {
 
 
 
-const attach_document = global_window/* default */.A.document,
+const attach_document = global_window["default"].document,
   dataKey = "_inputmask_opts";
 /* harmony default export */ const attach = (attach_attach);
 
@@ -5210,14 +5237,14 @@ function attach_attach(Inputmask) {
     }
     elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
     elems.forEach(function (el) {
-      const scopedOpts = inputmask_dependencyLib/* default */.A.extend(true, {}, that.opts),
+      const scopedOpts = inputmask_dependencyLib["default"].extend(true, {}, that.opts),
         // importAttributeOptions enriches this object with the options read
         // from the data-attributes, so it has to be the one handed to the
         // element scoped instance - otherwise those options are lost from
         // userOptions (they only end up in opts) #2847
-        scopedUserOptions = inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions);
+        scopedUserOptions = inputmask_dependencyLib["default"].extend(true, {}, that.userOptions);
       if (importAttributeOptions(el, scopedOpts, scopedUserOptions, that.dataAttribute)) {
-        const maskset = (0,mask_lexer/* generateMaskSet */._)(scopedOpts, that.noMasksCache);
+        const maskset = (0,mask_lexer.generateMaskSet)(scopedOpts, that.noMasksCache);
         if (maskset !== undefined) {
           if (el.inputmask !== undefined) {
             el.inputmask.opts.autoUnmask = true; // force autounmasking when remasking
@@ -5229,9 +5256,9 @@ function attach_attach(Inputmask) {
           el.inputmask.noMasksCache = that.noMasksCache;
           el.inputmask.userOptions = scopedUserOptions;
           el.inputmask.el = el;
-          el.inputmask.$el = (0,inputmask_dependencyLib/* default */.A)(el);
+          el.inputmask.$el = (0,inputmask_dependencyLib["default"])(el);
           el.inputmask.maskset = maskset;
-          inputmask_dependencyLib/* default */.A.data(el, dataKey, that.userOptions);
+          inputmask_dependencyLib["default"].data(el, dataKey, that.userOptions);
           mask_mask.call(el.inputmask);
         }
       }
@@ -5244,10 +5271,10 @@ function attach_attach(Inputmask) {
    */
   function remove() {
     if (this.el) {
-      inputmask_dependencyLib/* default */.A.data(this.el, dataKey, null); // invalidate
+      inputmask_dependencyLib["default"].data(this.el, dataKey, null); // invalidate
       // writeout the value
-      const cv = this.opts.autoUnmask ? (0,inputHandling/* unmaskedvalue */.q4)(this.el) : this._valueGet(this.opts.autoUnmask);
-      if (cv !== positioning/* getBufferTemplate */.Tc.call(this).join("")) this._valueSet(cv, this.opts.autoUnmask);else this._valueSet("");
+      const cv = this.opts.autoUnmask ? (0,inputHandling.unmaskedvalue)(this.el) : this._valueGet(this.opts.autoUnmask);
+      if (cv !== positioning.getBufferTemplate.call(this).join("")) this._valueSet(cv, this.opts.autoUnmask);else this._valueSet("");
       // unbind all events
       EventRuler.off(this.el);
 
@@ -5306,7 +5333,7 @@ function staticSetValue(elems, value) {
   }
   elems = elems.nodeName ? [elems] : elems;
   elems.forEach(function (el) {
-    if (el.inputmask) el.inputmask.setValue(value);else (0,inputmask_dependencyLib/* default */.A)(el).trigger("setvalue", [value]);
+    if (el.inputmask) el.inputmask.setValue(value);else (0,inputmask_dependencyLib["default"])(el).trigger("setvalue", [value]);
   });
 }
 
@@ -5320,7 +5347,7 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
       if (typeof optionData === "string") {
         if (option.startsWith("on")) {
           // get function definition
-          optionData = global_window/* default */.A[optionData];
+          optionData = global_window["default"][optionData];
         } else if (optionData === "false") optionData = false;else if (optionData === "true") optionData = true;else if (option === "mask") optionData = optionData.replace(/\\\\/g, "\\");
       }
       userOptions[option] = optionData;
@@ -5354,7 +5381,7 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
     }
     importOption("alias", optionData); // pickup alias from dataAttribute-alias
     if (userOptions.alias) {
-      (0,cache/* resolveAlias */.Zg)(userOptions.alias, userOptions, opts);
+      (0,cache.resolveAlias)(userOptions.alias, userOptions, opts);
     }
     for (option in opts) {
       if (dataoptions) {
@@ -5369,7 +5396,7 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
       importOption(option, optionData);
     }
   }
-  inputmask_dependencyLib/* default */.A.extend(true, opts, userOptions);
+  inputmask_dependencyLib["default"].extend(true, opts, userOptions);
 
   // handle dir=rtl
   if (npt.dir === "rtl" || opts.rightAlign) {
@@ -5404,131 +5431,14 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
  * @typedef {import("./core/inputmask.js").InputmaskStatic} InputmaskStatic
  */
 
-attach(core_inputmask/* default */.Ay);
+attach(core_inputmask["default"]);
 
-/* harmony default export */ const lib = (core_inputmask/* default */.Ay);
+/* harmony default export */ const lib = (core_inputmask["default"]);
+})();
 
-/***/ }
+const __webpack_exports__aliases = __webpack_exports__.aliases;
+const __webpack_exports__default = __webpack_exports__["default"];
+const __webpack_exports__masksCache = __webpack_exports__.masksCache;
+export { __webpack_exports__aliases as aliases, __webpack_exports__default as default, __webpack_exports__masksCache as masksCache };
 
-/******/ });
-/************************************************************************/
-/******/ // The module cache
-/******/ const __webpack_module_cache__ = {};
-/******/ 
-/******/ // The require function
-/******/ function __inputmask_require(moduleId) {
-/******/ 	// Check if module is in cache
-/******/ 	const cachedModule = __webpack_module_cache__[moduleId];
-/******/ 	if (cachedModule !== undefined) {
-/******/ 		return cachedModule.exports;
-/******/ 	}
-/******/ 	// Create a new module (and put it into the cache)
-/******/ 	const module = __webpack_module_cache__[moduleId] = {
-/******/ 		// no module.id needed
-/******/ 		// no module.loaded needed
-/******/ 		exports: {}
-/******/ 	};
-/******/ 
-/******/ 	// Execute the module function
-/******/ 	__webpack_modules__[moduleId](module, module.exports, __inputmask_require);
-/******/ 
-/******/ 	// Return the exports of the module
-/******/ 	return module.exports;
-/******/ }
-/******/ 
-/******/ // expose the modules object (__webpack_modules__)
-/******/ __inputmask_require.m = __webpack_modules__;
-/******/ 
-/************************************************************************/
-/******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__inputmask_require.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__inputmask_require.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__inputmask_require.o(definition, key) && !__inputmask_require.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	};
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__inputmask_require.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/export webpack runtime */
-/******/ export { __inputmask_require };
-/******/ 
-/******/ /* webpack/runtime/import chunk loading */
-/******/ (() => {
-/******/ 	// no baseURI
-/******/ 	
-/******/ 	// object to store loaded and loading chunks
-/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 	// [resolve, Promise] = chunk loading, 0 = chunk loaded
-/******/ 	const installedChunks = {
-/******/ 		744: 0
-/******/ 	};
-/******/ 	
-/******/ 	const installChunk = (data) => {
-/******/ 		let {__webpack_esm_ids__, __webpack_esm_modules__, __webpack_esm_runtime__} = data;
-/******/ 		// add "modules" to the modules object,
-/******/ 		// then flag all "ids" as loaded and fire callback
-/******/ 		var moduleId, chunkId, i = 0;
-/******/ 		for(moduleId in __webpack_esm_modules__) {
-/******/ 			if(__inputmask_require.o(__webpack_esm_modules__, moduleId)) {
-/******/ 				__inputmask_require.m[moduleId] = __webpack_esm_modules__[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(__webpack_esm_runtime__) __webpack_esm_runtime__(__inputmask_require);
-/******/ 		for(;i < __webpack_esm_ids__.length; i++) {
-/******/ 			chunkId = __webpack_esm_ids__[i];
-/******/ 			if(__inputmask_require.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 				installedChunks[chunkId][0]();
-/******/ 			}
-/******/ 			installedChunks[__webpack_esm_ids__[i]] = 0;
-/******/ 		}
-/******/ 	
-/******/ 	}
-/******/ 	
-/******/ 	// no chunk on demand loading
-/******/ 	
-/******/ 	// no prefetching
-/******/ 	
-/******/ 	// no preloaded
-/******/ 	
-/******/ 	__inputmask_require.C = installChunk;
-/******/ 	
-/******/ 	// no on chunks loaded
-/******/ 	// no HMR
-/******/ 	
-/******/ 	// no HMR manifest
-/******/ })();
-/******/ 
-/************************************************************************/
-/******/ 
-/******/ // startup
-/******/ // Load entry module and return exports
-/******/ // This entry module is referenced by other modules so it can't be inlined
-/******/ let __webpack_exports__ = __inputmask_require(309);
-/******/ const __webpack_exports__aliases = __webpack_exports__.z2;
-/******/ const __webpack_exports__default = __webpack_exports__.Ay;
-/******/ const __webpack_exports__masksCache = __webpack_exports__.st;
-/******/ export { __webpack_exports__aliases as aliases, __webpack_exports__default as default, __webpack_exports__masksCache as masksCache };
-/******/ 
+//# sourceMappingURL=inputmask.mjs.map

@@ -1,4 +1,4 @@
-require("../lib/jquery.inputmask");
+require("../lib/components/jquery.inputmask");
 
 export default function (qunit, $, Inputmask) {
   qunit.module("jquery.inputmask plugin");

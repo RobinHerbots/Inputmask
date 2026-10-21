@@ -1,0 +1,960 @@
+/*!
+ * dist/esm/extensions/numeric.mjs
+ * https://github.com/RobinHerbots/Inputmask
+ * Copyright (c) 2010 - 2026 Robin Herbots
+ * Licensed under the MIT license
+ * Version: 5.1.0-beta.36
+ */
+export const __webpack_esm_id__ = 6;
+export const __webpack_esm_ids__ = [6];
+export const __webpack_esm_modules__ = {
+
+/***/ 13
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   currency: () => (/* binding */ currency),
+/* harmony export */   decimal: () => (/* binding */ decimal),
+/* harmony export */   indianns: () => (/* binding */ indianns),
+/* harmony export */   integer: () => (/* binding */ integer),
+/* harmony export */   numeric: () => (/* binding */ numeric),
+/* harmony export */   percentage: () => (/* binding */ percentage),
+/* harmony export */   registerNumeric: () => (/* binding */ registerNumeric)
+/* harmony export */ });
+/* harmony import */ var _core_definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
+/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _core_keycode__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
+/* harmony import */ var _core_rule_engine__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
+/* harmony import */ var _core_validation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(2);
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+
+
+
+
+
+
+
+// resolved on every call so a definition extended at runtime is honoured
+function isDigit(chr) {
+  return new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__["default"]["9"].validator, "u").test(chr);
+}
+function autoEscape(txt, opts) {
+  let escapedTxt = "";
+  for (let i = 0; i < txt.length; i++) {
+    if (_core_definitions__WEBPACK_IMPORTED_MODULE_0__["default"][txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
+      escapedTxt += "\\" + txt.charAt(i);
+    } else {
+      escapedTxt += txt.charAt(i);
+    }
+  }
+  return escapedTxt;
+}
+function alignDigits(buffer, digits, opts, force) {
+  let negationBack = false;
+  if (buffer.length > 0 && digits > 0 && (!opts.digitsOptional || force)) {
+    let radixPosition = buffer.indexOf(opts.radixPoint);
+    if (opts.negationSymbol.back === buffer[buffer.length - 1]) {
+      negationBack = true;
+      buffer.length--;
+    }
+    if (radixPosition === -1) {
+      buffer.push(opts.radixPoint);
+      radixPosition = buffer.length - 1;
+    }
+    for (let i = 1; i <= digits; i++) {
+      if (!isFinite(buffer[radixPosition + i])) {
+        buffer[radixPosition + i] = "0";
+      }
+    }
+  }
+  if (negationBack) buffer.push(opts.negationSymbol.back);
+  return buffer;
+}
+function unmaskAsNumber(str, opts) {
+  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend({}, opts, {
+    unmaskAsNumber: true
+  }));
+}
+
+// onUnMask's text form, whatever the unmaskAsNumber option says
+function unmaskAsString(str, opts) {
+  return opts.onUnMask(str, undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend({}, opts, {
+    unmaskAsNumber: false
+  }));
+}
+function boundaryBuffer(bound, opts) {
+  // 5.x: the boundary keeps opts.digits only when they are not optional
+  // (alignDigits pads when !opts.digitsOptional); with digitsOptional the
+  // clamped value keeps its integer form.
+  return alignDigits(bound.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse();
+}
+function findValidator(symbol, maskset) {
+  let posNdx = 0;
+  if (symbol === "+") {
+    posNdx = _core_rule_engine__WEBPACK_IMPORTED_MODULE_4__.seekNext.call(this, maskset.validPositions.length - 1);
+  }
+  for (let tstNdx in maskset.tests) {
+    tstNdx = parseInt(tstNdx);
+    if (tstNdx >= posNdx) {
+      for (let ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) {
+        if ((maskset.validPositions[tstNdx] === undefined || symbol === "-") && maskset.tests[tstNdx][ndx].match.def === symbol) {
+          return tstNdx + (maskset.validPositions[tstNdx] !== undefined && symbol !== "-" ? 1 : 0);
+        }
+      }
+    }
+  }
+  return posNdx;
+}
+function findValid(symbol, maskset) {
+  let ret = -1;
+  for (let ndx = 0, vpl = maskset.validPositions.length; ndx < vpl; ndx++) {
+    const tst = maskset.validPositions[ndx];
+    if (tst && tst.match.def === symbol) {
+      ret = ndx;
+      break;
+    }
+  }
+  return ret;
+}
+
+// a negation placeholder, not a literal sign inside the prefix or suffix
+function hasNegationPart(maskset, def) {
+  return maskset.validPositions.some(vp => vp && vp.match.static !== true && vp.match.def === def);
+}
+function isNegated(maskset) {
+  return hasNegationPart(maskset, "+") || hasNegationPart(maskset, "-");
+}
+
+// does the value render the number the empty mask renders, or nothing at all.
+// jitMasking leaves the affixes out of the buffer until they are reached, so
+// when the wrapper cannot parse what is there, ask the mask instead: a digit
+// belonging to the prefix or suffix is not a number the user entered
+function holdsNoNumber(buffer, maskset, opts) {
+  const number = matchNumberInWrapper(buffer, opts);
+  if (number === null) {
+    return !maskset.validPositions.some(vp => vp && vp.match.static !== true && isDigit(vp.input));
+  }
+  return number === "" || number === matchNumberInWrapper(maskset._buffer, opts);
+}
+function parseMinMaxOptions(opts) {
+  if (opts.parseMinMaxOptions === undefined) {
+    // convert min and max options
+    if (opts.min !== null) {
+      opts.min = opts.min.toString().replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.groupSeparator), "g"), "");
+      if (opts.radixPoint === ",") opts.min = opts.min.replace(opts.radixPoint, ".");
+      opts.min = isFinite(opts.min) ? parseFloat(opts.min) : NaN;
+      if (isNaN(opts.min)) opts.min = Number.MIN_VALUE;
+    }
+    if (opts.max !== null) {
+      opts.max = opts.max.toString().replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.groupSeparator), "g"), "");
+      if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
+      opts.max = isFinite(opts.max) ? parseFloat(opts.max) : NaN;
+      if (isNaN(opts.max)) opts.max = Number.MAX_VALUE;
+    }
+    opts.parseMinMaxOptions = "done";
+  }
+}
+function genMask(opts) {
+  opts.repeat = 0;
+  // treat equal separator and radixpoint
+  if (opts.groupSeparator === opts.radixPoint && opts.digits && opts.digits !== "0") {
+    if (opts.radixPoint === ".") {
+      opts.groupSeparator = ",";
+    } else if (opts.radixPoint === ",") {
+      opts.groupSeparator = ".";
+    } else {
+      opts.groupSeparator = "";
+    }
+  }
+  // prevent conflict with default skipOptionalPartCharacter
+  if (opts.groupSeparator === " ") {
+    opts.skipOptionalPartCharacter = undefined;
+  }
+
+  // enforce placeholder to single
+  if (opts.placeholder !== undefined && opts.placeholder.length > 1) {
+    opts.placeholder = opts.placeholder.charAt(0);
+  }
+  // only allow radixfocus when placeholder = 0
+  if (opts.positionCaretOnClick === "radixFocus" && opts.placeholder === "") {
+    opts.positionCaretOnClick = "lvp";
+  }
+  let decimalDef = "0",
+    radixPointDef = opts.radixPoint;
+  if (opts.numericInput === true && opts.__financeInput === undefined) {
+    // finance people input style
+    decimalDef = "1";
+    opts.positionCaretOnClick = opts.positionCaretOnClick === "radixFocus" ? "lvp" : opts.positionCaretOnClick;
+    opts.digitsOptional = false;
+    if (isNaN(opts.digits)) opts.digits = opts.digits.indexOf(",") !== -1 ? opts.digits.split(",")[0] : 2;
+    opts._radixDance = false;
+    radixPointDef = opts.radixPoint === "," ? "?" : "!";
+    if (opts.radixPoint !== "" && opts.definitions[radixPointDef] === undefined) {
+      // update separator definition
+      opts.definitions[radixPointDef] = {};
+      opts.definitions[radixPointDef].validator = "[" + opts.radixPoint + "]";
+      opts.definitions[radixPointDef].placeholder = opts.radixPoint;
+      opts.definitions[radixPointDef].static = true;
+      opts.definitions[radixPointDef].generated = true; // forced marker as generated input
+    }
+  } else {
+    opts.__financeInput = false; // needed to keep original selection when remasking
+    opts.numericInput = true;
+  }
+
+  // Register the groupSeparator as a definition *before* escaping prefix/suffix
+  // so that a groupSeparator character appearing inside the prefix or suffix
+  // (e.g. prefix: "€ " with groupSeparator: " ") is escaped as a literal instead
+  // of being picked up by the lexer as a dynamic placeholder. Fixes #2262.
+  if (opts.groupSeparator !== "" && opts.definitions[opts.groupSeparator] === undefined) {
+    opts.definitions[opts.groupSeparator] = {
+      validator: "[" + opts.groupSeparator + "]",
+      placeholder: opts.groupSeparator,
+      static: true,
+      generated: true // forced marker as generated input
+    };
+  }
+  let mask = "[+]",
+    altMask;
+  mask += autoEscape(opts.prefix, opts);
+  if (opts.groupSeparator !== "") {
+    mask += opts._mask(opts);
+  } else {
+    mask += "9{+}";
+  }
+  if (opts.digits !== undefined && opts.digits !== 0) {
+    const dq = opts.digits.toString().split(",");
+    if (isFinite(dq[0]) && dq[1] && isFinite(dq[1])) {
+      mask += radixPointDef + decimalDef + "{" + opts.digits + "}";
+    } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
+      if (opts.digitsOptional || opts.jitMasking) {
+        altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}";
+      } else {
+        mask += radixPointDef + decimalDef + "{" + opts.digits + "}";
+      }
+    }
+  } else {
+    opts.inputmode = "numeric";
+  }
+  mask += autoEscape(opts.suffix, opts);
+  mask += "[-]";
+  if (altMask) {
+    opts.keepStatic = true;
+    mask = [altMask + autoEscape(opts.suffix, opts) + "[-]", mask];
+  }
+  opts.greedy = false; // enforce greedy false
+
+  parseMinMaxOptions(opts);
+  if (opts.radixPoint !== "" && opts.substituteRadixPoint) opts.substitutes[opts.radixPoint == "." ? "," : "."] = opts.radixPoint;
+  // console.log(mask);
+  return mask;
+}
+function handleRadixDance(pos, c, radixPos, maskset, opts) {
+  if (opts._radixDance && opts.numericInput && c !== opts.negationSymbol.back) {
+    if (pos <= radixPos && (radixPos > 0 || c == opts.radixPoint) && (maskset.validPositions[pos - 1] === undefined || maskset.validPositions[pos - 1].input !== opts.negationSymbol.back)) {
+      pos -= 1;
+    }
+  }
+  return pos;
+}
+function decimalValidator(chrs, maskset, pos, strict, opts) {
+  const radixPos = maskset.buffer ? maskset.buffer.indexOf(opts.radixPoint) : -1,
+    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__["default"]["9"].validator, "u").test(chrs);
+  if (!strict && opts._radixDance && radixPos !== -1 && result && maskset.validPositions[radixPos] == undefined) {
+    return {
+      insert: {
+        pos: radixPos === pos ? radixPos + 1 : radixPos,
+        c: opts.radixPoint,
+        fromIsValid: true
+      },
+      pos
+    };
+  }
+  return result;
+}
+
+// Match the numeric body of the (reversed) buffer against the prefix/suffix
+// wrapper, returning the captured "number" group or null if the match fails.
+function matchNumberInWrapper(buffer, opts) {
+  const match = new RegExp("(^" + (opts.negationSymbol.front !== "" ? "(?:" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.front) + ")?" : "") + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.prefix) + ")(.*?)(" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.suffix) + (opts.negationSymbol.back !== "" ? "(?:" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.back) + ")?" : "") + "$)").exec(buffer.slice().reverse().join(""));
+  return match ? match[2] : null;
+}
+function checkForLeadingZeroes(buffer, opts) {
+  let number = matchNumberInWrapper(buffer, opts) ?? "",
+    leadingzeroes = false;
+  if (number) {
+    number = number.split(opts.radixPoint.charAt(0))[0];
+    leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
+  }
+  return leadingzeroes && (leadingzeroes[0].length > 1 || leadingzeroes[0].length > 0 && leadingzeroes[0].length < number.length) ? leadingzeroes : false;
+}
+
+// number aliases
+const numericAlias = {
+    mask: genMask,
+    _mask: function (opts) {
+      return "(" + opts.groupSeparator + "999){+|1}";
+    },
+    digits: "*",
+    // number of fractionalDigits
+    digitsOptional: true,
+    enforceDigitsOnBlur: false,
+    radixPoint: ".",
+    positionCaretOnClick: "radixFocus",
+    _radixDance: true,
+    groupSeparator: "",
+    allowMinus: true,
+    negationSymbol: {
+      front: "-",
+      // "("
+      back: "" // ")"
+    },
+    prefix: "",
+    suffix: "",
+    min: null,
+    // minimum value
+    max: null,
+    // maximum value
+    setMinMaxOnOverflow: false,
+    step: 1,
+    inputType: "text",
+    // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
+    unmaskAsNumber: false,
+    roundingFN: Math.round,
+    // Math.floor ,  fn(x)
+    inputmode: "decimal",
+    shortcuts: {
+      k: "1000",
+      m: "1000000"
+    },
+    // global options
+    placeholder: "0",
+    greedy: false,
+    rightAlign: true,
+    insertMode: true,
+    autoUnmask: false,
+    skipOptionalPartCharacter: "",
+    stripLeadingZeroes: true,
+    substituteRadixPoint: true,
+    definitions: {
+      0: {
+        validator: decimalValidator
+      },
+      1: {
+        validator: decimalValidator,
+        definitionSymbol: "9"
+      },
+      "+": {
+        validator: function (chrs, maskset, pos, strict, opts) {
+          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front);
+        }
+      },
+      "-": {
+        validator: function (chrs, maskset, pos, strict, opts) {
+          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.back);
+        }
+      }
+    },
+    preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+      const inputmask = this;
+      if (opts.__financeInput !== false && c === opts.radixPoint) return false;
+      const radixPos = buffer.indexOf(opts.radixPoint),
+        initPos = pos;
+      pos = handleRadixDance(pos, c, radixPos, maskset, opts);
+      if (c === "-" || c === opts.negationSymbol.front) {
+        if (opts.allowMinus !== true) return false;
+        let isNegative = false;
+        const front = findValid("+", maskset),
+          back = findValid("-", maskset);
+        if (front !== -1) {
+          isNegative = [front];
+          if (back !== -1) isNegative.push(back);
+        }
+        const checkMax = isNegative !== false && opts.max !== null,
+          checkMin = isNegative === false && opts.min !== null;
+        // Reject typing "-" against a non-negative min — alignDigits would
+        // pad the orphan sign to "-0". setMinMaxOnOverflow=true has its own
+        // boundary refresh in postValidation.
+        if (!opts.setMinMaxOnOverflow && checkMin && opts.min >= 0) return false;
+        // A sign flip out of range: setMinMaxOnOverflow puts the boundary it
+        // crossed in the field, as an overflowing keystroke does, otherwise
+        // the keystroke is refused. postValidation's range check doesn't fire
+        // after the validator's `{remove: ...}` return (toggle-off path), so
+        // the flip has to be caught here. #2846
+        if ((checkMax || checkMin) && this.maskset.validPositions.length > 0) {
+          const absVal = Math.abs(unmaskAsNumber(buffer.slice().reverse().join(""), opts));
+          if (checkMax && absVal > opts.max || checkMin && -absVal < opts.min) {
+            if (!opts.setMinMaxOnOverflow) return false;
+            return {
+              refreshFromBuffer: true,
+              buffer: boundaryBuffer(checkMax ? opts.max : opts.min, opts)
+            };
+          }
+        }
+        return isNegative !== false ? {
+          remove: isNegative,
+          caret: initPos - opts.negationSymbol.back.length
+        } : {
+          insert: [{
+            pos: findValidator.call(inputmask, "+", maskset),
+            c: opts.negationSymbol.front,
+            fromIsValid: true,
+            strict: strict !== undefined ? strict : false
+          }, {
+            pos: findValidator.call(inputmask, "-", maskset),
+            c: opts.negationSymbol.back,
+            fromIsValid: undefined,
+            strict: strict !== undefined ? strict : false
+          }],
+          caret: initPos + opts.negationSymbol.back.length
+        };
+      }
+      if (c === opts.groupSeparator) {
+        return {
+          caret: initPos
+        };
+      }
+      if (strict) return true;
+      if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
+        const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
+        if (maskset.validPositions[radixValidatorPos]) {
+          maskset.validPositions[radixValidatorPos] = _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, maskset.validPositions[radixValidatorPos], {
+            generatedInput: maskset.validPositions[radixValidatorPos].generated || false
+          });
+        }
+        return {
+          caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
+        };
+      }
+      if (opts.__financeInput === false) {
+        if (isSelection) {
+          if (opts.digitsOptional) {
+            // Full selection overwrite (covers entire value including suffix) lands on suffix position
+            // in RTL. Target base mask units position instead.
+            if (caretPos.end <= opts.suffix.length) {
+              return {
+                rewritePosition: opts.suffix.length
+              };
+            }
+            return {
+              rewritePosition: caretPos.end
+            };
+          } else if (!opts.digitsOptional) {
+            if (caretPos.begin > radixPos && caretPos.end <= radixPos) {
+              if (c === opts.radixPoint) {
+                return {
+                  insert: {
+                    pos: radixPos + 1,
+                    c: "0",
+                    fromIsValid: true
+                  },
+                  rewritePosition: radixPos
+                };
+              } else {
+                return {
+                  rewritePosition: radixPos + 1
+                };
+              }
+            } else if (caretPos.begin < radixPos) {
+              return {
+                rewritePosition: caretPos.begin - 1
+              };
+            }
+          }
+        } else {
+          if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && opts.digits > 0 && this.__valueGet.call(this.el) === "") {
+            return {
+              rewritePosition: radixPos
+            };
+          }
+
+          // Cursor placed at or before the prefix on a field with no digits
+          // would otherwise fall through to alternation switching and land
+          // in the decimal part (#2615)
+          if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
+            const digitTest = new RegExp(_core_definitions__WEBPACK_IMPORTED_MODULE_0__["default"]["9"].validator, "u");
+            if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
+              return {
+                rewritePosition: radixPos !== -1 ? radixPos : 0
+              };
+            }
+          }
+        }
+      }
+      return {
+        rewritePosition: pos
+      };
+    },
+    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate) {
+      if (currentResult === false) return currentResult;
+      if (strict) return true;
+      // A checkval write (setvalue, paste, initial value) is whole-value: accept
+      // every char and let the final onBeforeWrite clamp normalize the boundary,
+      // instead of rejecting overflow chars mid-write (which truncates the value).
+      if (fromCheckval) return currentResult;
+      if (opts.min !== null || opts.max !== null) {
+        const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
+        if (opts.min !== null && unmasked < opts.min && (fromAlternate !== true && typeof fromAlternate !== "number" || unmasked < 0) && (unmasked.toString().length > opts.min.toString().length ||
+        // > instead of >= because we want to allow to type a bigger number
+        buffer[0] === opts.radixPoint ||
+        // disallow radixpoint when value is smaller than min
+        unmasked < 0)) {
+          return unmasked < 0 && opts.setMinMaxOnOverflow ? {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.min, opts)
+          } : false;
+        }
+        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
+          return opts.setMinMaxOnOverflow ? {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.max, opts)
+          } : false;
+        }
+      }
+      return currentResult;
+    },
+    onUnMask: function (maskedValue, unmaskedValue, opts) {
+      if (unmaskedValue === "" && opts.nullable === true) {
+        return unmaskedValue;
+      }
+      let processValue = maskedValue.replace(opts.prefix, "");
+      processValue = processValue.replace(opts.suffix, "");
+      processValue = processValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.groupSeparator), "g"), "");
+      const placeholderChar = opts.placeholder !== undefined ? opts.placeholder.charAt(0) : "";
+      if (placeholderChar !== "") {
+        processValue = processValue.replace(new RegExp(placeholderChar, "g"), "0");
+      }
+      if (opts.unmaskAsNumber) {
+        if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex.call(this, opts.radixPoint), ".");
+        processValue = processValue.replace(new RegExp("^" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.front)), "-");
+        processValue = processValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.back) + "$"), "");
+        // a blank buffer, or a lone sign/radix, holds no number; Number("") is
+        // 0, which a min/max check would mistake for a real 0 (#2863)
+        const numberValue = Number(processValue);
+        return /[0-9]/.test(processValue) ? numberValue : NaN;
+      }
+      return processValue;
+    },
+    isComplete: function (buffer, opts) {
+      let maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
+      maskedValue = maskedValue.replace(new RegExp("^" + (0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.front)), "-");
+      maskedValue = maskedValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.negationSymbol.back) + "$"), "");
+      maskedValue = maskedValue.replace(opts.prefix, "");
+      maskedValue = maskedValue.replace(opts.suffix, "");
+      maskedValue = maskedValue.replace(new RegExp((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
+      if (opts.radixPoint === ",") maskedValue = maskedValue.replace((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(opts.radixPoint), ".");
+      return isFinite(maskedValue);
+    },
+    onBeforeMask: function (initialValue, opts) {
+      initialValue = initialValue ?? "";
+      const radixPoint = opts.radixPoint || ",",
+        originalValue = initialValue;
+      if (isFinite(opts.digits)) opts.digits = parseInt(opts.digits);
+      if ((typeof initialValue === "number" || opts.inputType === "number") && radixPoint !== "") {
+        initialValue = initialValue.toString().replace(".", radixPoint);
+      }
+      const isNegative = initialValue.charAt(0) === "-" || initialValue.charAt(0) === opts.negationSymbol.front,
+        valueParts = initialValue.split(radixPoint),
+        integerPart = valueParts[0].replace(/[^\-0-9]/g, ""),
+        decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "",
+        forceDigits = valueParts.length > 1,
+        // beyond Number.MAX_SAFE_INTEGER (9007199254740991, 16 digits) any
+        // parseFloat/rounding or string min/max compare would collapse the
+        // integer precision (#2715)
+        isHuge = integerPart.replace("-", "").length > 15;
+      initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
+      let digits = 0;
+      if (radixPoint !== "") {
+        digits = !opts.digitsOptional ? opts.digits : opts.digits < decimalPart.length ? opts.digits : decimalPart.length;
+        if (decimalPart !== "" || !opts.digitsOptional) {
+          if (isHuge) {
+            // keep the incoming value as-is: numeric rounding would collapse it
+            initialValue = originalValue;
+          } else {
+            const digitsFactor = Math.pow(10, digits || 1);
+
+            // make the initialValue a valid javascript number for the parsefloat
+            initialValue = initialValue.replace((0,_core_escapeRegex__WEBPACK_IMPORTED_MODULE_1__.escapeRegex)(radixPoint), ".");
+            if (!isNaN(parseFloat(initialValue))) {
+              initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
+            }
+            initialValue = initialValue.toString().replace(".", radixPoint);
+          }
+        }
+      }
+      // this needs to be in a separate part and not directly in decimalPart to allow rounding
+      if (opts.digits === 0 && initialValue.indexOf(radixPoint) !== -1) {
+        initialValue = initialValue.substring(0, initialValue.indexOf(radixPoint));
+      }
+      if (initialValue !== "" && !isHuge && (opts.min !== null || opts.max !== null)) {
+        const numberValue = initialValue.toString().replace(radixPoint, ".");
+        if (opts.min !== null && numberValue < opts.min) {
+          initialValue = opts.min.toString().replace(".", radixPoint);
+        } else if (opts.max !== null && numberValue > opts.max) {
+          initialValue = opts.max.toString().replace(".", radixPoint);
+        }
+      }
+      if (isNegative && initialValue.charAt(0) !== "-") {
+        initialValue = "-" + initialValue;
+      }
+      return alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
+    },
+    onBeforeWrite: function (e, buffer, caretPos, opts) {
+      const inputmask = this,
+        maskset = inputmask.maskset;
+      function stripBuffer(buffer, stripRadix) {
+        if (opts.__financeInput !== false || stripRadix) {
+          const position = buffer.indexOf(opts.radixPoint);
+          if (position !== -1) {
+            buffer.splice(position, 1);
+          }
+        }
+        if (opts.groupSeparator !== "") {
+          let position;
+          while ((position = buffer.indexOf(opts.groupSeparator)) !== -1) {
+            buffer.splice(position, 1);
+          }
+        }
+        return buffer;
+      }
+      function checkAlignment(buffer, result, opts) {
+        result = result || {};
+        const bffr = (result && result.buffer || buffer).slice().reverse();
+        let radixPos = bffr.indexOf(opts.radixPoint);
+        const digits = bffr.slice(radixPos + 1, radixPos + 1 + opts.digits),
+          needsAlign = radixPos === -1 || digits.length < opts.digits || !digits.every(ch => isFinite(ch));
+        if (needsAlign) {
+          result.refreshFromBuffer = true;
+          result.buffer = alignDigits(bffr.slice(), opts.digits, opts, true).reverse();
+          const delta = result.buffer.length - bffr.length;
+          if (delta > 0 && caretPos !== undefined) {
+            result.caret = (caretPos.begin !== undefined ? caretPos.begin : caretPos) + delta;
+            radixPos = result.buffer.indexOf(opts.radixPoint);
+            if (result.caret > radixPos) result.caret = radixPos;
+          }
+        }
+        return result;
+      }
+      let result, leadingzeroes;
+      if (opts.stripLeadingZeroes && (leadingzeroes = checkForLeadingZeroes(buffer, opts))) {
+        const caretNdx = buffer.join("").lastIndexOf(leadingzeroes[0].split("").reverse().join("")) - (leadingzeroes[0] == leadingzeroes.input ? 0 : 1),
+          offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0;
+        for (let i = leadingzeroes[0].length - offset; i > 0; i--) {
+          this.maskset.validPositions.splice(caretNdx + i, 1);
+          buffer.splice(caretNdx + i, 1);
+        }
+      }
+
+      // When the integer part has no digit yet (typing starts at the radix
+      // point, e.g. ".5", or at a bare suffix, e.g. "%", which under
+      // jitMasking has no placeholder), the leading zero is missing. Inject
+      // it explicitly at the integer position instead of leaving a lonely
+      // radix or suffix. #2561 #1810
+      if (opts.jitMasking !== false && opts.jitMasking !== undefined && e && buffer.length > 0 && (typeof e.key === "string" && e.key.length === 1 || e.type === "input" && typeof e.data === "string" && e.data.length === 1)) {
+        const number = matchNumberInWrapper(buffer, opts) ?? "",
+          radixNdx = buffer.indexOf(opts.radixPoint),
+          backLen = opts.negationSymbol.back.length,
+          display = buffer.slice().reverse().join(""),
+          isRadixStart = number.charAt(0) === opts.radixPoint.charAt(0) || number === "" && display.charAt(0) === opts.radixPoint.charAt(0),
+          isBareSuffix = number === "" && opts.suffix !== "" && buffer.length === opts.suffix.length + backLen;
+        if (isBareSuffix || isRadixStart && radixNdx !== -1) {
+          // the buffer is reversed, so an integer digit goes directly behind
+          // the radix, or behind the suffix (and the closing negation symbol
+          // when the value is already negative) when there is no radix yet
+          const injectNdx = isRadixStart ? radixNdx + 1 : opts.suffix.length + backLen;
+          // place a real input digit, like the engine's own insert command
+          _core_validation__WEBPACK_IMPORTED_MODULE_5__.isValid.call(inputmask, injectNdx, "0", true, true);
+          buffer.splice(injectNdx, 0, "0");
+        }
+      }
+      if (e) {
+        switch (e.type) {
+          case "blur":
+          case "checkval":
+          case "input":
+            if ((opts.min !== null || opts.max !== null) && this.maskset.validPositions.length > 0) {
+              const unmasked = unmaskAsNumber(buffer.slice().reverse().join(""), opts);
+              // unmaskAsNumber is NaN when the buffer holds no number, so a
+              // blank/whitespace value is not mistaken for a real 0 and clamped
+              if (!isNaN(unmasked) && opts.min !== null && unmasked < opts.min) {
+                return {
+                  refreshFromBuffer: true,
+                  buffer: boundaryBuffer(opts.min, opts)
+                };
+              } else if (!isNaN(unmasked) && opts.max !== null && unmasked > opts.max) {
+                return {
+                  refreshFromBuffer: true,
+                  buffer: boundaryBuffer(opts.max, opts)
+                };
+              }
+            }
+            if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
+              // strip negation symbol on blur when value is 0. Match on the
+              // raw buffer so a groupSeparator-colliding char inside the
+              // prefix/suffix (e.g. space in "€ ") is preserved; normalize
+              // only the extracted number group. Fixes #2262.
+              const rawNumber = matchNumberInWrapper(buffer, opts);
+              if (rawNumber !== null) {
+                let number = rawNumber.split(opts.groupSeparator).join("");
+                if (opts.radixPoint) number = number.replace(opts.radixPoint, ".");
+                if (number === "" || number == 0) {
+                  result = {
+                    refreshFromBuffer: true,
+                    buffer: [0]
+                  };
+                }
+              }
+            } else if (opts.radixPoint !== "") {
+              // strip radixpoint on blur when it is the latest char
+              const radixNDX = buffer.indexOf(opts.radixPoint);
+              if (radixNDX === opts.suffix.length) {
+                if (result && result.buffer) {
+                  result.buffer.splice(0, 1 + opts.suffix.length);
+                } else {
+                  buffer.splice(0, 1 + opts.suffix.length);
+                  result = {
+                    refreshFromBuffer: true,
+                    buffer: stripBuffer(buffer)
+                  };
+                }
+              }
+            }
+            if (e && e.type === "blur" && (opts.enforceDigitsOnBlur || opts.digitsOptional === false && opts.jitMasking === false)) {
+              result = checkAlignment(buffer, result, opts);
+            }
+            break;
+          case "_checkval":
+          case "keydown":
+            if (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.Delete || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.Backspace || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.BACKSPACE_SAFARI) {
+              if (
+              // nothing but the sign is left, e.g. "-0" - clear it
+              isNegated(maskset) && holdsNoNumber(buffer, maskset, opts) ||
+              // half of a paired negation symbol is left behind - deleting
+              // "(" out of "(50)" cannot render as anything sensible - so
+              // clear the value, as it did before
+              opts.negationSymbol.front !== "" && opts.negationSymbol.back !== "" && hasNegationPart(maskset, "+") !== hasNegationPart(maskset, "-")) {
+                result = {
+                  refreshFromBuffer: true,
+                  buffer: [],
+                  caret: caretPos.begin
+                };
+              }
+              if (opts.digitsOptional === false) {
+                const caret = typeof caretPos === "object" ? caretPos : {
+                    begin: caretPos,
+                    end: caretPos
+                  },
+                  end = caret.end === caret.begin ? caret.end + 1 : caret.end;
+                let reAlign = false,
+                  radixNdx = buffer.indexOf(opts.radixPoint);
+                if (caret.end <= radixNdx) {
+                  for (let i = caret.begin; i < end; i++) {
+                    radixNdx = buffer.indexOf(opts.radixPoint) - 1;
+                    if (buffer[radixNdx] === "0") {
+                      buffer.splice(radixNdx, 1);
+                      reAlign = true;
+                    }
+                  }
+                  if (reAlign) result = checkAlignment(buffer, result, opts);
+                } else {
+                  result = result || {};
+                  // the radix dance: after a deletion in the integer part,
+                  // park the caret on the integer digit next to the radix
+                  // point instead of leaving it in the fraction, so repeated
+                  // Deletes keep eating the integer part
+                  result.caret = radixNdx + 1;
+                  // Deleting a digit left of the radix point on a fixed-digits
+                  // mask has to drop the digit and repad the fraction, the
+                  // same job checkAlignment does for the fraction above. It
+                  // cannot do it here: the engine removes the digit for
+                  // Backspace but not for a Delete in the integer part, so
+                  // nothing else takes the digit out and the fraction is left
+                  // short - currency "0.23" never reaches "0.00" (#1351).
+                  //
+                  // The deletion site is buffer[caret.begin - 1], which the
+                  // first two conditions already checked. The last two ask
+                  // whether a digit was really deleted there, because an
+                  // earlier pass can have rebuilt the whole buffer - taking
+                  // the sign off sends the value over max, so it is clamped to
+                  // the boundary - while the native value still holds the text
+                  // from before. The caret then points into a layout that no
+                  // longer exists and the splice takes a digit out of the
+                  // boundary that was just written: "$ 30.00" loses the 0 of
+                  // 30. #2904
+                  //
+                  // Neither of the two tells on its own. Comparing lengths
+                  // catches the rebuild, but a clamp that keeps the rendered
+                  // length slips through - the native value is stale in the
+                  // currency case too, there just at equal length. Reading the
+                  // character under the caret catches a caret that landed on
+                  // the radix point, but a digit sitting there does not prove
+                  // anything was deleted from it. So both have to agree.
+                  // translatePosition cannot bridge the gap either, it derives
+                  // the mask position from that same stale native value.
+                  if (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1]) && inputmask._valueGet().length === buffer.length && /\d/.test(buffer.slice().reverse()[caret.begin] || "")) {
+                    const spliced = buffer.slice();
+                    spliced.splice(caret.begin - 1, 1);
+                    result.refreshFromBuffer = true;
+                    result.buffer = alignDigits(spliced.reverse(), opts.digits, opts).reverse();
+                  }
+                }
+              }
+            }
+        }
+      }
+
+      // Taking the sign off a negative value is that value crossing max.
+      // setMinMaxOnOverflow sets the boundary there and then, as it does for
+      // an overflowing keystroke, instead of leaving the value to be clamped
+      // on blur. Only the pure flip counts - the sign and nothing else,
+      // compared as text, not as a number: deleting digits is ordinary
+      // editing. #2846
+      if (e && opts.setMinMaxOnOverflow && opts.max !== null && (e.type === "cut" || e.type === "keydown" && (e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.Delete || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.Backspace || e.key === _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.BACKSPACE_SAFARI))) {
+        const after = buffer.slice().reverse().join("");
+        if (unmaskAsNumber(after, opts) > opts.max && unmaskAsString(inputmask._valueGet(true), opts) === opts.negationSymbol.front + unmaskAsString(after, opts) + opts.negationSymbol.back) {
+          return {
+            refreshFromBuffer: true,
+            buffer: boundaryBuffer(opts.max, opts)
+          };
+        }
+      }
+      return result;
+    },
+    onKeyDown: function (e, buffer, caretPos, opts) {
+      const $input = (0,_dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"])(this);
+      if (e.location !== 3) {
+        let pattern;
+        const c = e.key;
+        if (pattern = opts.shortcuts && opts.shortcuts[c]) {
+          if (pattern.length > 1) {
+            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(pattern));
+            $input.trigger("setvalue");
+            return false;
+          }
+        }
+      }
+      if (e.ctrlKey) {
+        switch (e.key) {
+          case _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.ArrowUp:
+            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
+            $input.trigger("setvalue");
+            return false;
+          case _core_keycode__WEBPACK_IMPORTED_MODULE_3__.keys.ArrowDown:
+            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
+            $input.trigger("setvalue");
+            return false;
+        }
+      }
+    }
+  },
+  currencyAlias = {
+    prefix: "",
+    // "$ ",
+    groupSeparator: ",",
+    // alias: "numeric",
+    digits: 2,
+    digitsOptional: false
+  },
+  decimalAlias = {
+    // alias: "numeric"
+  },
+  integerAlias = {
+    // alias: "numeric",
+    inputmode: "numeric",
+    digits: 0
+  },
+  percentageAlias = {
+    // alias: "numeric",
+    min: 0,
+    max: 100,
+    suffix: " %",
+    digits: 0,
+    allowMinus: false
+  },
+  indiannsAlias = {
+    // indian numbering system
+    // alias: "numeric",
+    _mask: function (opts) {
+      return "(" + opts.groupSeparator + "99){*|1}(" + opts.groupSeparator + "999){1|1}";
+    },
+    groupSeparator: ",",
+    radixPoint: ".",
+    placeholder: "0",
+    digits: 2,
+    digitsOptional: false
+  };
+
+function numeric(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, options);
+}
+function currency(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, currencyAlias, options);
+}
+function decimal(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, decimalAlias, options);
+}
+function integer(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, integerAlias, options);
+}
+function percentage(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, percentageAlias, options);
+}
+function indianns(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, {}, numericAlias, indiannsAlias, options);
+}
+function registerNumeric() {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_6__["default"].extend(true, _core_inputmask__WEBPACK_IMPORTED_MODULE_2__.aliases, {
+    numeric: numericAlias,
+    currency: {
+      alias: "numeric",
+      ...currencyAlias
+    },
+    decimal: {
+      alias: "numeric",
+      ...decimalAlias
+    },
+    integer: {
+      alias: "numeric",
+      ...integerAlias
+    },
+    percentage: {
+      alias: "numeric",
+      ...percentageAlias
+    },
+    indianns: {
+      alias: "numeric",
+      ...indiannsAlias
+    }
+  });
+}
+
+/***/ }
+
+};
+;
+
+// load runtime
+import { __webpack_require__ } from "../inputmask.mjs";
+var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+
+import * as __webpack_chunk_1__ from "./numeric.mjs";
+__webpack_require__.C(__webpack_chunk_1__);
+var __webpack_exports__ = __webpack_exec__(13);
+const __webpack_exports__currency = __webpack_exports__.currency;
+const __webpack_exports__decimal = __webpack_exports__.decimal;
+const __webpack_exports__indianns = __webpack_exports__.indianns;
+const __webpack_exports__integer = __webpack_exports__.integer;
+const __webpack_exports__numeric = __webpack_exports__.numeric;
+const __webpack_exports__percentage = __webpack_exports__.percentage;
+const __webpack_exports__registerNumeric = __webpack_exports__.registerNumeric;
+export { __webpack_exports__currency as currency, __webpack_exports__decimal as decimal, __webpack_exports__indianns as indianns, __webpack_exports__integer as integer, __webpack_exports__numeric as numeric, __webpack_exports__percentage as percentage, __webpack_exports__registerNumeric as registerNumeric };
+
+//# sourceMappingURL=numeric.mjs.map
