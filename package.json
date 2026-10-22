@@ -12,14 +12,14 @@
       "require": "./dist/inputmask.js"
     },
     "./extensions/date": {
-      "types": "./lib/extensions/date.d.ts",
+      "types": "./dist/types/extensions/date.d.ts",
       "import": "./dist/esm/extensions/date.mjs"
     },
     "./extensions/date.i18n": {
       "import": "./dist/esm/extensions/date.i18n.mjs"
     },
     "./extensions/numeric": {
-      "types": "./lib/extensions/numeric.d.ts",
+      "types": "./dist/types/extensions/numeric.d.ts",
       "import": "./dist/esm/extensions/numeric.mjs"
     },
     "./extensions/definitions": {
@@ -65,20 +65,9 @@
   },
   "files": [
     "Changelog.md",
-    "dist/",
-    "lib/",
-    "micromasks/"
+    "dist/"
   ],
   "sideEffects": [
-    "./bundle.js",
-    "./bundle.jquery.js",
-    "./bundle.colormask.js",
-    "./lib/global/FormData.js",
-    "./lib/extensions/date.i18n.js",
-    "./lib/inputmaskElement.js",
-    "./lib/jquery.inputmask.js",
-    "./lib/components/jquery.inputmask.js",
-    "./lib/bindings/inputmask.binding.js",
     "./dist/*.js",
     "./dist/esm/**/*.mjs"
   ],

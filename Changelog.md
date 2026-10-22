@@ -28,6 +28,7 @@
 - the headless class (`lib/core/inputmask.js`) has no `lib/dom/` imports; the element-bound `mask`/`remove` methods and `remove`/`setValue` statics attach from `lib/dom/attach.js`, wired by the `lib/index.js` entry
 - internal module paths moved under `lib/core/` and `lib/dom/` (e.g. `inputmask/lib/inputmask` → `inputmask/lib/core/inputmask`, `inputmask/lib/eventhandlers` → `inputmask/lib/dom/eventhandlers`); the public entry points (`inputmask`, `inputmask/extensions/*`) are unchanged (deep imports only)
 - date translations live in the date extension instead of the core; `Inputmask.prototype.i18n` is gone, pass translations through the `i18n` option (breaking)
+- the npm package ships the bundles in `dist/` and the type declarations in `dist/types/` only; the `lib/` sources and the `micromasks/` helper are no longer published, so deep imports into `inputmask/lib/...` are no longer available and the `sideEffects` field lists the published bundles only
 
 ### Fixed
 
