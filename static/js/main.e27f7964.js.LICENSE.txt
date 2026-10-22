@@ -6,11 +6,11 @@
  */
 
 /*!
- * dist/esm/inputmask.mjs
+ * inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.35
+ * Version: 5.1.0-beta.36
  */
 
 /**

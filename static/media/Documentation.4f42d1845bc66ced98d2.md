@@ -780,6 +780,128 @@ var isValid = Inputmask.isValid("23/03/1973", {
 });
 ```
 
+### Headless Interactive Session
+
+Inputmask can run in-memory without a DOM element for use in Node.js, React controlled inputs, React Native, SSR, terminal CLI prompts, or test suites.
+
+An interactive session is created using `Inputmask(options)` (or `new Inputmask(options)`); the mask state initializes lazily on the first session call:
+
+```javascript
+import Inputmask from "inputmask";
+
+const session = Inputmask({ mask: "99/99/9999" });
+```
+
+#### Interactive Methods
+
+##### `session.input(chars)`
+
+Types characters at the current caret position, advancing across static mask tokens and placeholders.
+
+```javascript
+session.input("12");
+session.getValue(); // "12/__/____"
+session.caret;      // { begin: 3, end: 3 }
+```
+
+##### `session.delete(direction)` / `session.backspace()`
+
+Deletes a character backward (`"backspace"`) or forward (`"delete"`) from the current caret, handling separators and re-padding placeholders.
+
+```javascript
+session.backspace();
+session.getValue(); // "1_/__/____"
+```
+
+##### `session.paste(text)`
+
+Pastes text starting at the current cursor/selection.
+
+```javascript
+session.paste("231973");
+session.getValue(); // "12/31/973_"
+```
+
+##### `session.setValue(value, caretPos)`
+
+Sets a value headlessly and computes mask state, optionally placing the caret.
+
+```javascript
+session.setValue("23031973");
+session.getValue(); // "23/03/1973"
+```
+
+##### `session.getValue()` / `session.value`
+
+Returns the current masked display string.
+
+##### `session.unmaskedvalue()` / `session.unmaskedValue`
+
+Returns the raw unmasked string.
+
+##### `session.getSelection()` / `session.caret`
+
+Returns `{ begin: number, end: number }`.
+
+##### `session.setSelection(begin, end)`
+
+Sets the in-memory cursor or selection range.
+
+##### `session.isComplete()`
+
+Returns boolean indicating whether the mask pattern is completely filled.
+
+#### Controlled inputs (React, etc.)
+
+There is no separate reconcile method: push the raw text with `setValue`, mirror the view's selection with `setSelection`, and read the state back with the getters. The element itself gets no inputmask binding, so React stays the only writer:
+
+```jsx
+import Inputmask from "inputmask";
+import { useLayoutEffect, useMemo, useRef } from "react";
+
+function MaskedInput({ mask, value, onChange }) {
+  // one session per mask; the mask set is parsed lazily on first use
+  const session = useMemo(() => Inputmask({ mask }), [mask]);
+  const inputRef = useRef(null);
+  const syncCaret = useRef(false);
+
+  const handleChange = (e) => {
+    // re-derive the state from the view's text
+    session.setValue(e.target.value);
+    // setValue re-parses the value and resets the caret, so restore the view's selection after it
+    session.setSelection(e.target.selectionStart, e.target.selectionEnd);
+    syncCaret.current = true;
+    onChange(session.getValue(), {
+      unmasked: session.unmaskedvalue(), // .unmaskedvalue() / .unmaskedValue
+      caret: session.getSelection(), // .getSelection() / .caret
+      complete: session.isComplete() // .isComplete()
+    });
+  };
+
+  // seed external values (initial value, programmatic set, form reset) into the session
+  useLayoutEffect(() => {
+    if (
+      value == null ||
+      value === session.getValue() ||
+      value === session.unmaskedvalue()
+    )
+      return;
+    session.setValue(value);
+    syncCaret.current = true;
+  }, [session, value]);
+
+  // the session's caret is in memory only: put it back in the element after React commits
+  useLayoutEffect(() => {
+    if (!syncCaret.current || !inputRef.current) return;
+    syncCaret.current = false;
+    const { begin, end } = session.getSelection();
+    inputRef.current.setSelectionRange(begin, end);
+  });
+
+  return <input ref={inputRef} value={value} onChange={handleChange} />;
+}
+```
+
 ## Options
 
 ### placeholder

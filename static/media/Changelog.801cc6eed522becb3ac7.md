@@ -7,6 +7,12 @@
 - Provide TypeScript definitions #1939
 - add displayChar option to mask definitions (masked display, native value) #2402
 - datetime accepts whole values written in the outputFormat and converts them to the inputFormat #576
+- headless / non-DOM usage: `Inputmask` runs entirely in-memory without an element (Node.js, React controlled inputs, CLI prompts, SSR)
+- `inputmask/extensions/date.i18n` exposes the date translations for extending or merging into the `i18n` option
+- interactive session API on the instance, initialized lazily on the first call:
+  - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
+  - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
+  - `setSelection(begin, end)`, `getSelection()`/`caret`
 
 ### Updates
 
@@ -15,6 +21,14 @@
 - the NuGet packages work again on modern .NET and are built with the dotnet SDK instead of the Windows-only nuget.exe
 - the `placeholder` option is resolved per position: a placeholder map first, then the placeholder of the mask definition, then the string option, then the default of the prototype definitions
 - a multi-char `placeholder` string is mapped onto the mask tokens by index, so it lines up with an ungrouped mask only. Use a placeholder map for a mask with groups or quantifiers
+- `caret()`, `checkVal()` and `writeBuffer()` no longer depend on DOM globals or element references; in-memory caret tracking is kept when there is no element
+- headless `setValue()` runs `onBeforeMask` like the DOM path
+- headless `input()`/`delete()` use the core keystroke logic directly and no longer fire `onKeyDown`
+- source split into `lib/core/` (DOM-free engine: lexer, validation, positioning, key processing, input handling) and `lib/dom/` (browser driver: event handlers/binding, element patching, environment sniffing)
+- the headless class (`lib/core/inputmask.js`) has no `lib/dom/` imports; the element-bound `mask`/`remove` methods and `remove`/`setValue` statics attach from `lib/dom/attach.js`, wired by the `lib/index.js` entry
+- internal module paths moved under `lib/core/` and `lib/dom/` (e.g. `inputmask/lib/inputmask` → `inputmask/lib/core/inputmask`, `inputmask/lib/eventhandlers` → `inputmask/lib/dom/eventhandlers`); the public entry points (`inputmask`, `inputmask/extensions/*`) are unchanged (deep imports only)
+- date translations live in the date extension instead of the core; `Inputmask.prototype.i18n` is gone, pass translations through the `i18n` option (breaking)
+- the npm package ships the bundles in `dist/` and the type declarations in `dist/types/` only; the `lib/` sources and the `micromasks/` helper are no longer published, so deep imports into `inputmask/lib/...` are no longer available and the `sideEffects` field lists the published bundles only
 
 ### Fixed
 
@@ -39,11 +53,15 @@
 - `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
 - pasting no longer cancels the native paste event (`preventDefault`), fixing the Lighthouse/PageSpeed "Prevents users from pasting into input fields" audit on masked inputs #2823
 - clicking in or behind the suffix of a numeric value without a radix point keeps the caret out of the suffix and lands it at the end of the digits
+- a regex quantifier on the first element of an optional group dropped the still required positions, so `\d{2,}:\d{2}(:\d{2})?` no longer renders like `\d{2,}:\d{2}(:\d\d)?` #2226
+- the ESM bundles declared webpack's `__webpack_require__` in module scope, so a bundler injecting its own reference to that name (react-refresh prepends `__webpack_require__.$Refresh$.runtime = ...` to every module outside node_modules) bound it to our runtime instead of its own and the app died on load with `Cannot set properties of undefined (setting 'runtime')`; hits linked installs (npm `file:`, workspaces, pnpm/yarn links), not packages installed from the registry
+- the `<input-mask>` custom element was missing from the published bundles: the module that registers it is imported for its side effects only and the bundle build dropped it, so `customElements.define("input-mask", ...)` never ran
 
 ### Tests
 
 - Add Node/SSR smoke test to validate pipeline
 - Add regression test for percentage select-all overwrite issue (#2893)
+- Add regression test for regex quantifier inside an optional group (#2226)
 
 ## [5.0.10 - 31/07/2026]
 
