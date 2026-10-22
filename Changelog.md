@@ -54,6 +54,7 @@
 - clicking in or behind the suffix of a numeric value without a radix point keeps the caret out of the suffix and lands it at the end of the digits
 - a regex quantifier on the first element of an optional group dropped the still required positions, so `\d{2,}:\d{2}(:\d{2})?` no longer renders like `\d{2,}:\d{2}(:\d\d)?` #2226
 - the ESM bundles declared webpack's `__webpack_require__` in module scope, so a bundler injecting its own reference to that name (react-refresh prepends `__webpack_require__.$Refresh$.runtime = ...` to every module outside node_modules) bound it to our runtime instead of its own and the app died on load with `Cannot set properties of undefined (setting 'runtime')`; hits linked installs (npm `file:`, workspaces, pnpm/yarn links), not packages installed from the registry
+- the `<input-mask>` custom element was missing from the published bundles: the module that registers it is imported for its side effects only and the bundle build dropped it, so `customElements.define("input-mask", ...)` never ran
 
 ### Tests
 

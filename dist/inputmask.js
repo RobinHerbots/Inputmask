@@ -156,14 +156,14 @@
     return target;
   }
 
-  const document$3 = window$1.document;
+  const document$4 = window$1.document;
   function isValidElement(elem) {
     return elem instanceof Element && data(elem, "events");
   }
   let Evnt;
   if (typeof window$1.CustomEvent === "function") {
     Evnt = window$1.CustomEvent;
-  } else if (window$1.Event && document$3 && document$3.createEvent) {
+  } else if (window$1.Event && document$4 && document$4.createEvent) {
     Evnt = function (event, params) {
       params = params || {
         bubbles: false,
@@ -171,7 +171,7 @@
         composed: true,
         detail: undefined
       };
-      const evt = document$3.createEvent("CustomEvent");
+      const evt = document$4.createEvent("CustomEvent");
       evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
       return evt;
     };
@@ -290,7 +290,7 @@
         const nsEvent = _events[endx].split("."),
           ev = nsEvent[0],
           namespace = nsEvent[1] || "global";
-        if (document$3 !== undefined) {
+        if (document$4 !== undefined) {
           // trigger domevent
           let evnt;
           const params = {
@@ -310,7 +310,7 @@
                 evnt = new CustomEvent(ev, params);
             }
           } catch (e) {
-            evnt = document$3.createEvent("CustomEvent");
+            evnt = document$4.createEvent("CustomEvent");
             evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
           }
           if (events.type) extend(evnt, events);
@@ -334,7 +334,7 @@
    Licensed under the MIT license
    */
 
-  const document$2 = window$1.document;
+  const document$3 = window$1.document;
   function DependencyLib(elem) {
     if (elem instanceof DependencyLib) {
       return elem;
@@ -343,7 +343,7 @@
       return new DependencyLib(elem);
     }
     if (elem !== undefined && elem !== null && elem !== window$1) {
-      this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : document$2.querySelector(elem);
+      this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : document$3.querySelector(elem);
       if (this[0] !== undefined && this[0] !== null) {
         data(this[0], "events", data(this[0], "events") || {});
       }
@@ -6817,7 +6817,7 @@
     }
   }
 
-  const document$1 = window$1.document,
+  const document$2 = window$1.document,
     dataKey = "_inputmask_opts";
 
   /**
@@ -6836,7 +6836,7 @@
     function mask$1(elems) {
       const that = this;
       if (typeof elems === "string") {
-        elems = document$1.getElementById(elems) || document$1.querySelectorAll(elems);
+        elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
       }
       elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
       elems.forEach(function (el) {
@@ -6894,7 +6894,7 @@
               });
             }
           }
-        } else if (document$1.__lookupGetter__ && this.el.__lookupGetter__("value")) {
+        } else if (document$2.__lookupGetter__ && this.el.__lookupGetter__("value")) {
           if (this.__valueGet) {
             this.el.__defineGetter__("value", this.__valueGet);
             this.el.__defineSetter__("value", this.__valueSet);
@@ -6917,7 +6917,7 @@
    */
   function staticRemove(elems) {
     if (typeof elems === "string") {
-      elems = document$1.getElementById(elems) || document$1.querySelectorAll(elems);
+      elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
     }
     elems = elems.nodeName ? [elems] : elems;
     for (let i = 0; i < elems.length; i++) {
@@ -6932,7 +6932,7 @@
    */
   function staticSetValue(elems, value) {
     if (typeof elems === "string") {
-      elems = document$1.getElementById(elems) || document$1.querySelectorAll(elems);
+      elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
     }
     elems = elems.nodeName ? [elems] : elems;
     elems.forEach(function (el) {
@@ -7024,6 +7024,55 @@
    */
 
   attach(InputmaskExport);
+
+  const document$1 = window$1.document;
+
+  // add check if it is supported by the browser
+  // integrate shadowroot into maskcope
+  if (document$1 && document$1.head && document$1.head.attachShadow && window$1.customElements && window$1.customElements.get("input-mask") === undefined) {
+    class InputmaskElement extends HTMLElement {
+      /** @type {HTMLInputElement} */
+      input;
+      constructor() {
+        super();
+        const attributeNames = this.getAttributeNames(),
+          shadow = this.attachShadow({
+            mode: "closed"
+          });
+        this.input = document$1.createElement("input");
+        this.input.type = "text";
+        shadow.appendChild(this.input);
+        for (const attr in attributeNames) {
+          if (Object.prototype.hasOwnProperty.call(attributeNames, attr)) {
+            this.input.setAttribute(attributeNames[attr], this.getAttribute(attributeNames[attr]));
+          }
+        }
+        const im = new InputmaskExport();
+        im.dataAttribute = "";
+        im.mask(this.input);
+      }
+
+      /**
+       * @param {string} attrName
+       * @param {string | null} oldVal
+       * @param {string | null} newVal
+       */
+      attributeChangedCallback(attrName, oldVal, newVal) {
+        this.input.setAttribute(attrName, newVal);
+      }
+
+      // bind value
+      get value() {
+        return this.input.value;
+      }
+
+      /** @param {string} value */
+      set value(value) {
+        this.input.value = value;
+      }
+    }
+    window$1.customElements.define("input-mask", InputmaskElement);
+  }
 
   registerDefinitions();
   registerCssunit();

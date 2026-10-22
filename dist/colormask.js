@@ -156,14 +156,14 @@
     return target;
   }
 
-  const document$2 = window$1.document;
+  const document$4 = window$1.document;
   function isValidElement(elem) {
     return elem instanceof Element && data(elem, "events");
   }
   let Evnt;
   if (typeof window$1.CustomEvent === "function") {
     Evnt = window$1.CustomEvent;
-  } else if (window$1.Event && document$2 && document$2.createEvent) {
+  } else if (window$1.Event && document$4 && document$4.createEvent) {
     Evnt = function (event, params) {
       params = params || {
         bubbles: false,
@@ -171,7 +171,7 @@
         composed: true,
         detail: undefined
       };
-      const evt = document$2.createEvent("CustomEvent");
+      const evt = document$4.createEvent("CustomEvent");
       evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
       return evt;
     };
@@ -290,7 +290,7 @@
         const nsEvent = _events[endx].split("."),
           ev = nsEvent[0],
           namespace = nsEvent[1] || "global";
-        if (document$2 !== undefined) {
+        if (document$4 !== undefined) {
           // trigger domevent
           let evnt;
           const params = {
@@ -310,7 +310,7 @@
                 evnt = new CustomEvent(ev, params);
             }
           } catch (e) {
-            evnt = document$2.createEvent("CustomEvent");
+            evnt = document$4.createEvent("CustomEvent");
             evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
           }
           if (events.type) extend(evnt, events);
@@ -334,7 +334,7 @@
    Licensed under the MIT license
    */
 
-  const document$1 = window$1.document;
+  const document$3 = window$1.document;
   function DependencyLib(elem) {
     if (elem instanceof DependencyLib) {
       return elem;
@@ -343,7 +343,7 @@
       return new DependencyLib(elem);
     }
     if (elem !== undefined && elem !== null && elem !== window$1) {
-      this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : document$1.querySelector(elem);
+      this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : document$3.querySelector(elem);
       if (this[0] !== undefined && this[0] !== null) {
         data(this[0], "events", data(this[0], "events") || {});
       }
@@ -5982,6 +5982,118 @@
     });
   }
 
+  const EventRuler = {
+    on: function (input, eventName, eventHandler) {
+      const $ = input.inputmask.dependencyLib;
+      let ev = function (e) {
+        if (e.originalEvent) {
+          e = e.originalEvent || e; // get original event from jquery event
+          arguments[0] = e;
+        }
+        // console.log(e.type);
+        const that = this,
+          inputmask = that.inputmask,
+          opts = inputmask ? inputmask.opts : undefined;
+        let args;
+        if (inputmask === undefined && this.nodeName !== "FORM") {
+          // happens when cloning an object with jquery.clone
+          const imOpts = $.data(that, "_inputmask_opts");
+          $(that).off(); // unbind all events
+          if (imOpts) {
+            new InputmaskExport(imOpts).mask(that);
+          }
+        } else if (!["submit", "reset", "setvalue"].includes(e.type) && this.nodeName !== "FORM" && (that.disabled || that.readOnly && !(e.type === "keydown" && e.ctrlKey && e.key === keys.c || opts.tabThrough === false && e.key === keys.Tab))) {
+          e.preventDefault();
+        } else {
+          switch (e.type) {
+            case "input":
+              if (inputmask.skipInputEvent === true) {
+                inputmask.skipInputEvent = false;
+                return e.preventDefault();
+              }
+
+              // #2855
+              // Prevent duplicate input processing between keyEvent and inputFallBackEvent
+              // This fixes Chinese IME duplication issue on Safari where both events fire for the same input
+              // if (
+              //   inputmask.lastInputEvent &&
+              //   Date.now() - inputmask.lastInputEvent.time < 10 &&
+              //   inputmask.lastInputEvent.data === e.data
+              // ) {
+              //   return;
+              // }
+              // Mark input as processed to prevent duplicate handling by keyEvent
+              // This fixes Chinese IME duplication issue on Safari #2855
+              inputmask.lastInputEvent = {
+                time: Date.now(),
+                data: e.data
+              };
+
+              // if (mobile) { //this causes problem see #2220
+              // 	args = arguments;
+              // 	setTimeout(function () { //needed for caret selection when entering a char on Android 8 - #1818
+              // 		eventHandler.apply(that, args);
+              // 		caret(that, that.inputmask.caretPos, undefined, true);
+              // 	}, 0);
+              // 	return false;
+              // }
+              break;
+            case "keydown":
+              // Prevent duplicate input processing between keyEvent and inputFallBackEvent #2855
+              // This fixes Chinese IME duplication issue on Safari where both events fire for the same input
+              if (inputmask.lastInputEvent && Date.now() - inputmask.lastInputEvent.time < 10 && inputmask.lastInputEvent.data === e.key) {
+                return false;
+              }
+              break;
+            case "click":
+            case "focus":
+              if (inputmask.validationEvent) {
+                // #841
+                inputmask.validationEvent = false;
+                input.blur();
+                HandleNativePlaceholder(input, (inputmask.isRTL ? getBufferTemplate.call(inputmask).slice().reverse() : getBufferTemplate.call(inputmask)).join(""));
+                setTimeout(function () {
+                  input.focus();
+                }, opts.validationEventTimeOut);
+                return false;
+              }
+              args = arguments;
+              setTimeout(function () {
+                // needed for Chrome ~ initial selection clears after the clickevent
+                if (!input.inputmask) {
+                  // `inputmask.remove()` was called before this callback
+                  return;
+                }
+                eventHandler.apply(that, args);
+              }, 0);
+              return;
+            /* false */ // #2423
+          }
+          const returnVal = eventHandler.apply(that, arguments);
+          if (returnVal === false) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          return returnVal;
+        }
+      };
+      // add inputmask namespace to event
+      eventName = `${eventName}.inputmask`;
+      if (["submit.inputmask", "reset.inputmask"].includes(eventName)) {
+        ev = ev.bind(input); // bind creates a new eventhandler (wrap)
+        if (input.form !== null) $(input.form).on(eventName, ev);
+      } else {
+        $(input).on(eventName, ev);
+      }
+    },
+    off: function (input, event) {
+      if (input.inputmask) {
+        const $ = input.inputmask.dependencyLib;
+        $(input).off(event || ".inputmask");
+      }
+    }
+  };
+
   const nav = window$1.navigator || {},
     ua = nav.userAgent || "",
     mobile = (() => {
@@ -6485,6 +6597,482 @@
       }, 0);
     }
   };
+
+  // todo put on the prototype?
+  function mask() {
+    const inputmask = this,
+      opts = this.opts,
+      el = this.el,
+      $ = this.dependencyLib;
+    function isElementTypeSupported(input, opts) {
+      function patchValueProperty(npt) {
+        let valueGet, valueSet;
+        function patchValhook(type) {
+          if ($.valHooks && ($.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true)) {
+            const valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) {
+                return elem.value;
+              },
+              valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+                elem.value = value;
+                return elem;
+              };
+            $.valHooks[type] = {
+              get: function (elem) {
+                if (elem.inputmask) {
+                  if (elem.inputmask.opts.autoUnmask) {
+                    return elem.inputmask.unmaskedvalue();
+                  } else {
+                    const result = valhookGet(elem);
+                    return getLastValidPosition.call(inputmask, undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
+                  }
+                } else {
+                  return valhookGet(elem);
+                }
+              },
+              set: function (elem, value) {
+                const result = valhookSet(elem, value);
+                if (elem.inputmask) {
+                  applyInputValue(elem, value);
+                }
+                return result;
+              },
+              inputmaskpatch: true
+            };
+          }
+        }
+        function getter() {
+          if (this.inputmask) {
+            return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : getLastValidPosition.call(inputmask) !== -1 || opts.nullable !== true ? this.getRootNode().activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice()).reverse() : clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "";
+          } else {
+            return valueGet.call(this);
+          }
+        }
+        function setter(value) {
+          valueSet.call(this, value);
+          if (this.inputmask) {
+            applyInputValue(this, value);
+          }
+        }
+        function installNativeValueSetFallback(npt) {
+          EventRuler.on(npt, "mouseenter", function () {
+            const input = this,
+              value = input.inputmask._valueGet(true),
+              bufferValue = (input.inputmask.isRTL ? getBuffer.call(input.inputmask).slice().reverse() : getBuffer.call(input.inputmask)).join("");
+            if (value !== bufferValue) {
+              applyInputValue(input, value);
+            }
+          });
+        }
+        if (!npt.inputmask.__valueGet) {
+          if (opts.noValuePatching !== true) {
+            if (Object.getOwnPropertyDescriptor) {
+              const valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
+              if (valueProperty && valueProperty.get && valueProperty.set) {
+                valueGet = valueProperty.get;
+                valueSet = valueProperty.set;
+                Object.defineProperty(npt, "value", {
+                  get: getter,
+                  set: setter,
+                  configurable: true
+                });
+              } else if (npt.tagName.toLowerCase() !== "input") {
+                valueGet = function () {
+                  return this.textContent;
+                };
+                valueSet = function (value) {
+                  this.textContent = value;
+                };
+                Object.defineProperty(npt, "value", {
+                  get: getter,
+                  set: setter,
+                  configurable: true
+                });
+              }
+            } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+              valueGet = npt.__lookupGetter__("value");
+              valueSet = npt.__lookupSetter__("value");
+              npt.__defineGetter__("value", getter);
+              npt.__defineSetter__("value", setter);
+            }
+            npt.inputmask.__valueGet = valueGet; // store native property getter
+            npt.inputmask.__valueSet = valueSet; // store native property setter
+          }
+          npt.inputmask._valueGet = function (overruleRTL) {
+            return inputmask.isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+          };
+          npt.inputmask._valueSet = function (value, overruleRTL) {
+            // null check is needed for IE8 => otherwise converts to "null"
+            valueSet.call(this.el, value === null || value === undefined ? "" : overruleRTL !== true && inputmask.isRTL ? value.split("").reverse().join("") : value);
+          };
+          if (valueGet === undefined) {
+            // jquery.val fallback
+            valueGet = function () {
+              return this.value;
+            };
+            valueSet = function (value) {
+              this.value = value;
+            };
+            patchValhook(npt.type);
+            installNativeValueSetFallback(npt);
+          }
+        }
+      }
+      const elementType = input.getAttribute("type");
+      let isSupported = input.tagName.toLowerCase() === "input" && opts.supportsInputType.includes(elementType) || input.isContentEditable || input.tagName.toLowerCase() === "textarea";
+      if (!isSupported) {
+        if (input.tagName.toLowerCase() === "input") {
+          let el = document.createElement("input");
+          el.setAttribute("type", elementType);
+          isSupported = el.type === "text"; // apply mask only if the type is not natively supported
+          el = null;
+        } else {
+          isSupported = "partial";
+        }
+      }
+      if (isSupported !== false) {
+        patchValueProperty(input);
+      } else {
+        input.inputmask = undefined;
+      }
+      return isSupported;
+    }
+
+    // unbind all events - to make sure that no other mask will interfere when re-masking
+    EventRuler.off(el);
+    const isSupported = isElementTypeSupported(el, opts);
+    if (isSupported !== false) {
+      inputmask.originalPlaceholder = el.placeholder;
+
+      // read maxlength prop from el
+      inputmask.maxLength = el !== undefined ? el.maxLength : undefined;
+      if (inputmask.maxLength === -1) inputmask.maxLength = undefined;
+      if ("inputMode" in el && el.getAttribute("inputmode") === null) {
+        el.inputMode = opts.inputmode;
+        el.setAttribute("inputmode", opts.inputmode);
+      }
+      if (isSupported === true) {
+        opts.showMaskOnFocus = opts.showMaskOnFocus && ["cc-number", "cc-exp"].indexOf(el.autocomplete) === -1;
+        if (iphone) {
+          // selecting the caret shows as a selection on iphone
+          opts.insertModeVisual = false;
+          // disable autocorrect
+          el.setAttribute("autocorrect", "off");
+        }
+
+        // bind events
+        EventRuler.on(el, "submit", EventHandlers.submitEvent);
+        EventRuler.on(el, "reset", EventHandlers.resetEvent);
+        EventRuler.on(el, "blur", EventHandlers.blurEvent);
+        EventRuler.on(el, "focus", EventHandlers.focusEvent);
+        EventRuler.on(el, "invalid", EventHandlers.invalidEvent);
+        EventRuler.on(el, "click", EventHandlers.clickEvent);
+        EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
+        EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
+        EventRuler.on(el, "paste", EventHandlers.pasteEvent);
+        EventRuler.on(el, "cut", EventHandlers.cutEvent);
+        EventRuler.on(el, "complete", opts.oncomplete);
+        EventRuler.on(el, "incomplete", opts.onincomplete);
+        EventRuler.on(el, "cleared", opts.oncleared);
+        if (opts.inputEventOnly !== true) {
+          EventRuler.on(el, "keydown", EventHandlers.keyEvent);
+        }
+        if (mobile || opts.inputEventOnly) {
+          el.removeAttribute("maxLength");
+        }
+        EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
+        // EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent); //https://github.com/w3c/input-events - to implement
+      }
+      EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
+
+      // apply mask
+      inputmask.applyMaskHook === undefined || inputmask.applyMaskHook();
+      getBufferTemplate.call(inputmask).join(""); // initialize the buffer and getmasklength
+      inputmask.undoValue = inputmask._valueGet(true);
+      const activeElement = el.getRootNode().activeElement;
+      if (el.inputmask._valueGet(true) !== "" || opts.clearMaskOnLostFocus === false || activeElement === el) {
+        applyInputValue(el, el.inputmask._valueGet(true));
+        let buffer = getBuffer.call(inputmask).slice();
+        if (isComplete.call(inputmask, buffer) === false) {
+          if (opts.clearIncomplete) {
+            resetMaskSet.call(inputmask, false);
+          }
+        }
+        if (opts.clearMaskOnLostFocus && activeElement !== el) {
+          if (getLastValidPosition.call(inputmask) === -1) {
+            buffer = [];
+          } else {
+            clearOptionalTail.call(inputmask, buffer);
+          }
+        }
+        if (opts.clearMaskOnLostFocus === false || opts.showMaskOnFocus && activeElement === el || el.inputmask._valueGet(true) !== "") {
+          writeBuffer(el, buffer);
+        }
+        if (activeElement === el) {
+          // position the caret when in focus
+          caret.call(inputmask, el, seekNext.call(inputmask, getLastValidPosition.call(inputmask)));
+        } else {
+          caret.call(inputmask, el, 0);
+        }
+      }
+    }
+  }
+
+  const document$2 = window$1.document,
+    dataKey = "_inputmask_opts";
+
+  /**
+   * Attach the element-bound half of the API to an Inputmask class: the
+   * instance methods `mask`/`remove` and the statics `remove`/`setValue`.
+   * lib/core/inputmask.js itself stays free of DOM references; the public entries
+   * (lib/index.js, the bundles) call this once at load time.
+   * @param {any} Inputmask
+   * @returns {void}
+   */
+  function attach(Inputmask) {
+    /**
+     * @param {import("../core/inputmask.js").InputmaskElements} elems
+     * @returns {any}
+     */
+    function mask$1(elems) {
+      const that = this;
+      if (typeof elems === "string") {
+        elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
+      }
+      elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
+      elems.forEach(function (el) {
+        const scopedOpts = DependencyLib.extend(true, {}, that.opts),
+          // importAttributeOptions enriches this object with the options read
+          // from the data-attributes, so it has to be the one handed to the
+          // element scoped instance - otherwise those options are lost from
+          // userOptions (they only end up in opts) #2847
+          scopedUserOptions = DependencyLib.extend(true, {}, that.userOptions);
+        if (importAttributeOptions(el, scopedOpts, scopedUserOptions, that.dataAttribute)) {
+          const maskset = generateMaskSet(scopedOpts, that.noMasksCache);
+          if (maskset !== undefined) {
+            if (el.inputmask !== undefined) {
+              el.inputmask.opts.autoUnmask = true; // force autounmasking when remasking
+              el.inputmask.remove();
+            }
+            // store inputmask instance on the input with element reference
+            el.inputmask = new Inputmask(undefined, undefined, true);
+            el.inputmask.opts = scopedOpts;
+            el.inputmask.noMasksCache = that.noMasksCache;
+            el.inputmask.userOptions = scopedUserOptions;
+            el.inputmask.el = el;
+            el.inputmask.$el = DependencyLib(el);
+            el.inputmask.maskset = maskset;
+            DependencyLib.data(el, dataKey, that.userOptions);
+            mask.call(el.inputmask);
+          }
+        }
+      });
+      return elems && elems[0] ? elems[0].inputmask || this : this;
+    }
+
+    /**
+     * @returns {Element | undefined}
+     */
+    function remove() {
+      if (this.el) {
+        DependencyLib.data(this.el, dataKey, null); // invalidate
+        // writeout the value
+        const cv = this.opts.autoUnmask ? unmaskedvalue(this.el) : this._valueGet(this.opts.autoUnmask);
+        if (cv !== getBufferTemplate.call(this).join("")) this._valueSet(cv, this.opts.autoUnmask);else this._valueSet("");
+        // unbind all events
+        EventRuler.off(this.el);
+
+        // restore the value property
+        let valueProperty;
+        if (Object.getOwnPropertyDescriptor && Object.getPrototypeOf) {
+          valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(this.el), "value");
+          if (valueProperty) {
+            if (this.__valueGet) {
+              Object.defineProperty(this.el, "value", {
+                get: this.__valueGet,
+                set: this.__valueSet,
+                configurable: true
+              });
+            }
+          }
+        } else if (document$2.__lookupGetter__ && this.el.__lookupGetter__("value")) {
+          if (this.__valueGet) {
+            this.el.__defineGetter__("value", this.__valueGet);
+            this.el.__defineSetter__("value", this.__valueSet);
+          }
+        }
+        // clear data
+        this.el.inputmask = undefined;
+      }
+      return this.el;
+    }
+    Inputmask.prototype.mask = mask$1;
+    Inputmask.prototype.remove = remove;
+    Inputmask.remove = staticRemove;
+    Inputmask.setValue = staticSetValue;
+  }
+
+  /**
+   * @param {import("../core/inputmask.js").InputmaskElements} elems
+   * @returns {void}
+   */
+  function staticRemove(elems) {
+    if (typeof elems === "string") {
+      elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
+    }
+    elems = elems.nodeName ? [elems] : elems;
+    for (let i = 0; i < elems.length; i++) {
+      if (elems[i].inputmask) elems[i].inputmask.remove();
+    }
+  }
+
+  /**
+   * @param {import("../core/inputmask.js").InputmaskElements} elems
+   * @param {string} value
+   * @returns {void}
+   */
+  function staticSetValue(elems, value) {
+    if (typeof elems === "string") {
+      elems = document$2.getElementById(elems) || document$2.querySelectorAll(elems);
+    }
+    elems = elems.nodeName ? [elems] : elems;
+    elems.forEach(function (el) {
+      if (el.inputmask) el.inputmask.setValue(value);else DependencyLib(el).trigger("setvalue", [value]);
+    });
+  }
+
+  // read the option overrides a consumer placed on the element itself
+  // (data-inputmask / data-inputmask-<option> attributes)
+  function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
+    function importOption(option, optionData) {
+      const attrOption = dataAttribute === "" ? option : dataAttribute + "-" + option;
+      optionData = optionData !== undefined ? optionData : npt.getAttribute(attrOption);
+      if (optionData !== null) {
+        if (typeof optionData === "string") {
+          if (option.startsWith("on")) {
+            // get function definition
+            optionData = window$1[optionData];
+          } else if (optionData === "false") optionData = false;else if (optionData === "true") optionData = true;else if (option === "mask") optionData = optionData.replace(/\\\\/g, "\\");
+        }
+        userOptions[option] = optionData;
+      }
+    }
+    if (opts.importDataAttributes === true) {
+      let attrOptions = npt.getAttribute(dataAttribute),
+        option,
+        dataoptions,
+        optionData,
+        p;
+      if (attrOptions && attrOptions !== "") {
+        attrOptions = attrOptions.replace(/'/g, '"');
+        try {
+          dataoptions = JSON.parse("{" + attrOptions + "}");
+        } catch (e) {
+          dataoptions = undefined;
+        }
+      }
+
+      // resolve aliases
+      if (dataoptions) {
+        // pickup alias from dataAttribute
+        optionData = undefined;
+        for (p in dataoptions) {
+          if (p.toLowerCase() === "alias") {
+            optionData = dataoptions[p];
+            break;
+          }
+        }
+      }
+      importOption("alias", optionData); // pickup alias from dataAttribute-alias
+      if (userOptions.alias) {
+        resolveAlias(userOptions.alias, userOptions, opts);
+      }
+      for (option in opts) {
+        if (dataoptions) {
+          optionData = undefined;
+          for (p in dataoptions) {
+            if (p.toLowerCase() === option.toLowerCase()) {
+              optionData = dataoptions[p];
+              break;
+            }
+          }
+        }
+        importOption(option, optionData);
+      }
+    }
+    DependencyLib.extend(true, opts, userOptions);
+
+    // handle dir=rtl
+    if (npt.dir === "rtl" || opts.rightAlign) {
+      npt.style.textAlign = "right";
+    }
+    if (npt.dir === "rtl" || opts.numericInput) {
+      npt.dir = "ltr";
+      npt.removeAttribute("dir");
+      opts.isRTL = true;
+    }
+    return Object.keys(userOptions).length;
+  }
+
+  /*
+   * Inputmask public entry point
+   * http://github.com/RobinHerbots/inputmask
+   * Copyright (c) Robin Herbots
+   * Licensed under the MIT license
+   *
+   * headless Inputmask class + the DOM driver (element-bound methods).
+   * import "inputmask/lib/core/inputmask" instead for the DOM-free class.
+   */
+
+  attach(InputmaskExport);
+
+  const document$1 = window$1.document;
+
+  // add check if it is supported by the browser
+  // integrate shadowroot into maskcope
+  if (document$1 && document$1.head && document$1.head.attachShadow && window$1.customElements && window$1.customElements.get("input-mask") === undefined) {
+    class InputmaskElement extends HTMLElement {
+      /** @type {HTMLInputElement} */
+      input;
+      constructor() {
+        super();
+        const attributeNames = this.getAttributeNames(),
+          shadow = this.attachShadow({
+            mode: "closed"
+          });
+        this.input = document$1.createElement("input");
+        this.input.type = "text";
+        shadow.appendChild(this.input);
+        for (const attr in attributeNames) {
+          if (Object.prototype.hasOwnProperty.call(attributeNames, attr)) {
+            this.input.setAttribute(attributeNames[attr], this.getAttribute(attributeNames[attr]));
+          }
+        }
+        const im = new InputmaskExport();
+        im.dataAttribute = "";
+        im.mask(this.input);
+      }
+
+      /**
+       * @param {string} attrName
+       * @param {string | null} oldVal
+       * @param {string | null} newVal
+       */
+      attributeChangedCallback(attrName, oldVal, newVal) {
+        this.input.setAttribute(attrName, newVal);
+      }
+
+      // bind value
+      get value() {
+        return this.input.value;
+      }
+
+      /** @param {string} value */
+      set value(value) {
+        this.input.value = value;
+      }
+    }
+    window$1.customElements.define("input-mask", InputmaskElement);
+  }
 
   registerDefinitions();
   registerCssunit();

@@ -3,12 +3,6 @@ const path = require("path");
 
 // Per-extension import maps - only what's actually used
 const extensionImports = {
-  "colormask.js": {
-    "../core/inputmask": { default: "Inputmask", isMixed: false },
-    "../core/keycode.js": { named: ["keys"] },
-    "../core/positioning": { named: ["caret", "getBuffer", "translatePosition"] },
-    "../dom/eventhandlers": { named: ["EventHandlers"] }
-  },
   "cssunit.js": {
     "../core/inputmask": { named: ["aliases"] },
     "../dependencyLibs/inputmask.dependencyLib": { default: "dependencyLib" }
@@ -57,23 +51,6 @@ const extensionImports = {
   "vin.js": {
     "../core/inputmask": { named: ["aliases"] },
     "../dependencyLibs/inputmask.dependencyLib": { default: "dependencyLib" }
-  },
-  "date.i18n.js": {
-    // No imports needed - self-contained
-  },
-  "FormData.js": {
-    // No imports needed - patches global FormData directly
-  },
-  "inputmaskElement.js": {
-    "../global/window": { default: "window" },
-    "../index": { default: "Inputmask" }
-  },
-  "jquery.inputmask.js": {
-    "jquery": { default: "jQuery" },
-    "../index": { default: "Inputmask" }
-  },
-  "inputmask.binding.js": {
-    // IIFE wrapper, no direct imports to rewrite
   }
 };
 
@@ -171,12 +148,7 @@ const extensions = [
   { name: "vin", dir: "extensions" },
   { name: "ssn", dir: "extensions" },
   { name: "date", dir: "extensions" },
-  { name: "numeric", dir: "extensions" },
-  { name: "date.i18n", dir: "extensions" },
-  { name: "FormData", dir: "global" },
-  { name: "inputmaskElement", dir: "" },
-  { name: "jquery.inputmask", dir: "" },
-  { name: "inputmask.binding", dir: "bindings" }
+  { name: "numeric", dir: "extensions" }
 ];
 
 const srcDir = path.join(__dirname, "lib");
