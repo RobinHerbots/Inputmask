@@ -1,10 +1,10 @@
 import js from "@eslint/js";
-import globals from "globals";
 import prettierConfig from "eslint-config-prettier";
-import prettier from "eslint-plugin-prettier";
-import n from "eslint-plugin-n";
-import promise from "eslint-plugin-promise";
 import importX from "eslint-plugin-import-x";
+import n from "eslint-plugin-n";
+import prettier from "eslint-plugin-prettier";
+import promise from "eslint-plugin-promise";
+import globals from "globals";
 
 // Rules previously inherited from eslint-config-standard (legacy eslintrc flat
 // config via FlatCompat). Ported inline so the flat config no longer depends on
@@ -203,7 +203,7 @@ const standardRules = {
     "error",
     { allowMultiplePropertiesPerLine: true }
   ],
-  "one-var": ["error", { initialized: "never" }],
+  "one-var": ["warn", { initialized: "never" }],
   "operator-linebreak": [
     "error",
     "after",

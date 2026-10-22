@@ -8,6 +8,7 @@
 - add displayChar option to mask definitions (masked display, native value) #2402
 - datetime accepts whole values written in the outputFormat and converts them to the inputFormat #576
 - headless / non-DOM usage: `Inputmask` runs entirely in-memory without an element (Node.js, React controlled inputs, CLI prompts, SSR)
+- `inputmask/extensions/date.i18n` exposes the date translations for extending or merging into the `i18n` option
 - interactive session API on the instance, initialized lazily on the first call:
   - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
   - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
@@ -26,6 +27,7 @@
 - source split into `lib/core/` (DOM-free engine: lexer, validation, positioning, key processing, input handling) and `lib/dom/` (browser driver: event handlers/binding, element patching, environment sniffing)
 - the headless class (`lib/core/inputmask.js`) has no `lib/dom/` imports; the element-bound `mask`/`remove` methods and `remove`/`setValue` statics attach from `lib/dom/attach.js`, wired by the `lib/index.js` entry
 - internal module paths moved under `lib/core/` and `lib/dom/` (e.g. `inputmask/lib/inputmask` → `inputmask/lib/core/inputmask`, `inputmask/lib/eventhandlers` → `inputmask/lib/dom/eventhandlers`); the public entry points (`inputmask`, `inputmask/extensions/*`) are unchanged (deep imports only)
+- date translations live in the date extension instead of the core; `Inputmask.prototype.i18n` is gone, pass translations through the `i18n` option (breaking)
 
 ### Fixed
 

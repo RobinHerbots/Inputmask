@@ -15,6 +15,9 @@
       "types": "./lib/extensions/date.d.ts",
       "import": "./dist/esm/extensions/date.mjs"
     },
+    "./extensions/date.i18n": {
+      "import": "./dist/esm/extensions/date.i18n.mjs"
+    },
     "./extensions/numeric": {
       "types": "./lib/extensions/numeric.d.ts",
       "import": "./dist/esm/extensions/numeric.mjs"
@@ -71,27 +74,27 @@
     "./bundle.jquery.js",
     "./bundle.colormask.js",
     "./lib/global/FormData.js",
+    "./lib/extensions/date.i18n.js",
     "./lib/inputmaskElement.js",
     "./lib/jquery.inputmask.js",
-    "./lib/extensions/inputmask.date.i18n.js",
-    "./lib/bindings/inputmask.binding.js"
+    "./lib/components/jquery.inputmask.js",
+    "./lib/bindings/inputmask.binding.js",
+    "./dist/*.js",
+    "./dist/esm/**/*.mjs"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "start": "webpack --progress --watch --config-name main --config webpack.config.js",
-    "jquery": "webpack --progress --watch --config-name jquery --config webpack.config.js",
-    "colormask": "webpack --progress --watch --config-name colormask --config webpack.config.js",
-    "modern": "webpack --progress --watch --config-name modern --config webpack.config.js",
-    "qunit": "webpack --progress --watch --config-name test --config webpack.config.js",
+    "build": "node build.js",
+    "build:watch": "node build.js --watch",
     "types": "tsc -p tsconfig.types.json --emitDeclarationOnly",
-    "test": "grunt validate",
-    "test:all": "npm run test:node && npm run test:chrome && npm run test:jsdom && npm run test:browserstack",
-    "test:browserstack": "cross-env CI=true karma start karma.conf.js --single-run",
-    "test:chrome": "karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test": "npm run build && npm run types && npm run test:node && npm run lint && npm run test:jsdom",
     "test:node": "qunit qunit/tests_node.js",
     "test:jsdom": "karma start karma.conf.js --browsers jsdom --single-run",
+    "test:chrome": "karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:browserstack": "cross-env CI=true karma start karma.conf.js --single-run",
+    "lint": "eslint lib/**/*.js --ignore-pattern lib/.rollup/** --ignore-pattern lib/extensions/.rollup/**",
     "update-browserlist": "npx update-browserslist-db@latest"
   },
   "repository": {
@@ -117,12 +120,17 @@
   },
   "homepage": "https://github.com/RobinHerbots/Inputmask",
   "devDependencies": {
-    "@babel/core": "^8.0.6",
+    "@babel/core": "^8.0.7",
     "@babel/eslint-parser": "^8.0.1",
-    "@babel/preset-env": "^8.0.6",
-    "@babel/preset-typescript": "^8.0.1",
+    "@babel/preset-env": "^8.0.7",
+    "@babel/preset-typescript": "^8.0.7",
     "@eslint/js": "^9.39.5",
     "@robinherbots/grunt-available-tasks": "^0.6.4",
+    "@rollup/plugin-alias": "^6.0.0",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
     "babel-loader": "^10.1.1",
     "babel-plugin-polyfill-corejs3": "^1.0.0",
     "circular-dependency-plugin": "^5.2.2",
@@ -143,6 +151,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-eslint": "^26.0.0",
     "grunt-karma": "^4.0.2",
+    "grunt-shell": "^4.0.0",
     "grunt-webpack": "^8.0.0",
     "jquery": "^3.7.1",
     "jsdom": "^30.1.2",
@@ -155,6 +164,7 @@
     "lodash": "^4.18.1",
     "prettier": "3.9.6",
     "qunit": "^2.26.0",
+    "rollup": "^4.64.12",
     "terser-webpack-plugin": "^5.6.1",
     "typescript": "^5.9.3",
     "webpack": "^5.108.4",

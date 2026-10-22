@@ -1,0 +1,13 @@
+export function determineTestTemplate(pos: any, tests: any): any;
+export function getDecisionTaker(tst: any): any;
+export function getMaskTemplate(baseOnInput: any, minimalPos: any, includeMode: any, noJit: any, clearOptionalTail: any): any[];
+export function getPlaceholder(pos: any, test: any, returnPL: any): any;
+export function getTest(pos: any, tests: any): any;
+export function getTests(pos: any, ndxIntlzr: any, tstPs: any): any;
+export function getTestTemplate(pos: any, ndxIntlzr: any, tstPs: any): any;
+export function isSubsetOf(source: any, target: any, opts: any): boolean;
+export function seekNext(pos: any, newBlock: any, fuzzy: any): any;
+export function seekPrevious(pos: any, newBlock: any): number;
+export function isMask(pos: any, strict: any, fuzzy: any): any;
+export function getLastValidPosition(closestTo: any, strict: any, validPositions: any): number;
+export function casing(elem: any, test: any, pos: any, ...args: any[]): any;

@@ -1,61 +1,9 @@
 /*!
- * dist/esm/extensions/url.mjs
+ * inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
  * Version: 5.1.0-beta.36
  */
-export const __webpack_esm_id__ = 8;
-export const __webpack_esm_ids__ = [8];
-export const __webpack_esm_modules__ = {
-
-/***/ 21
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   registerUrl: () => (/* binding */ registerUrl),
-/* harmony export */   url: () => (/* binding */ url)
-/* harmony export */ });
-/* harmony import */ var _core_inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/*
- Input Mask plugin extensions
- http://github.com/RobinHerbots/inputmask
- Copyright (c) Robin Herbots
- Licensed under the MIT license
- */
-
-
-
-function url(options) {
-  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__["default"].extend(true, {
-    // needs update => https://en.wikipedia.org/wiki/URL
-    regex: "(https?|ftp)://.*",
-    autoUnmask: false,
-    keepStatic: false,
-    tabThrough: true
-  }, options);
-}
-function registerUrl() {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__["default"].extend(true, _core_inputmask__WEBPACK_IMPORTED_MODULE_0__.aliases, {
-    url: url()
-  });
-}
-
-/***/ }
-
-};
-;
-
-// load runtime
-import { __webpack_require__ } from "../inputmask.mjs";
-var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-
-import * as __webpack_chunk_1__ from "./url.mjs";
-__webpack_require__.C(__webpack_chunk_1__);
-var __webpack_exports__ = __webpack_exec__(21);
-const __webpack_exports__registerUrl = __webpack_exports__.registerUrl;
-const __webpack_exports__url = __webpack_exports__.url;
-export { __webpack_exports__registerUrl as registerUrl, __webpack_exports__url as url };
-
+import{dependencyLib as t,aliases as e}from"../inputmask.mjs";function n(e){return t.extend(!0,{regex:"(https?|ftp)://.*",autoUnmask:!1,keepStatic:!1,tabThrough:!0},e)}function r(){t.extend(!0,e,{url:n()})}export{r as registerUrl,n as url};
 //# sourceMappingURL=url.mjs.map

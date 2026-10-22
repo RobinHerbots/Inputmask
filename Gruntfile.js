@@ -1,6 +1,5 @@
 // eslint-disable-next-line import-x/order
-const { execSync } = require("child_process"),
-  webpackConfig = require("./webpack.config");
+const { execSync } = require("child_process");
 
 // npm and nuget.org take their credentials from the environment, and .env is
 // where they are kept locally, so read it when it is there. loadEnvFile is a
@@ -52,12 +51,10 @@ module.exports = function (grunt) {
         }
       }
     },
-    webpack: {
-      main: webpackConfig({ production: true })[0],
-      jquery: webpackConfig({ production: true })[1],
-      colormask: webpackConfig({ production: true })[2],
-      modern: webpackConfig({ production: true })[3],
-      test: webpackConfig({ production: true })[4]
+    shell: {
+      build: {
+        command: "node build.js"
+      }
     },
     copy: {
       extensions: {
@@ -255,44 +252,6 @@ module.exports = function (grunt) {
     grunt.task.run("nugetpack");
     grunt.task.run("nugetpush");
   });
-  // The ESM bundles ship webpack's own runtime, and there __webpack_require__
-  // lives in module scope: inputmask.mjs declares it and every extension entry
-  // imports it from there. A consuming bundler injects code that refers to its
-  // own __webpack_require__ into every module it processes, and
-  // @pmmmwh/react-refresh-webpack-plugin (react-scripts, next dev, ...) is one
-  // of them: it prepends `__webpack_require__.$Refresh$.runtime = ...` to each
-  // module. Inside our bundles that name resolves to our runtime rather than
-  // the consumer's, our runtime has no $Refresh$, and the page dies on load
-  // with "Cannot set properties of undefined (setting 'runtime')". That loader
-  // skips node_modules, so it only bites when the package is linked rather than
-  // installed (npm file:, workspaces, pnpm/yarn links) - which is what
-  // inputmask-pages does.
-  //
-  // Renaming the identifier in the bundles keeps it out of the consumer's way.
-  // The replacement has to be the same length so the emitted source maps, which
-  // are position based, stay valid.
-  grunt.registerTask("namespaceEsm", function () {
-    const from = "__webpack_require__",
-      to = "__inputmask_require";
-    if (from.length !== to.length) {
-      grunt.fail.fatal(
-        `${to} is ${to.length} characters, ${from} is ${from.length} - the replacement has to be the same length`
-      );
-    }
-    let renamed = 0;
-    grunt.file.expand("dist/esm/*.mjs").forEach(function (file) {
-      const source = grunt.file.read(file),
-        count = source.split(from).length - 1;
-      if (count === 0) {
-        return;
-      }
-      grunt.file.write(file, source.split(from).join(to));
-      renamed += count;
-      grunt.log.ok(`${file}: ${count}`);
-    });
-    grunt.log.ok(`${renamed} identifier(s) renamed in dist/esm`);
-  });
-
   grunt.registerTask("types", function () {
     execSync("npm run types", { stdio: "inherit" });
   });
@@ -300,8 +259,8 @@ module.exports = function (grunt) {
     execSync("npm run test:node", { stdio: "inherit" });
   });
   grunt.registerTask("validate", [
-    "webpack",
-    "namespaceEsm",
+    "clean",
+    "shell:build",
     "copy",
     "types",
     "qunitnode",
@@ -313,8 +272,7 @@ module.exports = function (grunt) {
     "updateYear",
     "bump:prerelease",
     "clean",
-    "webpack",
-    "namespaceEsm",
+    "shell:build",
     "copy",
     "types"
   ]);
@@ -322,8 +280,7 @@ module.exports = function (grunt) {
     "updateYear",
     "bump:patch",
     "clean",
-    "webpack",
-    "namespaceEsm",
+    "shell:build",
     "copy",
     "types"
   ]);
@@ -331,8 +288,7 @@ module.exports = function (grunt) {
     "updateYear",
     "bump:minor",
     "clean",
-    "webpack",
-    "namespaceEsm",
+    "shell:build",
     "copy",
     "types"
   ]);
@@ -340,8 +296,7 @@ module.exports = function (grunt) {
     "updateYear",
     "bump:major",
     "clean",
-    "webpack",
-    "namespaceEsm",
+    "shell:build",
     "copy",
     "types"
   ]);

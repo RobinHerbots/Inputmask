@@ -1,5 +1,4 @@
-require("../lib/components/jquery.inputmask");
-
+// jQuery plugin is loaded via jquery.inputmask.js bundle
 export default function (qunit, $, Inputmask) {
   qunit.module("jquery.inputmask plugin");
   qunit.test("", function (assert) {

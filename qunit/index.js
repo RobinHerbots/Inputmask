@@ -1,7 +1,10 @@
 import jQuery from "jquery";
 import qunit from "qunit";
 
-import Inputmask from "../bundle";
+// Import from the Rollup-built UMD bundle
+import Inputmask from "../dist/inputmask.js";
+// The jQuery plugin lives in its own bundle - load it so $.fn.inputmask exists
+import "../dist/jquery.inputmask.js";
 
 import "./prototypeExtensions.js";
 import installFocusShim from "./focusShim.js";
