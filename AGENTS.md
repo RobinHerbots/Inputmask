@@ -9,6 +9,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 | Task | Command |
 |------|---------|
 | Build the bundles | `npm run build` |
+| Rebuild on change | `npm run build:watch` |
 | Generate the type declarations | `npm run types` |
 | Lint only | `npm run lint` |
 | Full validate (build + types + node + lint + jsdom) | `npm test` |
@@ -40,7 +41,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 - **Side effects are declared in `rollup.config.cjs`** (`buildSideEffects`), not in the `sideEffects` field of `package.json`. That field describes the published package for consumers, the config describes the build. Every `resolve()` runs with `ignoreSideEffectsForRoot`, so node-resolve does not apply the `sideEffects` field of the root package in parallel: a resolver supplied `moduleSideEffects` wins over `treeshake.moduleSideEffects` and silently drops side-effect-only imports.
 - A module only has to be listed when it is imported for its side effects alone. `moduleSideEffects: false` does not remove statements from a module that is included, it only allows dropping the module itself.
 - The UMD bundles register the `<input-mask>` custom element (`lib/components/inputmaskElement.js`); the ESM main bundle does not. `lib/index.js` does not import the element, so `dist/esm/inputmask.mjs` stays free of it and the element is opt-in through `dist/esm/inputmaskElement.mjs`.
-- `npm run build:watch` is not implemented yet: `build.js` has no watch mode, so the script builds once.
+- `npm run build:watch` watches the sources and rebuilds on change. It re-runs `rewrite-imports.js` before every rebuild, because the extension bundles are built from the generated `lib/.rollup/` copies: an edit to `lib/extensions/*.js` only reaches rollup once the copies are regenerated (the rewrite skips the copies whose content did not change). The previous build's `cache` is passed back to rollup, so only the changed modules are re-transformed. `dist/`, `lib/.rollup/` and `qunit/qunit.js` are excluded from the watch, otherwise the build would trigger itself. A change to `rollup.config.cjs` needs a restart, since the config is required once.
 
 ## Testing
 

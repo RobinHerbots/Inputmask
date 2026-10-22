@@ -162,8 +162,13 @@ for (const ext of extensions) {
   const srcPath = path.join(srcDir, ext.dir, `${ext.name}.js`);
   const outPath = path.join(outDir, `${ext.name}.js`);
 
-  let code = fs.readFileSync(srcPath, "utf8");
-  code = rewriteImports(code, srcPath);
+  const code = rewriteImports(fs.readFileSync(srcPath, "utf8"), srcPath);
+
+  // Only touch the file when its content changed. In watch mode the rewrite runs
+  // before every rebuild and the file watcher must not see ten unrelated writes.
+  if (fs.existsSync(outPath) && fs.readFileSync(outPath, "utf8") === code) {
+    continue;
+  }
 
   fs.writeFileSync(outPath, code);
   console.log(`Rewrote: ${ext.name}.js`);
