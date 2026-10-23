@@ -65,7 +65,8 @@
   },
   "files": [
     "Changelog.md",
-    "dist/"
+    "dist/",
+    "!dist/**/*.map"
   ],
   "sideEffects": [
     "./dist/*.js",
