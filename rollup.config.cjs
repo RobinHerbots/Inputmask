@@ -1,5 +1,5 @@
-const path = require("path");
 const { readFileSync } = require("fs");
+const path = require("path");
 
 const babel = require("@rollup/plugin-babel");
 const commonjs = require("@rollup/plugin-commonjs");
@@ -81,7 +81,9 @@ const buildSideEffects = [
 const sideEffectPatterns = buildSideEffects.map((pattern) =>
   pattern.includes("/") ? pattern : `**/${pattern}`
 );
-const listedSideEffects = createFilter(sideEffectPatterns, null, { resolve: rootDir });
+const listedSideEffects = createFilter(sideEffectPatterns, null, {
+  resolve: rootDir
+});
 
 // Modules outside the package (dependencies) keep rollup's own resolution.
 const moduleSideEffects = (id) => {
@@ -196,7 +198,7 @@ module.exports = [
     treeshake: { moduleSideEffects }
   })),
 
-    // Date i18n - has side effects (populates default i18n)
+  // Date i18n - has side effects (populates default i18n)
   {
     input: "lib/extensions/date.i18n.js",
     output: {
@@ -216,7 +218,7 @@ module.exports = [
     treeshake: { moduleSideEffects }
   },
 
-// FormData patch - side effect: patches global FormData
+  // FormData patch - side effect: patches global FormData
   {
     input: "lib/global/FormData.js",
     output: {

@@ -203,7 +203,6 @@ const standardRules = {
     "error",
     { allowMultiplePropertiesPerLine: true }
   ],
-  "one-var": ["warn", { initialized: "never" }],
   "operator-linebreak": [
     "error",
     "after",
@@ -347,7 +346,6 @@ export default [
       ],
       "import-x/named": "error",
       "prettier/prettier": ["error", { singleQuote: false }],
-      "one-var": ["warn", "consecutive"],
       "no-use-before-define": "off",
       "no-unmodified-loop-condition": "off",
       eqeqeq: "warn",
