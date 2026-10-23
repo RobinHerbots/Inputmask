@@ -31,7 +31,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 - **Bundle entry points:** `bundle.js` (vanilla), `bundle.jquery.js` (jQuery), `bundle.colormask.js`
 - **Dependency abstraction:** `lib/dependencyLibs/` — `inputmask.dependencyLib.js` is the vanilla DOM implementation and `inputmask.dependencyLib.jquery.js` the jQuery one; `bundle.jquery.js` imports the jQuery variant and assigns it to `Inputmask.dependencyLib`
 - **Extensions:** `lib/extensions/` — each exports a `register*()` function, called in `bundle.js`
-- **Tests:** `qunit/` — QUnit test files, bundled by rollup into `qunit/qunit.js`
+- **Tests:** `qunit/` — QUnit test files, bundled by rollup into `qunit/qunit*.js` (one per bundle lane); `qunit/harness.js` registers the shared suite
 - **Output formats:** ESM (`dist/esm/*.mjs`), UMD (`dist/inputmask.js`), minified UMD (`dist/inputmask.min.js`)
 
 ## The build
@@ -41,25 +41,34 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 - **Side effects are declared in `rollup.config.cjs`** (`buildSideEffects`), not in the `sideEffects` field of `package.json`. That field describes the published package for consumers, the config describes the build. Every `resolve()` runs with `ignoreSideEffectsForRoot`, so node-resolve does not apply the `sideEffects` field of the root package in parallel: a resolver supplied `moduleSideEffects` wins over `treeshake.moduleSideEffects` and silently drops side-effect-only imports.
 - A module only has to be listed when it is imported for its side effects alone. `moduleSideEffects: false` does not remove statements from a module that is included, it only allows dropping the module itself.
 - The UMD bundles register the `<input-mask>` custom element (`lib/components/inputmaskElement.js`); the ESM main bundle does not. `lib/index.js` does not import the element, so `dist/esm/inputmask.mjs` stays free of it and the element is opt-in through `dist/esm/inputmaskElement.mjs`.
-- `npm run build:watch` watches the sources and rebuilds on change. It re-runs `rewrite-imports.js` before every rebuild, because the extension bundles are built from the generated `lib/.rollup/` copies: an edit to `lib/extensions/*.js` only reaches rollup once the copies are regenerated (the rewrite skips the copies whose content did not change). The previous build's `cache` is passed back to rollup, so only the changed modules are re-transformed. `dist/`, `lib/.rollup/` and `qunit/qunit.js` are excluded from the watch, otherwise the build would trigger itself. A change to `rollup.config.cjs` needs a restart, since the config is required once.
+- `npm run build:watch` watches the sources and rebuilds on change. It re-runs `rewrite-imports.js` before every rebuild, because the extension bundles are built from the generated `lib/.rollup/` copies: an edit to `lib/extensions/*.js` only reaches rollup once the copies are regenerated (the rewrite skips the copies whose content did not change). The previous build's `cache` is passed back to rollup, so only the changed modules are re-transformed. `dist/`, `lib/.rollup/` and `qunit/qunit*.js` are excluded from the watch, otherwise the build would trigger itself. A change to `rollup.config.cjs` needs a restart, since the config is required once.
 
 ## Testing
 
-QUnit is the only test framework; it runs in three lanes:
+QUnit is the only test framework. The browser suite runs once per built bundle:
 
 | Lane | Command | Notes |
 |------|---------|-------|
-| Browser (Karma) | `npm run test:chrome` | Local `ChromeHeadless` |
-| Node + jsdom (Karma) | `npm run test:jsdom` | Same bundle/config via the `jsdom` launcher |
+| Browser, UMD native | `npm run test:umd` | `dist/inputmask.js`, no jQuery on the page |
+| Browser, UMD jQuery | `npm run test:jquery` | `dist/jquery.inputmask.js`, loads global jQuery first |
+| Browser, ESM | `npm run test:esm` | `dist/esm/inputmask.mjs` + extension bundles, no jQuery |
+| All browser bundles | `npm run test:bundles` | Runs the three lanes sequentially |
+| Node + jsdom (Karma) | `npm run test:jsdom` | Same suite via the `jsdom` launcher, UMD native bundle |
+| All jsdom bundles | `npm run test:jsdom:bundles` | jsdom equivalent of `test:bundles` |
 | Node, DOM-less bundles | `npm run test:node` | Runs `qunit/tests_node.js` against `dist/` (build first) |
 | BrowserStack matrix | `npm run test:browserstack` | Real desktop + mobile devices (`cross-env CI=true karma start karma.conf.js --single-run`); needs `BROWSERSTACK_USERNAME`/`BROWSERSTACK_ACCESS_KEY` in the environment |
 
-- `npm test` covers the build, the types, the node lane, the lint and the jsdom lane.
+- `karma.conf.js` selects the test bundle with `INPUTMASK_BUNDLE=umd|jquery|esm` (default `umd`). The jQuery lane is the only one that adds `node_modules/jquery/dist/jquery.js` and `dist/jquery.inputmask.js` (as a global script) to the page; the native and ESM lanes run without jQuery.
+- Expected results: UMD native **937 passed + 1 skipped of 938**, UMD jQuery **938 passed + 1 skipped of 939**, ESM **937 passed + 1 skipped of 938**. The native/ESM skip is the jQuery-plugin insertMode test (the `tests_jquery_inputmask.js` module is not registered there); the jQuery skip is the native dependencyLib `extend` guard test.
+- `qunit/harness.js` registers the shared suite against whatever `Inputmask` the entry passes in. The entries are `qunit/index.js` (UMD native), `qunit/index.jquery.js` (UMD jQuery) and `qunit/index.esm.js` (ESM core + `dist/esm/extensions/*.mjs` + `dist/esm/global/FormData.mjs`, because the ESM entry does not register extensions itself).
+- The ESM build intentionally does not emit the jQuery plugin or binding (`rollup.config.cjs` has those outputs disabled): ESM consumers use the native dependencyLib, so there is no ESM jQuery lane.
+- `npm test` is unchanged: build, types, node lane, lint, and the UMD-native jsdom lane. `npm run test:bundles` is the opt-in full browser matrix.
 - `QUnit.config.testTimeout` is set to 10s (`client.qunit.testTimeout` in `karma.conf.js`) so a stalled async test fails instead of tripping Karma's 30s `browserNoActivityTimeout` and disconnecting the whole browser.
-- Real mobile BrowserStack (`bs_chrome_pixel*`, `bs_*_iPhone*`) runs with `document.hasFocus() === false`, so the browser never dispatches `focus`/`blur` even though `element.focus()` sets `document.activeElement`. `qunit/focusShim.js` (installed first thing in `qunit/index.js`) replays the withheld event so the focus/blur-driven paths (`showMaskOnFocus`, `clearMaskOnLostFocus`, `clearIncomplete`, `onincomplete`) run as on a focused page; all real desktop + mobile devices pass 939/939. It is a no-op when the browser fires the real event.
-- The browser/jsdom suite is built by rollup into `qunit/qunit.js` and imports the built bundles from `../dist/` (`../dist/inputmask.js` and `../dist/jquery.inputmask.js`), so the build has to run first.
-- `qunit/tests_node.js` loads `dist/` through Node's CommonJS `require` and a dynamic `import` and must not be imported by `qunit/index.js`: the assertions rely on the Node semantics.
-- To run a focused test: edit `qunit/index.js` to import only the test module you need, rebuild the bundle, then run Karma.
+- Real mobile BrowserStack (`bs_chrome_pixel*`, `bs_*_iPhone*`) runs with `document.hasFocus() === false`, so the browser never dispatches `focus`/`blur` even though `element.focus()` sets `document.activeElement`. `qunit/focusShim.js` (installed by the harness) replays the withheld event so the focus/blur-driven paths (`showMaskOnFocus`, `clearMaskOnLostFocus`, `clearIncomplete`, `onincomplete`) run as on a focused page; all real desktop + mobile devices pass the default UMD-native lane (937 executed + 1 jQuery-only skip). It is a no-op when the browser fires the real event.
+- The browser/jsdom suite is built by rollup into `qunit/qunit.js`, `qunit/qunit.jquery.js` and `qunit/qunit.esm.js`, so the build has to run first.
+- `qunit/tests_node.js` loads `dist/` through Node's CommonJS `require` and a dynamic `import` and must not be imported by the harness: the assertions rely on the Node semantics.
+- Only the jQuery-plugin tests (`qunit/tests_jquery_inputmask.js` and the jQuery insertMode test) need jQuery; the other test modules use `Inputmask.dependencyLib`, so they exercise the backend of whichever bundle is under test.
+- To run a focused test: edit `qunit/harness.js` to register only the test module you need, rebuild the bundles, then run Karma.
 
 ## Numeric input gotchas
 

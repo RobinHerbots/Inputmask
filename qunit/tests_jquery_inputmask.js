@@ -1,6 +1,12 @@
 // jQuery plugin is loaded via jquery.inputmask.js bundle
 export default function (qunit, $, Inputmask) {
   qunit.module("jquery.inputmask plugin");
+
+  if (!$ || !$.fn || typeof $.fn.inputmask !== "function") {
+    qunit.skip("jQuery plugin not loaded in this bundle");
+    return;
+  }
+
   qunit.test("", function (assert) {
     var done = assert.async(),
       $fixture = $("#qunit-fixture");

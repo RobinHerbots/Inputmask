@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.36
+ * Version: 5.1.0-beta.37
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? (module.exports = factory(), module.exports.default = module.exports) :
@@ -3726,7 +3726,10 @@
     if (!(this instanceof Inputmask)) {
       return new Inputmask(alias, options, internal);
     }
-    this.dependencyLib = DependencyLib;
+
+    // Read the static, not the module-local import: bundle.jquery.js overrides
+    // Inputmask.dependencyLib with the jQuery implementation after loading.
+    this.dependencyLib = Inputmask.dependencyLib;
     this.el = undefined;
     this.events = {};
     this.maskset = undefined;

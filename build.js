@@ -64,8 +64,8 @@ function watch() {
     }
   }
 
-  // dist/ is written by the build, lib/.rollup/ by rewrite-imports.js and
-  // qunit/qunit.js by the test bundle: watching them would rebuild in a loop.
+  // dist/ is written by the build, lib/.rollup/ by rewrite-imports.js and the
+  // qunit/qunit*.js test bundles by the build: watching them rebuilds in a loop.
   const watcher = chokidar.watch(
     [
       "lib/**/*.js",
@@ -81,8 +81,8 @@ function watch() {
         "lib/.rollup/**",
         "dist/**",
         "node_modules/**",
-        "qunit/qunit.js",
-        "qunit/qunit.js.map"
+        "qunit/qunit*.js",
+        "qunit/qunit*.js.map"
       ]
     }
   );

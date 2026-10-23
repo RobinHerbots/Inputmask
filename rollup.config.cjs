@@ -62,9 +62,10 @@ const buildSideEffects = [
   // The qunit harness and the prototype extensions it installs.
   "./qunit/index.js",
   "./qunit/prototypeExtensions.js",
-  // The built UMD bundles the qunit harness loads (importing them registers
-  // $.fn.inputmask).
+  // The built UMD bundles the qunit entries import.
   "./dist/*.js",
+  // The ESM lane imports the FormData patch for its side effects only.
+  "./dist/esm/global/FormData.mjs",
   // Source modules that are imported for their side effects only: they patch
   // globals, register a custom element or extend $.fn.
   "./lib/index.js",
@@ -256,44 +257,44 @@ module.exports = [
   },
 
   // jQuery plugin - side effect: extends $.fn
-  {
-    input: "lib/jquery.inputmask.js",
-    output: {
-      file: "dist/esm/jquery.inputmask.mjs",
-      format: "esm",
-      sourcemap: true,
-      banner,
-      generatedCode: { preset: "es2015" }
-    },
-    external: ["jquery", "jqlite", "qunit", "window", "../inputmask.mjs"],
-    plugins: [
-      resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
-      commonjs(),
-      babel(babelConfig),
-      terser(terserOptions)
-    ],
-    treeshake: { moduleSideEffects }
-  },
+  // {
+  //   input: "lib/jquery.inputmask.js",
+  //   output: {
+  //     file: "dist/esm/jquery.inputmask.mjs",
+  //     format: "esm",
+  //     sourcemap: true,
+  //     banner,
+  //     generatedCode: { preset: "es2015" }
+  //   },
+  //   external: ["jquery", "jqlite", "qunit", "window", "../inputmask.mjs"],
+  //   plugins: [
+  //     resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
+  //     commonjs(),
+  //     babel(babelConfig),
+  //     terser(terserOptions)
+  //   ],
+  //   treeshake: { moduleSideEffects }
+  // },
 
   // Binding - side effect: attaches jQuery event handlers
-  {
-    input: "lib/bindings/inputmask.binding.js",
-    output: {
-      file: "dist/esm/bindings/inputmask.binding.mjs",
-      format: "esm",
-      sourcemap: true,
-      banner,
-      generatedCode: { preset: "es2015" }
-    },
-    external: ["jquery", "jqlite", "qunit", "window"],
-    plugins: [
-      resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
-      commonjs(),
-      babel(babelConfig),
-      terser(terserOptions)
-    ],
-    treeshake: { moduleSideEffects }
-  },
+  // {
+  //   input: "lib/bindings/inputmask.binding.js",
+  //   output: {
+  //     file: "dist/esm/bindings/inputmask.binding.mjs",
+  //     format: "esm",
+  //     sourcemap: true,
+  //     banner,
+  //     generatedCode: { preset: "es2015" }
+  //   },
+  //   external: ["jquery", "jqlite", "qunit", "window"],
+  //   plugins: [
+  //     resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
+  //     commonjs(),
+  //     babel(babelConfig),
+  //     terser(terserOptions)
+  //   ],
+  //   treeshake: { moduleSideEffects }
+  // },
 
   // ===== UMD Builds =====
 
@@ -438,11 +439,18 @@ module.exports = [
     treeshake: { moduleSideEffects }
   },
 
-  // Test bundle (IIFE for QUnit)
-  {
-    input: "qunit/index.js",
+  // Test bundles (IIFE for QUnit). One bundle per artifact under test; Karma
+  // selects one with INPUTMASK_BUNDLE (see karma.conf.js).
+  // The jquery lane loads the UMD bundle as a global script, so the harness
+  // must not import it (to avoid pulling in a second instance).
+  ...[
+    ["qunit/index.js", "qunit/qunit.js"],
+    ["qunit/index.jquery.js", "qunit/qunit.jquery.js"],
+    ["qunit/index.esm.js", "qunit/qunit.esm.js"]
+  ].map(([input, file]) => ({
+    input,
     output: {
-      file: "qunit/qunit.js",
+      file,
       format: "iife",
       name: "InputmaskTest",
       globals,
@@ -457,5 +465,5 @@ module.exports = [
       babel(babelConfig)
     ],
     treeshake: { moduleSideEffects }
-  }
+  }))
 ];

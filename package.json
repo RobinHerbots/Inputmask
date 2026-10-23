@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.1.0-beta.36",
+  "version": "5.1.0-beta.37",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "dist/inputmask.js",
   "module": "dist/esm/inputmask.mjs",
@@ -81,7 +81,15 @@
     "test": "npm run build && npm run types && npm run test:node && npm run lint && npm run test:jsdom",
     "test:node": "qunit qunit/tests_node.js",
     "test:jsdom": "karma start karma.conf.js --browsers jsdom --single-run",
+    "test:jsdom:umd": "cross-env INPUTMASK_BUNDLE=umd karma start karma.conf.js --browsers jsdom --single-run",
+    "test:jsdom:jquery": "cross-env INPUTMASK_BUNDLE=jquery karma start karma.conf.js --browsers jsdom --single-run",
+    "test:jsdom:esm": "cross-env INPUTMASK_BUNDLE=esm karma start karma.conf.js --browsers jsdom --single-run",
+    "test:jsdom:bundles": "npm run test:jsdom:umd && npm run test:jsdom:jquery && npm run test:jsdom:esm",
     "test:chrome": "karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:umd": "cross-env INPUTMASK_BUNDLE=umd karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:jquery": "cross-env INPUTMASK_BUNDLE=jquery karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:esm": "cross-env INPUTMASK_BUNDLE=esm karma start karma.conf.js --browsers ChromeHeadless --single-run",
+    "test:bundles": "npm run test:umd && npm run test:jquery && npm run test:esm",
     "test:browserstack": "cross-env CI=true karma start karma.conf.js --single-run",
     "lint": "eslint lib/**/*.js --ignore-pattern lib/.rollup/** --ignore-pattern lib/extensions/.rollup/**",
     "update-browserlist": "npx update-browserslist-db@latest"

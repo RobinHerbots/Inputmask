@@ -1,79 +1,9 @@
-import jQuery from "jquery";
-import qunit from "qunit";
-
-// Import from the Rollup-built UMD bundle
+// UMD native bundle lane: dist/inputmask.js, vanilla dependencyLib.
+// No jQuery is loaded on the page by karma.conf.js for this lane.
 import Inputmask from "../dist/inputmask.js";
-// The jQuery plugin lives in its own bundle - load it so $.fn.inputmask exists
-import "../dist/jquery.inputmask.js";
 
-import "./prototypeExtensions.js";
-import installFocusShim from "./focusShim.js";
-import simulator from "./simulator.js"; // inject globally for the simulator to detect inputeventonly
-import testsAlternations from "./tests_alternations";
-import testsAndroid from "./tests_android";
-import testsAttributes from "./tests_attributes";
-import testsBase from "./tests_base";
-import testsDate from "./tests_date";
-import testsDisplaychar from "./tests_displaychar";
-import testsDynamic from "./tests_dynamic";
-import testsEscape from "./tests_escape";
-import testsFormatvalidate from "./tests_formatvalidate";
-import testsInitialvalue from "./tests_initialvalue";
-import testsInputeventonly from "./tests_inputeventonly";
-import testsInsertmode from "./tests_insertmode";
-import testsIp from "./tests_ip";
-import testsJitmasking from "./tests_jitmasking";
-import testsJqueryInputmask from "./tests_jquery_inputmask";
-import testsKeepStatic from "./tests_keepStatic";
-import testsMulti from "./tests_multi";
-import testsNumeric from "./tests_numeric";
-import testsNumericinput from "./tests_numericinput";
-import testsOption from "./tests_option";
-import testsOptional from "./tests_optional";
-import testsPaste from "./tests_paste";
-import testsRegex from "./tests_regex";
-import testsSetvalue from "./tests_setvalue";
+import registerTests from "./harness.js";
 
-if (Inputmask.dependencyLib === jQuery) window.jQuery = Inputmask.dependencyLib;
-
-// android testing
-Inputmask.extendDefaults({
-  inputEventOnly: false
+registerTests(Inputmask, {
+  label: "UMD native (dist/inputmask.js)"
 });
-
-window.Inputmask = Inputmask;
-
-// inject simulater code in the dependencies
-simulator(Inputmask.dependencyLib, Inputmask);
-simulator(jQuery, Inputmask);
-
-// normalise focus/blur for pages without document focus (real mobile devices)
-installFocusShim();
-
-// load tests
-if (qunit) {
-  testsAlternations(qunit, Inputmask);
-  testsAndroid(qunit, Inputmask);
-  testsAttributes(qunit, Inputmask);
-  testsBase(qunit, Inputmask);
-  testsDate(qunit, Inputmask);
-  testsDisplaychar(qunit, Inputmask);
-  testsDynamic(qunit, Inputmask);
-  testsEscape(qunit, Inputmask);
-  testsFormatvalidate(qunit, Inputmask);
-  testsInitialvalue(qunit, Inputmask);
-  testsInputeventonly(qunit, Inputmask);
-  testsInsertmode(qunit, Inputmask);
-  testsIp(qunit, Inputmask);
-  testsJitmasking(qunit, Inputmask);
-  testsJqueryInputmask(qunit, jQuery, Inputmask);
-  testsKeepStatic(qunit, Inputmask);
-  testsMulti(qunit, Inputmask);
-  testsNumeric(qunit, Inputmask);
-  testsNumericinput(qunit, Inputmask);
-  testsOption(qunit, Inputmask);
-  testsOptional(qunit, Inputmask);
-  testsPaste(qunit, Inputmask);
-  testsRegex(qunit, Inputmask);
-  testsSetvalue(qunit, Inputmask);
-}

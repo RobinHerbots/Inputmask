@@ -29,6 +29,35 @@ module.exports = function (config) {
     browsers.splice(0, browsers.length, "ChromeHeadless");
   }
 
+  // Which built bundle the QUnit suite runs against. Each lane is a separate
+  // Karma run: loading more than one test bundle in one page would register the
+  // whole suite twice.
+  const testBundles = {
+      umd: "qunit/qunit.js",
+      jquery: "qunit/qunit.jquery.js",
+      esm: "qunit/qunit.esm.js"
+    },
+    bundle = process.env.INPUTMASK_BUNDLE || "umd";
+
+  if (!testBundles[bundle]) {
+    throw new Error(
+      `Unknown INPUTMASK_BUNDLE "${bundle}". Use one of: ${Object.keys(
+        testBundles
+      ).join(", ")}.`
+    );
+  }
+
+  // The UMD jQuery bundle expects the global jQuery. The native and ESM lanes
+  // deliberately run without it, so they prove those bundles need no jQuery.
+  // For the jquery lane we load the built UMD as a global script (same as
+  // consumers) so its UMD registration stays intact.
+  const testFiles = [
+    ...(bundle === "jquery"
+      ? ["node_modules/jquery/dist/jquery.js", "dist/jquery.inputmask.js"]
+      : []),
+    testBundles[bundle]
+  ];
+
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
@@ -38,7 +67,7 @@ module.exports = function (config) {
     frameworks: ["qunit"],
 
     // list of files / patterns to load in the browser
-    files: ["node_modules/jquery/dist/jquery.js", "qunit/qunit.js"],
+    files: testFiles,
 
     // list of files / patterns to exclude
     exclude: [],

@@ -19,8 +19,11 @@ This skill guides testing workflows in the Inputmask repository using Karma and 
    ```
    Then read the file with the `Read` or `Select-String` tool in a separate step.
 
-3. **ALWAYS Rebuild the Test Bundle After Any Changes:**
-   Tests run from `qunit/qunit.js`, which is compiled by webpack from `qunit/index.js` and `lib/`. Any edit in `lib/` or `qunit/*.js` (including `qunit/focusShim.js`) requires rebuilding the test bundle (`npx webpack --config-name test`) before running Karma, or running webpack in watch mode. The Node bundle tests (`qunit/tests_node.js`) do NOT use this bundle — run them with `npm run test:node` (after a build, they load `dist/`).
+3. **ALWAYS Rebuild the Test Bundles After Any Changes:**
+   Tests run from `qunit/qunit*.js`, which are compiled by rollup (`npm run build`) from `qunit/index*.js`, `qunit/harness.js` and `lib/`. Any edit in `lib/` or `qunit/*.js` (including `qunit/focusShim.js`) requires rebuilding (`npm run build`) or running the build in watch mode (`npm run build:watch`) before running Karma. The Node bundle tests (`qunit/tests_node.js`) do NOT use these bundles — run them with `npm run test:node` (after a build, they load `dist/`).
+
+4. **The suite runs once per bundle:**
+   `INPUTMASK_BUNDLE=umd|jquery|esm` selects `qunit/qunit.js`, `qunit/qunit.jquery.js` or `qunit/qunit.esm.js`. Only the `jquery` lane loads `node_modules/jquery/dist/jquery.js` (plus `dist/jquery.inputmask.js` as a global script). The native and ESM lanes have no jQuery on the page; the jQuery-only test module is not registered and the jQuery insertMode test is reported as skipped.
 
 ---
 
@@ -31,25 +34,27 @@ This skill guides testing workflows in the Inputmask repository using Karma and 
 Always use this exact pattern for reliable, non-hanging test runs:
 
 ```bash
-# 1. Rebuild test bundle (if source changed)
-npx webpack --config-name test
+# 1. Rebuild bundles (if source changed)
+npm run build
 
-# 2. Run karma with ChromeHeadless, output to file
-npx karma start karma.conf.js --browsers ChromeHeadless --single-run --reporters progress > $env:TEMP\karma_results.log 2>&1
+# 2. Run one lane (umd | jquery | esm), output to file
+npm run test:umd > $env:TEMP\karma_umd.log 2>&1
+npm run test:jquery > $env:TEMP\karma_jquery.log 2>&1
+npm run test:esm > $env:TEMP\karma_esm.log 2>&1
+
+# Or all three sequentially
+npm run test:bundles > $env:TEMP\karma_bundles.log 2>&1
 
 # 3. Read results (separate step)
-Select-String -Path $env:TEMP\karma_results.log -Pattern "TOTAL|FAILED" | Select-Object -Last 5
+Select-String -Path $env:TEMP\karma_*.log -Pattern "TOTAL|FAILED" | Select-Object -Last 5
 ```
 
 ### 2. Running a Single Test Suite or Selected Test Suites
 
 To isolate specific test files (e.g., only `qunit/tests_numeric.js` or `qunit/tests_date.js`):
 
-1. Edit `qunit/index.js` to import and register only the desired test module(s):
+1. Edit `qunit/harness.js` to register only the desired test module(s):
    ```javascript
-   import testsNumeric from "./tests_numeric";
-   import testsDate from "./tests_date";
-
    // ...
    if (qunit) {
      testsNumeric(qunit, Inputmask);
@@ -59,14 +64,14 @@ To isolate specific test files (e.g., only `qunit/tests_numeric.js` or `qunit/te
 
    Note: do NOT add `qunit.load()` — `karma-qunit` sets `autostart: false` and starts the run itself.
 
-2. Rebuild the test bundle:
+2. Rebuild the test bundles:
    ```bash
-   npx webpack --config-name test
+   npm run build
    ```
 
-3. Run Karma:
+3. Run Karma (pick the bundle lane you are debugging):
    ```bash
-   npx karma start karma.conf.js --browsers ChromeHeadless --single-run --reporters progress > $env:TEMP\karma_results.log 2>&1
+   npm run test:umd > $env:TEMP\karma_results.log 2>&1
    ```
 
 4. Check results:
@@ -78,9 +83,9 @@ To isolate specific test files (e.g., only `qunit/tests_numeric.js` or `qunit/te
 
 To keep the browser open and re-run tests instantly on changes:
 
-1. In one terminal, run the webpack test bundle watcher:
+1. In one terminal, run the build watcher (rebuilds `dist/` and the test bundles):
    ```bash
-   npm run qunit
+   npm run build:watch
    ```
 
 2. In another terminal, run Karma in watch mode:
@@ -93,8 +98,8 @@ To keep the browser open and re-run tests instantly on changes:
 ### 4. Alternative: Direct Browser HTML Runner (No Karma)
 
 You can run and debug QUnit tests directly in any browser without Karma:
-1. Rebuild the test bundle: `npx webpack --config-name test` (or keep `npm run qunit` running).
-2. Open `qunit/qunit.html` in your browser.
+1. Rebuild the test bundles: `npm run build` (or keep `npm run build:watch` running).
+2. Open `qunit/qunit.html` in your browser (it loads the UMD native bundle, `qunit/qunit.js`).
 3. Use the QUnit web interface dropdown to filter by module or re-run individual tests.
 
 ### 5. Running Specific Tests via CLI Filter
@@ -136,15 +141,42 @@ Use BrowserStack ONLY when reproducing or verifying browser-specific or OS-speci
 > all report 927/927. Keep the shim rebuild in mind: it lives in the test bundle
 > (`npx webpack --config-name test`).
 
-### 7. Node + jsdom and DOM-less Bundle Lanes
+### 7. Bundle Lanes (UMD native, UMD jQuery, ESM)
+
+The browser suite runs once per built bundle. Each lane is a separate Karma run
+because loading more than one test bundle in a page would register the suite twice.
+
+| Lane | Env | Artifact | jQuery | Expected |
+| :--- | :--- | :--- | :--- | :--- |
+| UMD native | `INPUTMASK_BUNDLE=umd` | `dist/inputmask.js` | no | 937 pass, 1 skip (of 938) |
+| UMD jQuery | `INPUTMASK_BUNDLE=jquery` | `dist/jquery.inputmask.js` | yes | 938 pass, 1 skip (of 939) |
+| ESM native | `INPUTMASK_BUNDLE=esm` | `dist/esm/inputmask.mjs` + `dist/esm/extensions/*.mjs` | no | 937 pass, 1 skip (of 938) |
+
+```bash
+npm run build
+npm run test:umd    > $env:TEMP\im-umd.log 2>&1
+npm run test:jquery > $env:TEMP\im-jquery.log 2>&1
+npm run test:esm    > $env:TEMP\im-esm.log 2>&1
+```
+
+The native/ESM lanes deliberately do not load jQuery. The whole
+`tests_jquery_inputmask.js` module is only registered on the jQuery lane, and the
+"jQuery plugin insertMode:false" test in `tests_insertmode.js` is registered as a
+skip there. The jQuery lane skips the native dependencyLib's non-writable
+`extend` guard test, which does not apply to jQuery's `$.extend`. The ESM lane
+has to register the extension bundles itself, because `dist/esm/inputmask.mjs`
+is built from `lib/index.js` and does not include them.
+
+### 8. Node + jsdom and DOM-less Bundle Lanes
 
 Two extra QUnit lanes run without a real browser:
 
 - **Node + jsdom** (same browser suite, jsdom instead of Chrome):
   ```bash
-  npm run test:jsdom   # karma start karma.conf.js --browsers jsdom --single-run
+  npm run test:jsdom                 # UMD native, the default lane
+  npm run test:jsdom:bundles         # umd, jquery and esm sequentially
   ```
-  Uses the same `qunit/qunit.js` bundle, so rebuild it after source changes.
+  Uses the same `qunit/qunit*.js` bundles, so rebuild them after source changes.
 
 - **Node, DOM-less bundles** (loads `dist/`, not the bundle):
   ```bash
@@ -160,21 +192,24 @@ Two extra QUnit lanes run without a real browser:
 
 | Task | Command |
 | :--- | :--- |
-| Build test bundle once | `npx webpack --config-name test` |
-| Watch test bundle | `npm run qunit` |
-| Run browser tests (headless) | `npm run test:chrome` *(= `karma start karma.conf.js --browsers ChromeHeadless --single-run`; redirect to a file if piping)* |
-| Run Node + jsdom tests | `npm run test:jsdom` |
+| Build bundles once | `npm run build` |
+| Watch the build | `npm run build:watch` |
+| Run UMD native browser lane | `npm run test:umd` |
+| Run UMD jQuery browser lane | `npm run test:jquery` |
+| Run ESM browser lane | `npm run test:esm` |
+| Run all browser bundle lanes | `npm run test:bundles` |
+| Run browser tests (default UMD native) | `npm run test:chrome` *(= `karma start karma.conf.js --browsers ChromeHeadless --single-run`; redirect to a file if piping)* |
+| Run Node + jsdom tests | `npm run test:jsdom` (`test:jsdom:bundles` for all three) |
 | Run DOM-less bundle tests (build first) | `npm run test:node` |
-| Run all lanes (build first) | `npm run test:all` *(node → chrome → jsdom → browserstack)* |
 | Run the BrowserStack matrix | `npm run test:browserstack` *(`cross-env CI=true karma start karma.conf.js --single-run`; real desktop + mobile devices, needs `BROWSERSTACK_USERNAME`/`BROWSERSTACK_ACCESS_KEY`)* |
 | Run tests with live auto-watch (GUI Chrome) | `npx karma start --browsers Chrome --no-single-run --auto-watch` |
-| Full validation pipeline | `npm test` *(runs `grunt validate`: webpack → copy → types → qunitnode → eslint → karma:unit → karma:jsdom)* |
+| Full validation pipeline | `npm test` *(build → types → node → lint → UMD-native jsdom; run `test:bundles` separately for the full browser matrix)* |
 
 ---
 
 ## Known Pre-existing Failures
 
-None currently. Browser (`ChromeHeadless`), Node + jsdom, and the BrowserStack desktop + real mobile (Android/iOS) lanes all report **927/927**.
+None currently. The UMD jQuery lane reports **938 passed + 1 skipped** (of 939). The UMD native and ESM lanes report **937 passed + 1 skipped** (of 938): the jQuery-plugin insertMode test is skipped and the `tests_jquery_inputmask.js` module is not registered. Node + jsdom and the BrowserStack desktop + real mobile (Android/iOS) lanes are green as well.
 
 - `QUnit.config.testTimeout` (10s) turns a stalled async test into one failure instead of a browser
   disconnect. Real-mobile `document.hasFocus() === false` (which suppressed `focus`/`blur`) is handled

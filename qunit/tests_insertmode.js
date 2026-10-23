@@ -1,4 +1,15 @@
 export default function (qunit, Inputmask) {
+  const $ = Inputmask.dependencyLib;
+
+  function hasJqueryPlugin() {
+    return (
+      typeof window !== "undefined" &&
+      window.jQuery &&
+      window.jQuery.fn &&
+      typeof window.jQuery.fn.inputmask === "function"
+    );
+  }
+
   function setup(opts, alias) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
@@ -91,19 +102,23 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.test("jQuery plugin insertMode:false", function (assert) {
-    const $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" />');
-    const el = document.getElementById("testmask");
-    window.jQuery("#testmask").inputmask("9999", { insertMode: false });
-    el.focus();
-    pressInsert(el);
-    assert.equal(
-      el.inputmask.opts.insertMode,
-      false,
-      "still false after insert -> " + el.inputmask.opts.insertMode
-    );
-  });
+  if (hasJqueryPlugin()) {
+    qunit.test("jQuery plugin insertMode:false", function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const el = document.getElementById("testmask");
+      window.jQuery("#testmask").inputmask("9999", { insertMode: false });
+      el.focus();
+      pressInsert(el);
+      assert.equal(
+        el.inputmask.opts.insertMode,
+        false,
+        "still false after insert -> " + el.inputmask.opts.insertMode
+      );
+    });
+  } else {
+    qunit.skip("jQuery plugin insertMode:false (no jQuery in this bundle)");
+  }
 
   qunit.test(".option({insertMode:false}) blocks toggle", function (assert) {
     const el = setup({ mask: "9999" });
