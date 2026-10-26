@@ -26,7 +26,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 
 - **Entry point:** `lib/index.js` — public entry; re-exports the headless class and attaches the DOM driver (`lib/dom/attach.js`). Deep import `lib/core/inputmask.js` for the DOM-free class only
 - **Headless class:** `lib/core/inputmask.js` — constructor, aliases/definitions, validation/format statics and the headless session API; part of `lib/core/`, so it never imports `lib/dom/`
-- **Headless core:** `lib/core/` — mask lexer, validation, positioning, key processing, input handling; no DOM/window dependencies (only the safe `lib/global/window` shim)
+- **Headless core:** `lib/core/` — mask lexer, validation, positioning, key processing, input handling, plus the safe `window` shim (`window.js`); no direct DOM dependencies
 - **DOM driver:** `lib/dom/` — browser event handlers (`eventhandlers.js`), event binding (`eventruler.js`), element patching (`mask.js`), environment sniffing (`environment.js`), and `attach.js` which adds the element-bound instance methods (`mask`, `remove`) and statics (`remove`, `setValue`) to the class
 - **Bundle entry points:** `bundle.js` (vanilla), `bundle.jquery.js` (jQuery), `bundle.colormask.js`
 - **Dependency abstraction:** `lib/dependencyLibs/` — `inputmask.dependencyLib.js` is the vanilla DOM implementation and `inputmask.dependencyLib.jquery.js` the jQuery one; `bundle.jquery.js` imports the jQuery variant and assigns it to `Inputmask.dependencyLib`
@@ -60,7 +60,7 @@ QUnit is the only test framework. The browser suite runs once per built bundle:
 
 - `karma.conf.js` selects the test bundle with `INPUTMASK_BUNDLE=umd|jquery|esm` (default `umd`). The jQuery lane is the only one that adds `node_modules/jquery/dist/jquery.js` and `dist/jquery.inputmask.js` (as a global script) to the page; the native and ESM lanes run without jQuery.
 - Expected results: UMD native **937 passed + 1 skipped of 938**, UMD jQuery **938 passed + 1 skipped of 939**, ESM **937 passed + 1 skipped of 938**. The native/ESM skip is the jQuery-plugin insertMode test (the `tests_jquery_inputmask.js` module is not registered there); the jQuery skip is the native dependencyLib `extend` guard test.
-- `qunit/harness.js` registers the shared suite against whatever `Inputmask` the entry passes in. The entries are `qunit/index.js` (UMD native), `qunit/index.jquery.js` (UMD jQuery) and `qunit/index.esm.js` (ESM core + `dist/esm/extensions/*.mjs` + `dist/esm/global/FormData.mjs`, because the ESM entry does not register extensions itself).
+- `qunit/harness.js` registers the shared suite against whatever `Inputmask` the entry passes in. The entries are `qunit/index.js` (UMD native), `qunit/index.jquery.js` (UMD jQuery) and `qunit/index.esm.js` (ESM core + `dist/esm/extensions/*.mjs` + `dist/esm/dom/FormData.mjs`, because the ESM entry does not register extensions itself).
 - The ESM build intentionally does not emit the jQuery plugin or binding (`rollup.config.cjs` has those outputs disabled): ESM consumers use the native dependencyLib, so there is no ESM jQuery lane.
 - `npm test` is unchanged: build, types, node lane, lint, and the UMD-native jsdom lane. `npm run test:bundles` is the opt-in full browser matrix.
 - `QUnit.config.testTimeout` is set to 10s (`client.qunit.testTimeout` in `karma.conf.js`) so a stalled async test fails instead of tripping Karma's 30s `browserNoActivityTimeout` and disconnecting the whole browser.

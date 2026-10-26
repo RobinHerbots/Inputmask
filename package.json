@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.1.0-beta.37",
+  "version": "5.1.0-beta.40",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "dist/inputmask.js",
   "module": "dist/esm/inputmask.mjs",
@@ -59,7 +59,8 @@
       "require": "./dist/colormask.js"
     },
     "./inputmaskElement": {
-      "types": "./dist/types/inputmaskElement.d.ts"
+      "types": "./dist/types/components/inputmaskElement.d.ts",
+      "import": "./dist/esm/inputmaskElement.mjs"
     },
     "./dist/*": "./dist/*"
   },
@@ -71,6 +72,9 @@
   "sideEffects": [
     "./dist/*.js",
     "./dist/esm/**/*.mjs"
+  ],
+  "workspaces": [
+    "packages/*"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
@@ -92,6 +96,18 @@
     "test:esm": "cross-env INPUTMASK_BUNDLE=esm karma start karma.conf.js --browsers ChromeHeadless --single-run",
     "test:bundles": "npm run test:umd && npm run test:jquery && npm run test:esm",
     "test:browserstack": "cross-env CI=true karma start karma.conf.js --single-run",
+    "build:packages": "npm run build --workspaces --if-present",
+    "test:packages": "npm run test --workspaces --if-present",
+    "clean:packages": "npm run clean --workspaces --if-present",
+    "verify:packages": "npm test && npm run build:packages && npm run test:packages",
+    "publish:react": "npm publish --workspace @inputmask/react --access public",
+    "publish:vue": "npm publish --workspace @inputmask/vue --access public",
+    "publish:svelte": "npm publish --workspace @inputmask/svelte --access public",
+    "publish:angular": "npm publish packages/angular/dist --access public",
+    "publish:jquery": "npm publish --workspace @inputmask/jquery --access public",
+    "publish:packages": "npm run verify:packages && npm run publish:react && npm run publish:vue && npm run publish:svelte && npm run publish:angular && npm run publish:jquery",
+    "publish:packages:dry": "npm run verify:packages && npm run publish:react -- --dry-run && npm run publish:vue -- --dry-run && npm run publish:svelte -- --dry-run && npm run publish:angular -- --dry-run && npm run publish:jquery -- --dry-run",
+    "publish:packages:next": "npm run verify:packages && npm run publish:react -- --tag next && npm run publish:vue -- --tag next && npm run publish:svelte -- --tag next && npm run publish:angular -- --tag next && npm run publish:jquery -- --tag next",
     "lint": "eslint lib/**/*.js --ignore-pattern lib/.rollup/** --ignore-pattern lib/extensions/.rollup/**",
     "update-browserlist": "npx update-browserslist-db@latest"
   },

@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch InputmaskPages",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:3000/Inputmask",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "name": "Launch Chrome",
       "request": "launch",
       "type": "chrome",

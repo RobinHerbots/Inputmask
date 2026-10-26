@@ -1,0 +1,40 @@
+{
+  "name": "@inputmask/vue",
+  "version": "0.1.0",
+  "description": "Vue directive and plugin for Inputmask",
+  "type": "module",
+  "main": "./dist/vue.inputmask.cjs",
+  "module": "./dist/vue.inputmask.js",
+  "types": "./dist/vue.inputmask.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/vue.inputmask.d.ts",
+      "import": "./dist/vue.inputmask.js",
+      "require": "./dist/vue.inputmask.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "peerDependencies": {
+    "inputmask": "^5.1.0-beta.37",
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "inputmask": "file:../..",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^30.1.2",
+    "tsup": "^9.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5",
+    "vue": "^3.5.44"
+  },
+  "license": "MIT"
+}

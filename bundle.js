@@ -1,4 +1,4 @@
-import "./lib/global/FormData";
+import "./lib/dom/FormData";
 
 import { registerCssunit } from "./lib/extensions/cssunit";
 import { registerDatetime } from "./lib/extensions/date";

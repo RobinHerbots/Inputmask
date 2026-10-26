@@ -34,7 +34,6 @@ module.exports = function (config) {
   // whole suite twice.
   const testBundles = {
       umd: "qunit/qunit.js",
-      jquery: "qunit/qunit.jquery.js",
       esm: "qunit/qunit.esm.js"
     },
     bundle = process.env.INPUTMASK_BUNDLE || "umd";
@@ -47,14 +46,7 @@ module.exports = function (config) {
     );
   }
 
-  // The UMD jQuery bundle expects the global jQuery. The native and ESM lanes
-  // deliberately run without it, so they prove those bundles need no jQuery.
-  // For the jquery lane we load the built UMD as a global script (same as
-  // consumers) so its UMD registration stays intact.
   const testFiles = [
-    ...(bundle === "jquery"
-      ? ["node_modules/jquery/dist/jquery.js", "dist/jquery.inputmask.js"]
-      : []),
     testBundles[bundle]
   ];
 

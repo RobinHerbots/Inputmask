@@ -12,11 +12,34 @@ You can choose between:
 
 Include the js-files which you can find in the `dist` folder.
 
-Inputmask with jQuery as dependencylib.
+Inputmask with vanilla dependencylib.
+
+```html
+<script src="inputmask.js"></script>
+```
+
+**jQuery plugin and bindings are a separate package** — they are no longer bundled in the main `inputmask` dist folder.
+
+For jQuery projects using script tags, download `jquery.inputmask.js` from the [@inputmask/jquery releases](https://github.com/RobinHerbots/Inputmask/releases) or install via npm and copy from `node_modules/@inputmask/jquery/dist/jquery.inputmask.js`:
 
 ```html
 <script src="jquery.js"></script>
 <script src="jquery.inputmask.js"></script>
+```
+
+The **bindings** (auto-initialization of inputs with `data-inputmask` attributes) are **only available with the jQuery variant** and included in the `@inputmask/jquery` package.
+
+The `data-inputmask` attribute itself works on **all variants** — you can manually initialize: `Inputmask().mask(document.querySelectorAll("[data-inputmask]"))`.
+
+For modern bundlers, use the `@inputmask/jquery` package:
+
+```bash
+npm install @inputmask/jquery "inputmask@^5.1.0-beta.37" jquery
+```
+
+```js
+import $ from "jquery";
+import "@inputmask/jquery"; // registers $.fn.inputmask and auto-bindings
 ```
 
 Inputmask with vanilla dependencylib.
@@ -25,23 +48,17 @@ Inputmask with vanilla dependencylib.
 <script src="inputmask.js"></script>
 ```
 
-If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
-
-```html
-<script src="bindings/inputmask.binding.js"></script>
-```
-
-### webpack
+### Module bundlers (Vite, Rollup, esbuild, Webpack, etc.)
 
 #### Install the package
 
-```
+```bash
 npm install inputmask --save
 ```
 
 ##### Install the latest beta version
 
-```
+```bash
 npm install inputmask@next --save
 ```
 
@@ -49,10 +66,11 @@ npm install inputmask@next --save
 
 If you want to include the Inputmask and all extensions.
 
-```
+```javascript
+// CommonJS
 var Inputmask = require('inputmask');
 
-//es6
+// ES Modules
 import Inputmask from "inputmask";
 ```
 
@@ -114,6 +132,124 @@ Inputmask(mac({ definitions: definitions() })).mask(selector);
 ```
 
 If you prefer the classic string aliases (`Inputmask("email")`, `Inputmask("numeric")`, ...), each module also exports a `register*` function (`registerEmail`, `registerNumeric`, `registerDatetime`, `registerDefinitions`, ...) that registers the aliases globally. Registering is optional.
+
+### Framework packages
+
+First-party wrappers are available as separate packages. They all use the core
+`inputmask` package and the same framework-agnostic controller, so mask updates,
+remasking, cleanup and change payloads behave consistently. All wrappers require
+`inputmask` 5.1.0-beta.37 or newer.
+
+| Framework | Package | Adapter |
+| --- | --- | --- |
+| React | `@inputmask/react` | `<Inputmask />` component |
+| Vue 3 | `@inputmask/vue` | `v-inputmask` directive and plugin |
+| Svelte | `@inputmask/svelte` | `use:inputmask` action |
+| Angular | `@inputmask/angular` | `[inputmask]` directive |
+| jQuery | `@inputmask/jquery` | `$.fn.inputmask` plugin |
+
+Install the wrapper together with the core package:
+
+```bash
+npm install @inputmask/react "inputmask@^5.1.0-beta.37"     # React 18+
+npm install @inputmask/vue "inputmask@^5.1.0-beta.37"       # Vue 3.3+
+npm install @inputmask/svelte "inputmask@^5.1.0-beta.37"    # Svelte 4+
+npm install @inputmask/angular "inputmask@^5.1.0-beta.37"   # Angular 18+
+npm install @inputmask/jquery "inputmask@^5.1.0-beta.37"    # jQuery 3.7+
+```
+
+#### React
+
+```tsx
+import { Inputmask } from "@inputmask/react";
+
+<Inputmask
+  mask="+99 999 99 99"
+  onChange={(event, { unmaskedValue }) => console.log(unmaskedValue)}
+/>;
+```
+
+#### Vue 3
+
+```vue
+<script setup>
+import { vInputmask } from "@inputmask/vue";
+</script>
+
+<template>
+  <input v-inputmask="'+99 999 99 99'" v-model="phone" />
+</template>
+```
+
+#### Svelte
+
+```svelte
+<script>
+  import { inputmask } from "@inputmask/svelte";
+
+  let phone = "";
+</script>
+
+<input use:inputmask={"+99 999 99 99"} bind:value={phone} />
+```
+
+#### Angular
+
+The standalone directive implements `ControlValueAccessor`, so it works with
+template-driven and reactive forms.
+
+```ts
+import { Component } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { InputmaskDirective } from "@inputmask/angular";
+
+@Component({
+  standalone: true,
+  imports: [FormsModule, InputmaskDirective],
+  template: `<input inputmask="+99 999 99 99" [(ngModel)]="phone" />`
+})
+export class PhoneComponent {
+  phone = "";
+}
+```
+
+Use `ReactiveFormsModule` and `[formControl]` instead of `FormsModule` and
+`[(ngModel)]` for reactive forms. `[inputmaskOptions]` passes extra options
+separately.
+
+#### jQuery
+
+```js
+import $ from "jquery";
+import "@inputmask/jquery";
+
+$(document).ready(function () {
+  // Phone
+  $("#phone").inputmask("+99 999 99 99");
+
+  // Phone with extra options
+  $("#phone").inputmask({ mask: "+99 999 99 99", clearIncomplete: true });
+
+  // Email (register the email extension first)
+  import { registerEmail } from "inputmask/extensions/email";
+  registerEmail();
+  $("#email").inputmask({ alias: "email" });
+});
+```
+
+Optional aliases are not registered by the core entry. Register the extensions
+you use once, before mounting the app:
+
+```ts
+import { registerDatetime } from "inputmask/extensions/date";
+import { registerNumeric } from "inputmask/extensions/numeric";
+
+registerDatetime();
+registerNumeric();
+```
+
+See the [framework package documentation](https://github.com/RobinHerbots/Inputmask/blob/5.x/packages/README.md)
+for the full component and directive API.
 
 ### Colormask
 

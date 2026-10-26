@@ -1,0 +1,49 @@
+{
+  "name": "@inputmask/angular",
+  "version": "0.1.0",
+  "description": "Angular directive for Inputmask with ControlValueAccessor support",
+  "type": "module",
+  "main": "./dist/fesm2022/inputmask.mjs",
+  "module": "./dist/fesm2022/inputmask.mjs",
+  "types": "./dist/inputmask.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/inputmask.d.ts",
+      "import": "./dist/fesm2022/inputmask.mjs",
+      "require": "./dist/cjs/inputmask.js"
+    },
+    "./inputmask.directive": {
+      "types": "./dist/inputmask.directive.d.ts",
+      "import": "./dist/fesm2022/inputmask.directive.mjs",
+      "require": "./dist/cjs/inputmask.directive.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "peerDependencies": {
+    "@angular/core": ">=18",
+    "@angular/forms": ">=18",
+    "inputmask": "^5.1.0-beta.37"
+  },
+  "devDependencies": {
+    "inputmask": "file:../..",
+    "@angular/common": "^22.2.3",
+    "@angular/compiler": "^22.2.3",
+    "@angular/compiler-cli": "^22.2.3",
+    "@angular/core": "^22.2.3",
+    "@angular/forms": "^22.2.3",
+    "ng-packagr": "^22.2.5",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.8.1",
+    "typescript": "~6.0.3",
+    "zone.js": "^0.16.0"
+  },
+  "license": "MIT"
+}

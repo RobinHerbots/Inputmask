@@ -10,16 +10,20 @@
         <projectUrl>https://github.com/RobinHerbots/Inputmask</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <readme>Readme.md</readme>
-        <description>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</description>
-        <summary>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</summary>
+        <description>Inputmask is a javascript library which creates an input mask. Inputmask can run against vanilla javascript, jQuery and jqlite.</description>
+        <summary>Inputmask is a javascript library which creates an input mask. Inputmask can run against vanilla javascript, jQuery and jqlite.</summary>
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
+        <dependencies>
+            <dependency id="inputmask" version="$version$" />
+        </dependencies>
         <contentFiles>
             <files include="**\*" buildAction="None" />
         </contentFiles>
     </metadata>
     <files>
-        <file src="..\dist\**\*" target="content\Scripts\inputmask" />
-        <file src="..\dist\**\*" target="contentFiles\any\any" />
+        <file src="..\packages\jquery\dist\jquery.inputmask.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
+        <file src="..\packages\jquery\dist\jquery.inputmask.min.js" target="content\Scripts\inputmask\jquery.inputmask.min.js" />
+        <file src="..\packages\jquery\dist\jquery.inputmask.d.ts" target="content\Scripts\inputmask\jquery.inputmask.d.ts" />
         <file src="Readme.md" target="Readme.md" />
     </files>
 </package>

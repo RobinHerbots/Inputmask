@@ -59,10 +59,6 @@ module.exports = function (grunt) {
     copy: {
       extensions: {
         files: [
-          {
-            src: "lib/bindings/inputmask.binding.js",
-            dest: "dist/bindings/inputmask.binding.js"
-          },
           { src: "lib/extensions/colormask.css", dest: "dist/colormask.css" },
           {
             src: "Changelog.md",
@@ -97,6 +93,10 @@ module.exports = function (grunt) {
     nugetApiKey = process.env.NUGET_API_KEY;
 
   grunt.registerTask("nugetpack", function () {
+    // Build npm packages first (includes @inputmask/jquery which produces jquery.inputmask.js)
+    grunt.log.ok("Building npm packages...");
+    execSync(`npm run build:packages`, { stdio: "inherit" });
+
     const version = grunt.config("pkg").version;
     nugetPackages.forEach(function (nuspec) {
       grunt.log.ok("Packing " + nuspec);

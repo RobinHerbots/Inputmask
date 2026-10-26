@@ -1,3 +1,8 @@
+import hljs from "highlight.js";
+import bash from "highlight.js/lib/languages/bash";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
+import hljsSvelte from "highlightjs-svelte/dist/index.mjs";
 import { createElement, Fragment, useEffect, useContext } from "react";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeHighlight from "rehype-highlight";
@@ -12,6 +17,11 @@ import { visit } from "unist-util-visit";
 import styles from "./MarkDownPage.module.scss";
 import "highlight.js/scss/github-dark-dimmed.scss";
 import { MarkDownPageContext } from "./MarkDownPageContext";
+
+hljs.registerLanguage("typescript", typescript);
+hljs.registerLanguage("bash", bash);
+hljsSvelte(hljs);
+hljs.registerLanguage("vue", xml);
 
 const DANGEROUS_TAGS = new Set([
     "script",

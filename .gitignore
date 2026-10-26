@@ -6,6 +6,7 @@ nuspecs/obj/
 test.html
 jquery-1.10.2.js
 node_modules/
+packages/*/dist/
 bower_components/
 npm-debug.log
 .idea/
@@ -21,3 +22,4 @@ browserstack.err
 .opencode/*
 !.opencode/skills/
 .rollup
+inputmask*.tgz

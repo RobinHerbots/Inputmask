@@ -6,6 +6,7 @@
     "emitDeclarationOnly": true,
     "declarationMap": false,
     "outDir": "./dist/types",
+    "rootDir": "./lib",
     "stripInternal": true,
     "skipLibCheck": true,
     "strict": false,
@@ -14,5 +15,5 @@
     "moduleResolution": "Bundler"
   },
   "include": ["lib/**/*.js"],
-  "exclude": ["dist/**", "qunit/**", "inputmask-pages/**", "node_modules/**"]
+  "exclude": ["dist/**", "qunit/**", "inputmask-pages/**", "node_modules/**", "lib/.rollup/**"]
 }

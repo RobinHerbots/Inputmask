@@ -57,7 +57,6 @@ const buildSideEffects = [
   // Bundle entry points (bundle.colormask.js imports bundle.js for its side
   // effects only).
   "./bundle.js",
-  "./bundle.jquery.js",
   "./bundle.colormask.js",
   // The qunit harness and the prototype extensions it installs.
   "./qunit/index.js",
@@ -65,17 +64,13 @@ const buildSideEffects = [
   // The built UMD bundles the qunit entries import.
   "./dist/*.js",
   // The ESM lane imports the FormData patch for its side effects only.
-  "./dist/esm/global/FormData.mjs",
+  "./dist/esm/dom/FormData.mjs",
   // Source modules that are imported for their side effects only: they patch
   // globals, register a custom element or extend $.fn.
   "./lib/index.js",
-  "./lib/global/FormData.js",
+  "./lib/dom/FormData.js",
   "./lib/extensions/date.i18n.js",
-  "./lib/inputmaskElement.js",
-  "./lib/components/inputmaskElement.js",
-  "./lib/jquery.inputmask.js",
-  "./lib/components/jquery.inputmask.js",
-  "./lib/bindings/inputmask.binding.js"
+  "./lib/components/inputmaskElement.js"
 ];
 
 const sideEffectPatterns = buildSideEffects.map((pattern) =>
@@ -220,9 +215,9 @@ module.exports = [
 
   // FormData patch - side effect: patches global FormData
   {
-    input: "lib/global/FormData.js",
+    input: "lib/dom/FormData.js",
     output: {
-      file: "dist/esm/global/FormData.mjs",
+      file: "dist/esm/dom/FormData.mjs",
       format: "esm",
       sourcemap: true,
       banner,
@@ -240,7 +235,7 @@ module.exports = [
 
   // InputmaskElement - side effect: registers custom element
   {
-    input: "lib/inputmaskElement.js",
+    input: "lib/components/inputmaskElement.js",
     output: {
       file: "dist/esm/inputmaskElement.mjs",
       format: "esm",
@@ -259,8 +254,9 @@ module.exports = [
   },
 
   // jQuery plugin - side effect: extends $.fn
+  // Moved to @inputmask/jquery package
   // {
-  //   input: "lib/jquery.inputmask.js",
+  //   input: "lib/components/jquery.inputmask.esm.js",
   //   output: {
   //     file: "dist/esm/jquery.inputmask.mjs",
   //     format: "esm",
@@ -328,53 +324,6 @@ module.exports = [
     input: "bundle.js",
     output: {
       file: "dist/inputmask.min.js",
-      format: "umd",
-      name: "Inputmask",
-      globals,
-      sourcemap: true,
-      banner,
-      generatedCode: { preset: "es2015" },
-      exports: "default"
-    },
-    external: Object.keys(globals),
-    plugins: [
-      resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
-      commonjs(),
-      babel(babelConfig),
-      terser(terserOptions),
-      umdDefaultExport()
-    ],
-    treeshake: { moduleSideEffects }
-  },
-
-  // jQuery UMD (unminified)
-  {
-    input: "bundle.jquery.js",
-    output: {
-      file: "dist/jquery.inputmask.js",
-      format: "umd",
-      name: "Inputmask",
-      globals,
-      sourcemap: true,
-      banner,
-      generatedCode: { preset: "es2015" },
-      exports: "default"
-    },
-    external: Object.keys(globals),
-    plugins: [
-      resolve({ browser: true, ignoreSideEffectsForRoot: true, rootDir }),
-      commonjs(),
-      babel(babelConfig),
-      umdDefaultExport()
-    ],
-    treeshake: { moduleSideEffects }
-  },
-
-  // jQuery UMD (minified)
-  {
-    input: "bundle.jquery.js",
-    output: {
-      file: "dist/jquery.inputmask.min.js",
       format: "umd",
       name: "Inputmask",
       globals,

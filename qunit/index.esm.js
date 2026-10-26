@@ -6,7 +6,7 @@
 // so this lane mirrors what a consumer does instead of relying on the UMD
 // side effects. No jQuery is loaded on the page for this lane.
 import Inputmask from "../dist/esm/inputmask.mjs";
-import "../dist/esm/global/FormData.mjs";
+import "../dist/esm/dom/FormData.mjs";
 import { registerCssunit } from "../dist/esm/extensions/cssunit.mjs";
 import { registerDatetime } from "../dist/esm/extensions/date.mjs";
 import { registerDefinitions } from "../dist/esm/extensions/definitions.mjs";

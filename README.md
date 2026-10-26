@@ -13,6 +13,21 @@ Inputmask is a javascript library that creates an input mask. Inputmask can run 
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
+## Framework packages
+
+First-party wrappers are available as separate packages:
+
+- [`@inputmask/react`](./packages/react)
+- [`@inputmask/vue`](./packages/vue)
+- [`@inputmask/svelte`](./packages/svelte)
+- [`@inputmask/angular`](./packages/angular)
+- [`@inputmask/jquery`](./packages/jquery)
+
+All wrappers require `inputmask` 5.1.0-beta.37 or newer.
+
+See [packages/README.md](./packages/README.md) for usage, extension
+registration and build/test instructions.
+
 ## Documentation and demo page
 
 <https://robinherbots.github.io/Inputmask/>
