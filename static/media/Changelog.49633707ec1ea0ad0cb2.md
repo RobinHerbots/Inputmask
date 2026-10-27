@@ -13,7 +13,7 @@
   - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
   - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
   - `setSelection(begin, end)`, `getSelection()`/`caret`
-- first-party framework packages: `@inputmask/react`, `@inputmask/vue`, `@inputmask/svelte` and `@inputmask/angular`, sharing the framework-agnostic `createInputmaskAdapter` controller
+- first-party framework packages: `@inputmask/react`, `@inputmask/vue`, `@inputmask/svelte`, `@inputmask/angular` and `@inputmask/jquery`, sharing the framework-agnostic `createInputmaskAdapter` controller
 
 ### Updates
 
