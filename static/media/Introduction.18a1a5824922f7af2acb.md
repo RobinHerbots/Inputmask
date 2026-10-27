@@ -31,6 +31,7 @@ Highlights:
 - value formatting / validating without input element
 - AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
+- first-party wrappers for React, Vue, Svelte and Angular
 - \<input-mask\> htmlelement
 
 Thanks to [Browserstack](https://www.browserstack.com) for providing a free license, so we can automate testing in different browsers and devices.  
