@@ -21,9 +21,9 @@
         </contentFiles>
     </metadata>
     <files>
-        <file src="..\packages\jquery\dist\jquery.inputmask.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
+        <file src="..\packages\jquery\dist\jquery.inputmask.umd.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
         <file src="..\packages\jquery\dist\jquery.inputmask.min.js" target="content\Scripts\inputmask\jquery.inputmask.min.js" />
-        <file src="..\packages\jquery\dist\jquery.inputmask.d.ts" target="content\Scripts\inputmask\jquery.inputmask.d.ts" />
+        <file src="..\packages\jquery\dist\types\index.d.ts" target="content\Scripts\inputmask\jquery.inputmask.d.ts" />
         <file src="Readme.md" target="Readme.md" />
     </files>
 </package>

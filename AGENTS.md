@@ -16,6 +16,8 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 | Browser (Karma) | `npm run test:chrome` |
 | Node + jsdom (Karma) | `npm run test:jsdom` |
 | Node, DOM-less bundles | `npm run test:node` |
+| Build the framework packages | `npm run build:packages` |
+| Test the framework packages | `npm run test:packages` |
 | BrowserStack matrix | `npm run test:browserstack` |
 
 **Command order matters:** `npm test` runs build → types → node → lint → jsdom. Running the steps out of order fails (the tests need the built `dist/` bundles, the lint and the type generation need the sources).
@@ -33,6 +35,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 - **Extensions:** `lib/extensions/` — each exports a `register*()` function, called in `bundle.js`
 - **Tests:** `qunit/` — QUnit test files, bundled by rollup into `qunit/qunit*.js` (one per bundle lane); `qunit/harness.js` registers the shared suite
 - **Output formats:** ESM (`dist/esm/*.mjs`), UMD (`dist/inputmask.js`), minified UMD (`dist/inputmask.min.js`)
+- **Framework packages:** `packages/*` — React, Vue, Svelte and jQuery wrappers built with rollup (shared config in `packages/rollup.config.shared.mjs`) and declarations emitted by `tsc` into `dist/types`; Angular uses `ng-packagr`. Build the core (`npm run build && npm run types`) before `npm run build:packages`. `@inputmask/jquery` also emits standalone UMD bundles (`dist/jquery.inputmask.umd.js`, `dist/jquery.inputmask.min.js`), and its CJS build bundles the core and the extensions because the core exports the extensions through an `import` condition only, so a CJS build that keeps them external cannot be `require`d
 
 ## The build
 

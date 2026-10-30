@@ -93,7 +93,8 @@ module.exports = function (grunt) {
     nugetApiKey = process.env.NUGET_API_KEY;
 
   grunt.registerTask("nugetpack", function () {
-    // Build npm packages first (includes @inputmask/jquery which produces jquery.inputmask.js)
+    // Build npm packages first (includes @inputmask/jquery, whose UMD bundle is
+    // shipped as jquery.inputmask.js in the NuGet package)
     grunt.log.ok("Building npm packages...");
     execSync(`npm run build:packages`, { stdio: "inherit" });
 

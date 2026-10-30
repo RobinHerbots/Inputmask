@@ -41,9 +41,12 @@ through `"inputmask": "file:../.."`, so always build the core first:
 npm install
 npm run build          # core ESM/UMD bundles
 npm run types          # core declarations
-npm run build:packages # react, vue, svelte and angular
-npm run test:packages  # react, vue and svelte unit tests
+npm run build:packages # react, vue, svelte, jquery and angular
+npm run test:packages  # react, vue, svelte and jquery unit tests
 ```
 
-The Angular package is built with `ng-packagr` and currently has no unit test
-lane; it is validated through its library build.
+The React, Vue, Svelte and jQuery packages are bundled with `rollup` (shared
+config in [`rollup.config.shared.mjs`](./rollup.config.shared.mjs)) and emit
+their declarations with `tsc` into `dist/types`. The Angular package is built
+with `ng-packagr` and currently has no unit test lane; it is validated through
+its library build.

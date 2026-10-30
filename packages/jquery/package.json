@@ -5,13 +5,14 @@
   "type": "module",
   "main": "./dist/jquery.inputmask.cjs",
   "module": "./dist/jquery.inputmask.js",
-  "types": "./dist/jquery.inputmask.d.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/jquery.inputmask.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/jquery.inputmask.js",
       "require": "./dist/jquery.inputmask.cjs"
     },
+    "./jquery.inputmask.umd.js": "./dist/jquery.inputmask.umd.js",
     "./jquery.inputmask.min.js": "./dist/jquery.inputmask.min.js"
   },
   "files": [
@@ -20,7 +21,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup && node build-umd.js",
+    "build": "npm run clean && rollup -c && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
@@ -33,7 +34,6 @@
     "@types/jquery": "^3.5.0",
     "jquery": "^3.7.1",
     "jsdom": "^30.1.2",
-    "tsup": "^9.0.0",
     "typescript": "^5.9.3",
     "vitest": "^5.0.5"
   },

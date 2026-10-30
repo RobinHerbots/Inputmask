@@ -20,11 +20,11 @@ Inputmask with vanilla dependencylib.
 
 **jQuery plugin and bindings are a separate package** — they are no longer bundled in the main `inputmask` dist folder.
 
-For jQuery projects using script tags, download `jquery.inputmask.js` from the [@inputmask/jquery releases](https://github.com/RobinHerbots/Inputmask/releases) or install via npm and copy from `node_modules/@inputmask/jquery/dist/jquery.inputmask.js`:
+For jQuery projects using script tags, download `jquery.inputmask.umd.js` from the [@inputmask/jquery releases](https://github.com/RobinHerbots/Inputmask/releases) or install via npm and copy from `node_modules/@inputmask/jquery/dist/jquery.inputmask.umd.js`:
 
 ```html
 <script src="jquery.js"></script>
-<script src="jquery.inputmask.js"></script>
+<script src="jquery.inputmask.umd.js"></script>
 ```
 
 The **bindings** (auto-initialization of inputs with `data-inputmask` attributes) are **only available with the jQuery variant** and included in the `@inputmask/jquery` package.

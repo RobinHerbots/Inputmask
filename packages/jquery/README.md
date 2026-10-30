@@ -24,9 +24,7 @@ $(document).ready(function () {
   // Phone with extra options
   $("#phone").inputmask({ mask: "+99 999 99 99", clearIncomplete: true });
 
-  // Email (register the email extension first)
-  import { registerEmail } from "inputmask/extensions/email";
-  registerEmail();
+  // Email (the package registers all extensions, so the alias is available)
   $("#email").inputmask({ alias: "email" });
 });
 ```
@@ -64,8 +62,12 @@ $(selector).inputmask("getmetadata");
 
 ## Extensions
 
-The core entry does not register optional aliases. Register the extensions you
-use once, before initializing the mask:
+Unlike the core `inputmask` entry, this package registers every extension it
+ships with (`definitions`, `cssunit`, `url`, `ip`, `email`, `mac`, `vin`, `ssn`,
+`datetime`, `numeric`), so the aliases work without extra setup.
+
+If you also import the core directly, register the extensions on the instance
+you use there:
 
 ```ts
 import { registerDatetime } from "inputmask/extensions/date";
@@ -86,3 +88,10 @@ npm run test --workspace=@inputmask/jquery
 
 The core package must be built first (`npm run build && npm run types` at the
 repository root).
+
+## Browser (UMD)
+
+`dist/jquery.inputmask.umd.js` (unminified) and
+`dist/jquery.inputmask.min.js` (minified) are standalone browser bundles: load
+jQuery first and the plugin registers `$.fn.inputmask` and exposes the
+`Inputmask` class as `window.InputmaskJQuery`.

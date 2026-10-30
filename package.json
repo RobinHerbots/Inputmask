@@ -137,6 +137,7 @@
     "@babel/core": "^8.0.7",
     "@babel/eslint-parser": "^8.0.1",
     "@babel/preset-env": "^8.0.7",
+    "@babel/preset-react": "^8.0.1",
     "@babel/preset-typescript": "^8.0.7",
     "@eslint/js": "^9.39.5",
     "@robinherbots/grunt-available-tasks": "^0.6.4",

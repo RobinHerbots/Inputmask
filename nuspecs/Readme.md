@@ -1,7 +1,7 @@
 # Inputmask NuGet packages
 
-Two packages are published from this repository, both containing the same built
-javascript under `Scripts/inputmask`:
+Two packages are published from this repository. Each ships the build that
+matches how you instantiate Inputmask, under `Scripts/inputmask`:
 
 | Package id        | Intended for                                        |
 | ----------------- | --------------------------------------------------- |
@@ -26,7 +26,7 @@ you need in your csproj:
 
 ```xml
 <ItemGroup>
-  <Content Include="node_modules\inputmask\dist\jquery.inputmask.min.js" />
+  <Content Include="node_modules\@inputmask\jquery\dist\jquery.inputmask.min.js" />
 </ItemGroup>
 ```
 
@@ -55,20 +55,24 @@ and in your layout:
 
 ## What is in the package
 
+`inputmask` (vanilla):
+
 ```
 inputmask.js               vanilla UMD build
 inputmask.min.js           vanilla UMD build, minified
-jquery.inputmask.js        jQuery UMD build
-jquery.inputmask.min.js    jQuery UMD build, minified
 colormask.js(.min).js      color mask extension
 colormask.css              styling for the color mask
-bindings/                  Knockout / Angular bindings
 esm/                       ES modules
 types/                     TypeScript declarations
 ```
 
-Both the vanilla and the jQuery build are shipped in each package, pick the one
-matching how you instantiate Inputmask.
+`jQuery.InputMask` (jQuery plugin and bindings):
+
+```
+jquery.inputmask.js        jQuery UMD build
+jquery.inputmask.min.js    jQuery UMD build, minified
+jquery.inputmask.d.ts      TypeScript declaration
+```
 
 ## Releasing
 
