@@ -5,11 +5,11 @@ Svelte action for [Inputmask](https://github.com/RobinHerbots/Inputmask).
 ## Install
 
 ```bash
-npm install @inputmask/svelte "inputmask@^5.1.0-beta.37"
+npm install @inputmask/svelte inputmask
 ```
 
-`svelte` (4 or newer, including Svelte 5) and `inputmask` (5.1.0-beta.37 or
-newer) are peer dependencies.
+Install the latest versions. `svelte` (4 or newer, including Svelte 5) and
+`inputmask` are peer dependencies.
 
 ## Usage
 

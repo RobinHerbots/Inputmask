@@ -3,8 +3,8 @@
 First-party wrappers around [Inputmask](../README.md), published as separate
 packages. All of them share the same framework-agnostic controller from the core
 package (`createInputmaskAdapter`), so option updates, remasking, cleanup and the
-change payload behave identically everywhere. All packages require `inputmask`
-5.1.0-beta.37 or newer, the first release that exports the controller.
+change payload behave identically everywhere. Install the latest versions of the
+packages and the core `inputmask` package.
 
 | Package | Adapter | Notes |
 | --- | --- | --- |

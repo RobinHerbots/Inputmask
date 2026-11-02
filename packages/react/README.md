@@ -5,11 +5,11 @@ React component for [Inputmask](https://github.com/RobinHerbots/Inputmask).
 ## Install
 
 ```bash
-npm install @inputmask/react "inputmask@^5.1.0-beta.37"
+npm install @inputmask/react inputmask
 ```
 
-`react` and `react-dom` (18 or newer) and `inputmask` (5.1.0-beta.37 or newer)
-are peer dependencies.
+Install the latest versions. `react` and `react-dom` (18 or newer) and
+`inputmask` are peer dependencies.
 
 ## Usage
 

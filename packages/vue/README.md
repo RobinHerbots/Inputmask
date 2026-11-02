@@ -5,10 +5,10 @@ Vue 3 directive and plugin for [Inputmask](https://github.com/RobinHerbots/Input
 ## Install
 
 ```bash
-npm install @inputmask/vue "inputmask@^5.1.0-beta.37"
+npm install @inputmask/vue inputmask
 ```
 
-`vue` (3.3 or newer) and `inputmask` (5.1.0-beta.37 or newer) are peer
+Install the latest versions. `vue` (3.3 or newer) and `inputmask` are peer
 dependencies.
 
 ## Usage

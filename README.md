@@ -23,7 +23,7 @@ First-party wrappers are available as separate packages:
 - [`@inputmask/angular`](./packages/angular)
 - [`@inputmask/jquery`](./packages/jquery)
 
-All wrappers require `inputmask` 5.1.0-beta.37 or newer.
+Install the latest versions of the wrappers and of `inputmask`.
 
 See [packages/README.md](./packages/README.md) for usage, extension
 registration and build/test instructions.

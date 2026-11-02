@@ -18,7 +18,7 @@
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "peerDependencies": {
-    "inputmask": "^5.1.0-beta.37",
+    "inputmask": "^5.1.0-beta.40",
     "react": ">=18",
     "react-dom": ">=18"
   },

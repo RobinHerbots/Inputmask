@@ -6,11 +6,11 @@ Angular directive for [Inputmask](https://github.com/RobinHerbots/Inputmask) wit
 ## Install
 
 ```bash
-npm install @inputmask/angular "inputmask@^5.1.0-beta.37"
+npm install @inputmask/angular inputmask
 ```
 
-`@angular/core` and `@angular/forms` (18 or newer) and `inputmask`
-(5.1.0-beta.37 or newer) are peer dependencies.
+Install the latest versions. `@angular/core` and `@angular/forms` (18 or newer)
+and `inputmask` are peer dependencies.
 
 ## Usage
 

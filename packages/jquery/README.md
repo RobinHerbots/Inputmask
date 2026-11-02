@@ -5,10 +5,10 @@ jQuery plugin for [Inputmask](https://github.com/RobinHerbots/Inputmask).
 ## Install
 
 ```bash
-npm install @inputmask/jquery "inputmask@^5.1.0-beta.37" jquery
+npm install @inputmask/jquery inputmask jquery
 ```
 
-`jquery` (3.7 or newer) and `inputmask` (5.1.0-beta.37 or newer) are peer
+Install the latest versions. `jquery` (3.7 or newer) and `inputmask` are peer
 dependencies.
 
 ## Usage

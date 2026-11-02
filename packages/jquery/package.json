@@ -26,7 +26,7 @@
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "peerDependencies": {
-    "inputmask": "^5.1.0-beta.37",
+    "inputmask": "^5.1.0-beta.40",
     "jquery": ">=3.7.0"
   },
   "devDependencies": {
