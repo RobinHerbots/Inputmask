@@ -1,6 +1,54 @@
 export default function (qunit, Inputmask) {
   qunit.module("Value formatting");
   qunit.test(
+    "Custom validator state is independent at each position",
+    function (assert) {
+      const options = {
+        mask: "X{3}",
+        definitions: {
+          X: {
+            validator: function (value, maskset, pos) {
+              if (this.position === undefined) this.position = pos;
+              return this.position === pos && /^[0-9]$/.test(value);
+            }
+          }
+        }
+      };
+
+      ["123", "456", "789"].forEach(function (value) {
+        assert.equal(Inputmask.format(value, options), value);
+        assert.true(Inputmask.isValid(value, options));
+      });
+      assert.false(Inputmask.isValid("12a", options));
+    }
+  );
+
+  qunit.test(
+    "Optional branches remain independent when reusing a mask",
+    function (assert) {
+      const inputmask = new Inputmask({
+        mask: ["99[-99]", "aa[-aa]"],
+        greedy: false,
+        keepStatic: false
+      });
+
+      [
+        ["1234", "12-34"],
+        ["ab", "ab"],
+        ["12", "12"],
+        ["abcd", "ab-cd"],
+        ["56", "56"],
+        ["efgh", "ef-gh"]
+      ].forEach(function ([value, expected]) {
+        assert.equal(inputmask.format(value), expected);
+        assert.true(inputmask.isValid(expected));
+      });
+      assert.false(inputmask.isValid("12-3"));
+      assert.false(inputmask.isValid("ab-c"));
+    }
+  );
+
+  qunit.test(
     'Inputmask.format("2331973", { alias: "datetime"})',
     function (assert) {
       const formattedValue = Inputmask.format("2331973", {
