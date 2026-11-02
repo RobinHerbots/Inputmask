@@ -19,7 +19,7 @@
     "dist",
     "README.md"
   ],
-  "sideEffects": false,
+  "sideEffects": true,
   "scripts": {
     "build": "npm run clean && rollup -c && tsc -p tsconfig.build.json",
     "test": "vitest run",
