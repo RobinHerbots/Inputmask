@@ -39,6 +39,32 @@ export default function (qunit, Inputmask) {
 
     assert.equal(testmask.value, "", "Result " + testmask.value);
   });
+  qunit.test("two-digit year in four-digit date format", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MM.yyyy"
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("010101");
+
+    assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+  });
+  qunit.test("paste two-digit year in four-digit date format", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MM.yyyy"
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").val("010101");
+
+    assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+  });
   qunit.test("overtype valid entry", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
