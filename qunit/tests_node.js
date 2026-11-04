@@ -86,6 +86,37 @@ QUnit.test(
 );
 
 QUnit.test(
+  "Headless session: partial removal keeps the field usable (#2258)",
+  function (assert) {
+    const Inputmask = require("../dist/inputmask").default;
+    [
+      { placeholder: "", empty: "", afterPartial: "AA" },
+      { placeholder: "_", empty: "______", afterPartial: "____AA" }
+    ].forEach(function (c) {
+      const session = Inputmask({ mask: "9999AA", placeholder: c.placeholder });
+      session.input("1234AA");
+      session.setSelection(4, 4);
+      for (let i = 0; i < 4; i++) session.backspace();
+      assert.equal(session.getValue(), c.afterPartial, "partial removal");
+      session.delete("delete");
+      session.delete("delete");
+      assert.equal(session.getValue(), c.empty, "forward delete reaches AA");
+      session.input("5678BB");
+      assert.equal(session.getValue(), "5678BB", "field accepts a new value");
+    });
+    const session = Inputmask({ mask: "9999AA", placeholder: "_" });
+    session.input("1234AA");
+    session.setSelection(4, 4);
+    for (let i = 0; i < 4; i++) session.backspace();
+    session.setSelection(6, 6);
+    session.backspace();
+    session.backspace();
+    session.input("5678BB");
+    assert.equal(session.getValue(), "5678BB", "backspace to empty then type");
+  }
+);
+
+QUnit.test(
   "Headless interactive session: input, delete, paste, and selection",
   function (assert) {
     const Inputmask = require("../dist/inputmask").default;

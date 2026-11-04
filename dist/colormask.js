@@ -940,11 +940,24 @@
     }
     return false;
   }
+  function cloneTestData(value) {
+    if (!value || typeof value !== "object") return value;
+    const array = Array.isArray(value);
+    if (!array && Object.prototype.toString.call(value) !== "[object Object]") {
+      return value;
+    }
+    const clone = array ? [] : {};
+    for (const key of Object.keys(value)) {
+      if (key === "__proto__") continue;
+      const copy = value[key];
+      if (copy !== undefined) clone[key] = cloneTestData(copy);
+    }
+    return clone;
+  }
 
   // tobe put on prototype?
   function getTests(pos, ndxIntlzr, tstPs) {
     const inputmask = this,
-      $ = this.dependencyLib,
       maskset = this.maskset,
       opts = this.opts,
       maskTokens = maskset.maskToken;
@@ -1489,10 +1502,10 @@
     let result;
     if (ndxIntlzr !== undefined && maskset.tests[pos]) {
       // prioritize full tests for caching
-      result = $.extend(true, [], matches);
+      result = cloneTestData(matches);
     } else {
       // console.log("stored " + pos + " - " + JSON.stringify(matches));
-      maskset.tests[pos] = $.extend(true, [], matches); // set a clone to prevent overwriting some props
+      maskset.tests[pos] = cloneTestData(matches); // set a clone to prevent overwriting some props
       result = maskset.tests[pos];
     }
 
@@ -2093,6 +2106,11 @@
       }
     } else if (c === keys.Delete) {
       if (pos.begin === pos.end) {
+        // nothing valid at the caret: skip forward to the next filled position #2258
+        if (!(opts.numericInput || inputmask.isRTL) && maskset.validPositions[pos.begin] === undefined) {
+          const next = Object.keys(maskset.validPositions).map(Number).filter(k => k > pos.begin && maskset.validPositions[k].generatedInput !== true).sort((a, b) => a - b)[0];
+          if (next !== undefined) pos.begin = pos.end = next;
+        }
         pos.end = isMask.call(inputmask, pos.end, true, true) ? pos.end + 1 : seekNext.call(inputmask, pos.end) + 1;
       }
     }
@@ -2106,6 +2124,8 @@
         // full clear: reset the tests cache so dynamic mask definitions
         // (numeric radix/negation) don't leave a stale residue in the template #2890
         resetMaskSet.call(inputmask, false);
+        // an emptied field restarts at its first position #2258
+        if (!(opts.numericInput || inputmask.isRTL)) pos.begin = 0;
       }
       if (strict !== true) {
         pos.begin = c === keys.Delete ? pos.begin + offset : pos.begin;
