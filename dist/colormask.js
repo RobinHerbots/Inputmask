@@ -940,11 +940,24 @@
     }
     return false;
   }
+  function cloneTestData(value) {
+    if (!value || typeof value !== "object") return value;
+    const array = Array.isArray(value);
+    if (!array && Object.prototype.toString.call(value) !== "[object Object]") {
+      return value;
+    }
+    const clone = array ? [] : {};
+    for (const key of Object.keys(value)) {
+      if (key === "__proto__") continue;
+      const copy = value[key];
+      if (copy !== undefined) clone[key] = cloneTestData(copy);
+    }
+    return clone;
+  }
 
   // tobe put on prototype?
   function getTests(pos, ndxIntlzr, tstPs) {
     const inputmask = this,
-      $ = this.dependencyLib,
       maskset = this.maskset,
       opts = this.opts,
       maskTokens = maskset.maskToken;
@@ -1489,10 +1502,10 @@
     let result;
     if (ndxIntlzr !== undefined && maskset.tests[pos]) {
       // prioritize full tests for caching
-      result = $.extend(true, [], matches);
+      result = cloneTestData(matches);
     } else {
       // console.log("stored " + pos + " - " + JSON.stringify(matches));
-      maskset.tests[pos] = $.extend(true, [], matches); // set a clone to prevent overwriting some props
+      maskset.tests[pos] = cloneTestData(matches); // set a clone to prevent overwriting some props
       result = maskset.tests[pos];
     }
 
@@ -4749,8 +4762,10 @@
       if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
         const fcode = formatcode(tokenMatch.targetMatch[0]);
         validator = formatcodeRegex(fcode, opts);
-        const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
-        if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
+        // a single char token (d, M, ...) spans 2 positions when it holds 2 digits
+        const groupLength = tokenMatch.targetMatch[0].length === 1 && /^\d$/.test(buffer[tokenMatch.targetMatchIndex + 1]) ? 2 : tokenMatch.targetMatch[0].length;
+        const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + groupLength);
+        if (new RegExp(`^(?:${validator})$`).test(part.join("")) === false && groupLength === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
           if (pos.begin === tokenMatch.targetMatchIndex) {
             // first char of a 2-char group typed over a stale second char that
             // makes the combination invalid: clear the second position so it can
