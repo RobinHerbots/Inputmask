@@ -940,11 +940,24 @@
     }
     return false;
   }
+  function cloneTestData(value) {
+    if (!value || typeof value !== "object") return value;
+    const array = Array.isArray(value);
+    if (!array && Object.prototype.toString.call(value) !== "[object Object]") {
+      return value;
+    }
+    const clone = array ? [] : {};
+    for (const key of Object.keys(value)) {
+      if (key === "__proto__") continue;
+      const copy = value[key];
+      if (copy !== undefined) clone[key] = cloneTestData(copy);
+    }
+    return clone;
+  }
 
   // tobe put on prototype?
   function getTests(pos, ndxIntlzr, tstPs) {
     const inputmask = this,
-      $ = this.dependencyLib,
       maskset = this.maskset,
       opts = this.opts,
       maskTokens = maskset.maskToken;
@@ -1489,10 +1502,10 @@
     let result;
     if (ndxIntlzr !== undefined && maskset.tests[pos]) {
       // prioritize full tests for caching
-      result = $.extend(true, [], matches);
+      result = cloneTestData(matches);
     } else {
       // console.log("stored " + pos + " - " + JSON.stringify(matches));
-      maskset.tests[pos] = $.extend(true, [], matches); // set a clone to prevent overwriting some props
+      maskset.tests[pos] = cloneTestData(matches); // set a clone to prevent overwriting some props
       result = maskset.tests[pos];
     }
 
@@ -6501,6 +6514,7 @@
       }
     },
     cutEvent: function (e) {
+      e.preventDefault();
       const inputmask = this.inputmask,
         maskset = inputmask.maskset,
         input = this,

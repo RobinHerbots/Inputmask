@@ -128,6 +128,24 @@ export default function (qunit, Inputmask) {
 
     assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
   });
+  qunit.test("cut month", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      min: "01/01/1900"
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("2331973");
+    $.caret(testmask, 3, 5);
+    const cutEvent = new Event("cut", { bubbles: true, cancelable: true });
+    testmask.dispatchEvent(cutEvent);
+
+    assert.true(cutEvent.defaultPrevented, "native cut is prevented");
+    assert.equal(testmask.value, "23/MM/1973", "Result " + testmask.value);
+  });
   qunit.test("set date 592017", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
