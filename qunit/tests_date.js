@@ -39,6 +39,24 @@ export default function (qunit, Inputmask) {
 
     assert.equal(testmask.value, "", "Result " + testmask.value);
   });
+  qunit.test(
+    "retype first digit after removing the 1 of 10 - #2033",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", { inputFormat: "d/M/yyyy" }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("10");
+      $.caret(testmask, 1);
+      $("#testmask").SendKey(keys.Backspace);
+      $.caret(testmask, 0);
+      $("#testmask").Type("9");
+
+      assert.equal(testmask.value, "9/M/yyyy", "Result " + testmask.value);
+    }
+  );
   qunit.test("overtype valid entry", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
