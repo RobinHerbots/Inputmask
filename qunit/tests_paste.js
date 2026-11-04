@@ -398,4 +398,31 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  qunit.test(
+    "paste - input event propagates to ancestors with the masked value - #2431",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append(
+        '<div id="wrap"><input type="text" id="testmask" /></div>'
+      );
+      const testmask = document.getElementById("testmask"),
+        wrap = document.getElementById("wrap");
+      Inputmask("(999) 999-9999").mask(testmask);
+      testmask.focus();
+
+      let seen;
+      wrap.addEventListener("input", function (e) {
+        seen = e.target.value;
+      });
+
+      $("#testmask").paste("1231231234");
+
+      setTimeout(function () {
+        assert.equal(seen, "(123) 123-1234", "ancestor saw the masked value");
+        done();
+      }, 0);
+    }
+  );
 }
