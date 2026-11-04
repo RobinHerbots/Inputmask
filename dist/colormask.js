@@ -594,6 +594,56 @@
     }
   };
 
+  // Copies of resolved mask test entries. A "test" here is a valid-position
+  // entry ({ match, locator, mloc, cd, ... }), not a unit test.
+  //
+  // The `match` object of a resolved entry aliases the shared
+  // `maskset.maskToken` match objects, which are mutated while the mask is
+  // resolved. Entries are also cached per position in `maskset.tests`, so they
+  // have to be copied before they are stored. Custom definition validators keep
+  // state on `this` (the `{ test: fn }` wrapper), so every position needs its own
+  // wrapper; regular expressions are stateless for our use and can be shared.
+
+  function cloneTestEntry(entry) {
+    if (!entry || typeof entry !== "object") return entry;
+    const match = entry.match;
+    let matchClone = match;
+    if (match && typeof match === "object") {
+      matchClone = {
+        ...match
+      };
+      const fn = match.fn;
+      if (fn !== null && typeof fn === "object" && !(fn instanceof RegExp)) {
+        matchClone.fn = {
+          test: fn.test
+        };
+      }
+    }
+    const clone = {
+      ...entry,
+      match: matchClone
+    };
+    if (entry.locator !== undefined) {
+      clone.locator = entry.locator.slice();
+    }
+    if (entry.mloc !== undefined) {
+      const mloc = {};
+      for (const key of Object.keys(entry.mloc)) {
+        const locator = entry.mloc[key];
+        mloc[key] = Array.isArray(locator) ? locator.slice() : locator;
+      }
+      clone.mloc = mloc;
+    }
+    return clone;
+  }
+  function cloneTestList(list) {
+    const clone = new Array(list.length);
+    for (let i = 0; i < list.length; i++) {
+      clone[i] = cloneTestEntry(list[i]);
+    }
+    return clone;
+  }
+
   const ignorables = {
       Alt: 18,
       AltGraph: 18,
@@ -944,7 +994,6 @@
   // tobe put on prototype?
   function getTests(pos, ndxIntlzr, tstPs) {
     const inputmask = this,
-      $ = this.dependencyLib,
       maskset = this.maskset,
       opts = this.opts,
       maskTokens = maskset.maskToken;
@@ -1489,10 +1538,12 @@
     let result;
     if (ndxIntlzr !== undefined && maskset.tests[pos]) {
       // prioritize full tests for caching
-      result = $.extend(true, [], matches);
+      result = cloneTestList(matches);
     } else {
       // console.log("stored " + pos + " - " + JSON.stringify(matches));
-      maskset.tests[pos] = $.extend(true, [], matches); // set a clone to prevent overwriting some props
+      // Cached lists are treated as immutable: only maskset.tests[pos] is
+      // reassigned, the entries themselves are never written to.
+      maskset.tests[pos] = cloneTestList(matches); // set a clone to prevent overwriting some props
       result = maskset.tests[pos];
     }
 
@@ -1696,8 +1747,7 @@
   function determineLastRequiredPosition(returnDefinition) {
     const inputmask = this,
       {
-        maskset,
-        dependencyLib: $
+        maskset
       } = inputmask,
       lvp = getLastValidPosition.call(inputmask),
       positions = {},
@@ -1710,7 +1760,7 @@
     for (pos = lvp + 1; pos < buffer.length; pos++) {
       testPos = getTestTemplate.call(inputmask, pos, ndxIntlzr, pos - 1);
       ndxIntlzr = testPos.locator.slice();
-      positions[pos] = $.extend(true, {}, testPos);
+      positions[pos] = cloneTestEntry(testPos);
     }
     const lvTestAlt = lvTest && lvTest.alternation !== undefined ? lvTest.locator[lvTest.alternation] : undefined,
       // the optionality level of the last valid position
@@ -1899,12 +1949,16 @@
   function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
     // pos == true => generalize
     const inputmask = this,
-      $ = this.dependencyLib,
       opts = this.opts,
       maskset = inputmask.maskset;
     if (!inputmask.hasAlternator) return false;
+
+    // shallow snapshot: cached test lists are immutable, alternating replaces
+    // maskset.tests[pos] instead of mutating the list
     const validPsClone = maskset.validPositions.slice(),
-      tstClone = $.extend(true, {}, maskset.tests);
+      tstClone = {
+        ...maskset.tests
+      };
     let lastAlt,
       alternation,
       isValidRslt = false,
@@ -2028,7 +2082,9 @@
           prevAltPos = getTest.call(inputmask, decisionPos); // get the current decisionPos to exclude ~ needs to be before restoring the initial validation
           // reset & revert (copy: execution continues and mutates the live array below)
           maskset.validPositions = validPsClone.slice();
-          maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
+          maskset.tests = {
+            ...tstClone
+          }; // refresh tests after possible alternating
           returnRslt = false;
           if (maskset.excludes[decisionPos]) {
             if (prevAltPos.alternation != null) {
@@ -2057,7 +2113,9 @@
     }
     if (!returnRslt) {
       maskset.validPositions = validPsClone;
-      maskset.tests = $.extend(true, {}, tstClone); // refresh tests after possible alternating
+      maskset.tests = {
+        ...tstClone
+      }; // refresh tests after possible alternating
     }
     return returnRslt;
   }
@@ -2451,8 +2509,7 @@
     // console.log("revalidateMask " + fromIsValid);
     const inputmask = this,
       maskset = this.maskset,
-      opts = this.opts,
-      $ = this.dependencyLib;
+      opts = this.opts;
     function IsEnclosedStatic(pos, valids, selection) {
       const posMatch = valids[pos];
       if (posMatch !== undefined && posMatch.match.static === true && posMatch.match.optionality !== true && (valids[0] === undefined || valids[0].alternation === undefined)) {
@@ -2491,7 +2548,7 @@
         canMatch,
         test;
       if (validTest) {
-        maskset.validPositions[validatedPos] = $.extend(true, {}, validTest);
+        maskset.validPositions[validatedPos] = cloneTestEntry(validTest);
         posMatch++;
         j++;
       }
@@ -2554,7 +2611,7 @@
         return false;
       }
     } else if (validTest && getTest.call(inputmask, validatedPos).match.cd === validTest.match.cd) {
-      maskset.validPositions[validatedPos] = $.extend(true, {}, validTest);
+      maskset.validPositions[validatedPos] = cloneTestEntry(validTest);
     }
     resetMaskSet.call(inputmask, true);
     return offset;
