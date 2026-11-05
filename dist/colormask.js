@@ -4413,6 +4413,7 @@
           dateParts.year = year.toString();
           dateParts.rawyear = year.toString();
           dateParts.partialyear = false;
+          // A century minimum disambiguates a two-digit year below its first digit.
           currentResult.yearPrefill = true;
           currentResult.yearStart = currentResult.pos - enteredPart.length + 1;
           currentResult.pos = currentResult.yearStart + 4;
@@ -4453,7 +4454,10 @@
   }
   function isDateInRange(dateParts, result, opts, maskset, fromCheckval) {
     if (!result) return result;
-    if (opts.min && opts.min.date.getFullYear() % 100 === 0 && ["yyyy", "YYYY"].some(yearFormat => opts.inputFormat.includes(yearFormat)) && Number((dateParts.rawyear || "").replace(/[^0-9]/g, "")[0]) < Number(opts.min.date.getFullYear().toString()[0]) && (dateParts.rawyear || "").replace(/[^0-9]/g, "").length < 4) return result;
+    if (opts.min && opts.min.date.getFullYear() % 100 === 0 && ["yyyy", "YYYY"].some(yearFormat => opts.inputFormat.includes(yearFormat)) && Number((dateParts.rawyear || "").replace(/[^0-9]/g, "")[0]) < Number(opts.min.date.getFullYear().toString()[0]) && (dateParts.rawyear || "").replace(/[^0-9]/g, "").length < 4) {
+      // Let the abbreviated year finish before comparing it with the minimum.
+      return result;
+    }
     if (result && opts.min) {
       if (/* useDateObject && (dateParts["year"] === undefined || dateParts["yearSet"]) && */!isNaN(opts.min.date.getTime())) {
         let match;
