@@ -17,6 +17,7 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 | Node + jsdom (Karma) | `npm run test:jsdom` |
 | Node, DOM-less bundles | `npm run test:node` |
 | Build the framework packages | `npm run build:packages` |
+| Build the jQuery lane bundle | `npm run build:jquery` |
 | Test the framework packages | `npm run test:packages` |
 | BrowserStack matrix | `npm run test:browserstack` |
 
@@ -53,7 +54,7 @@ QUnit is the only test framework. The browser suite runs once per built bundle:
 | Lane | Command | Notes |
 |------|---------|-------|
 | Browser, UMD native | `npm run test:umd` | `dist/inputmask.js`, no jQuery on the page |
-| Browser, UMD jQuery | `npm run test:jquery` | `dist/jquery.inputmask.js`, loads global jQuery first |
+| Browser, UMD jQuery | `npm run test:jquery` | `packages/jquery/dist/jquery.inputmask.umd.js`, loads global jQuery first; `pretest:jquery` builds it via `npm run build:jquery` |
 | Browser, ESM | `npm run test:esm` | `dist/esm/inputmask.mjs` + extension bundles, no jQuery |
 | All browser bundles | `npm run test:bundles` | Runs the three lanes sequentially |
 | Node + jsdom (Karma) | `npm run test:jsdom` | Same suite via the `jsdom` launcher, UMD native bundle |
@@ -61,8 +62,8 @@ QUnit is the only test framework. The browser suite runs once per built bundle:
 | Node, DOM-less bundles | `npm run test:node` | Runs `qunit/tests_node.js` against `dist/` (build first) |
 | BrowserStack matrix | `npm run test:browserstack` | Real desktop + mobile devices (`cross-env CI=true karma start karma.conf.js --single-run`); needs `BROWSERSTACK_USERNAME`/`BROWSERSTACK_ACCESS_KEY` in the environment |
 
-- `karma.conf.js` selects the test bundle with `INPUTMASK_BUNDLE=umd|jquery|esm` (default `umd`). The jQuery lane is the only one that adds `node_modules/jquery/dist/jquery.js` and `dist/jquery.inputmask.js` (as a global script) to the page; the native and ESM lanes run without jQuery.
-- Expected results: UMD native **937 passed + 1 skipped of 938**, UMD jQuery **938 passed + 1 skipped of 939**, ESM **937 passed + 1 skipped of 938**. The native/ESM skip is the jQuery-plugin insertMode test (the `tests_jquery_inputmask.js` module is not registered there); the jQuery skip is the native dependencyLib `extend` guard test.
+- `karma.conf.js` selects the test bundle with `INPUTMASK_BUNDLE=umd|jquery|esm` (default `umd`). The jQuery lane is the only one that adds `node_modules/jquery/dist/jquery.js` and `packages/jquery/dist/jquery.inputmask.umd.js` (as global scripts) to the page; the native and ESM lanes run without jQuery. The core build no longer emits a jQuery bundle (the plugin lives in the `@inputmask/jquery` package), so the lane needs `npm run build:jquery` after the core build; `pretest:jquery` runs it automatically.
+- Expected results: UMD native **939 passed + 1 skipped of 940**, UMD jQuery **940 passed + 1 skipped of 941**, ESM **939 passed + 1 skipped of 940**. The native/ESM skip is the jQuery-plugin insertMode test (the `tests_jquery_inputmask.js` module is not registered there); the jQuery skip is the native dependencyLib `extend` guard test.
 - `qunit/harness.js` registers the shared suite against whatever `Inputmask` the entry passes in. The entries are `qunit/index.js` (UMD native), `qunit/index.jquery.js` (UMD jQuery) and `qunit/index.esm.js` (ESM core + `dist/esm/extensions/*.mjs` + `dist/esm/dom/FormData.mjs`, because the ESM entry does not register extensions itself).
 - The ESM build intentionally does not emit the jQuery plugin or binding (`rollup.config.cjs` has those outputs disabled): ESM consumers use the native dependencyLib, so there is no ESM jQuery lane.
 - `npm test` is unchanged: build, types, node lane, lint, and the UMD-native jsdom lane. `npm run test:bundles` is the opt-in full browser matrix.

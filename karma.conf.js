@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Thu Feb 10 2022 10:05:16 GMT+0100 (GMT+01:00)
 
+const fs = require("fs");
+
 module.exports = function (config) {
   const isCI = process.env.CI === "true" || process.env.CI === "1",
     browsers = [
@@ -32,9 +34,20 @@ module.exports = function (config) {
   // Which built bundle the QUnit suite runs against. Each lane is a separate
   // Karma run: loading more than one test bundle in one page would register the
   // whole suite twice.
-  const testBundles = {
-      umd: "qunit/qunit.js",
-      esm: "qunit/qunit.esm.js"
+  //
+  // The jQuery lane tests the standalone UMD bundle of the @inputmask/jquery
+  // workspace package; the core build no longer ships a jQuery bundle. jQuery
+  // itself has to be on the page first because the plugin takes it from the
+  // global.
+  const jqueryUmd = "packages/jquery/dist/jquery.inputmask.umd.js",
+    testBundles = {
+      umd: ["qunit/qunit.js"],
+      jquery: [
+        "node_modules/jquery/dist/jquery.js",
+        jqueryUmd,
+        "qunit/qunit.jquery.js"
+      ],
+      esm: ["qunit/qunit.esm.js"]
     },
     bundle = process.env.INPUTMASK_BUNDLE || "umd";
 
@@ -46,9 +59,14 @@ module.exports = function (config) {
     );
   }
 
-  const testFiles = [
-    testBundles[bundle]
-  ];
+  if (bundle === "jquery" && !fs.existsSync(jqueryUmd)) {
+    throw new Error(
+      `The jQuery lane needs ${jqueryUmd}. Run "npm run build:jquery" first ` +
+        `(it needs the core build: "npm run build" and "npm run types").`
+    );
+  }
+
+  const testFiles = testBundles[bundle];
 
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
