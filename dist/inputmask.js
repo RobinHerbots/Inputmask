@@ -4817,9 +4817,9 @@
             buffer[tokenMatch.targetMatchIndex + 1] = tpl[tokenMatch.targetMatchIndex + 1];
           } else {
             const staleIdx = tokenMatch.targetMatchIndex + 1;
-            maskset.validPositions[staleIdx] = DependencyLib.extend(true, {}, maskset.validPositions[staleIdx], {
-              input: "0"
-            });
+            const stalePos = cloneTestEntry(maskset.validPositions[staleIdx]) || {};
+            stalePos.input = "0";
+            maskset.validPositions[staleIdx] = stalePos;
           }
         }
         if (fcode[2] == "year") {
@@ -5480,9 +5480,10 @@
         if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
           const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
           if (maskset.validPositions[radixValidatorPos]) {
-            maskset.validPositions[radixValidatorPos] = DependencyLib.extend(true, {}, maskset.validPositions[radixValidatorPos], {
-              generatedInput: maskset.validPositions[radixValidatorPos].generated || false
-            });
+            const radixEntry = maskset.validPositions[radixValidatorPos],
+              radixClone = cloneTestEntry(radixEntry);
+            radixClone.generatedInput = radixEntry.generated || false;
+            maskset.validPositions[radixValidatorPos] = radixClone;
           }
           return {
             caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
