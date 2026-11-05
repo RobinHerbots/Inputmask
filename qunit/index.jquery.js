@@ -1,9 +1,18 @@
-// UMD jQuery bundle lane: load dist/jquery.inputmask.js as a global script
-// (UMD global branch) so behavior matches how the bundle is consumed. karma
-// loads jquery then dist/jquery.inputmask.js before this harness bundle.
+// UMD jQuery bundle lane: karma loads jquery and the standalone UMD bundle of
+// the @inputmask/jquery workspace package as global scripts, so behavior
+// matches how the bundle is consumed. The UMD bundle registers itself as
+// `window.InputmaskJQuery`.
 import registerTests from "./harness.js";
 
-registerTests(window.Inputmask, {
+const Inputmask = window.Inputmask || window.InputmaskJQuery;
+
+if (!Inputmask) {
+  throw new Error(
+    "@inputmask/jquery did not register window.InputmaskJQuery; is the UMD bundle loaded?"
+  );
+}
+
+registerTests(Inputmask, {
   jquery: true,
-  label: "UMD jQuery (dist/jquery.inputmask.js)"
+  label: "UMD jQuery (@inputmask/jquery)"
 });
