@@ -82,6 +82,55 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+  qunit.test("prefill two-digit year with minimum date", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MM.yyyy",
+      min: "01.01.2000"
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("010101");
+
+    assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+  });
+  qunit.test(
+    "paste two-digit year with minimum date",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.2000"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").paste("010101");
+
+      setTimeout(function () {
+        assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+        done();
+      }, 0);
+    }
+  );
+  qunit.test("full year with minimum date", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MM.yyyy",
+      min: "01.01.2000"
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("01012001");
+
+    assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+  });
   qunit.test("overtype valid entry", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
