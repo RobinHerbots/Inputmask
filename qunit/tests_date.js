@@ -96,27 +96,24 @@ export default function (qunit, Inputmask) {
 
     assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
   });
-  qunit.test(
-    "paste two-digit year with minimum date",
-    function (assert) {
-      const done = assert.async(),
-        $fixture = $("#qunit-fixture");
-      $fixture.append('<input type="text" id="testmask" />');
-      const testmask = document.getElementById("testmask");
-      Inputmask("datetime", {
-        inputFormat: "dd.MM.yyyy",
-        min: "01.01.2000"
-      }).mask(testmask);
+  qunit.test("paste two-digit year with minimum date", function (assert) {
+    const done = assert.async(),
+      $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MM.yyyy",
+      min: "01.01.2000"
+    }).mask(testmask);
 
-      testmask.focus();
-      $("#testmask").paste("010101");
+    testmask.focus();
+    $("#testmask").paste("010101");
 
-      setTimeout(function () {
-        assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
-        done();
-      }, 0);
-    }
-  );
+    setTimeout(function () {
+      assert.equal(testmask.value, "01.01.2001", "Result " + testmask.value);
+      done();
+    }, 0);
+  });
   qunit.test("full year with minimum date", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
