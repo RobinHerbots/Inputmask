@@ -4957,7 +4957,7 @@ export default function (qunit, Inputmask) {
   }
 
   // headless Chrome refuses clipboard writes; cutEvent only needs its
-  // synchronous writeText call to succeed
+  // writeText call to resolve
   function cut(begin, end) {
     return function (el) {
       const clipboard = Object.getOwnPropertyDescriptor(
@@ -4966,7 +4966,11 @@ export default function (qunit, Inputmask) {
       );
       Object.defineProperty(window.navigator, "clipboard", {
         configurable: true,
-        value: { writeText: function () {} }
+        value: {
+          writeText: function () {
+            return Promise.resolve();
+          }
+        }
       });
       $.caret(el, begin, end);
       try {

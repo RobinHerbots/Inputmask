@@ -6595,8 +6595,24 @@
         pos = caret.call(inputmask, input),
         // correct clipboardData
         clipData = inputmask.isRTL ? getBuffer.call(inputmask).slice(pos.end, pos.begin) : getBuffer.call(inputmask).slice(pos.begin, pos.end),
-        clipDataText = inputmask.isRTL ? clipData.reverse().join("") : clipData.join("");
-      if (window$1.navigator && window$1.navigator.clipboard) window$1.navigator.clipboard.writeText(clipDataText);
+        clipDataText = inputmask.isRTL ? clipData.reverse().join("") : clipData.join(""),
+        // jQuery wraps the native event, only the original one exposes the
+        // clipboardData (same as pasteEvent)
+        clipboardData = e.clipboardData || e.originalEvent && e.originalEvent.clipboardData;
+      if (clipboardData && clipboardData.setData) {
+        // the native cut is cancelled below, so the payload has to be written
+        // here; setData also works on a non-secure page where the Clipboard API
+        // is undefined
+        clipboardData.setData("text/plain", clipDataText);
+      } else if (window$1.navigator && window$1.navigator.clipboard) {
+        window$1.navigator.clipboard.writeText(clipDataText).catch(function () {
+          // clipboard permission refused, the selection is still removed below
+        });
+      }
+      // the mask already removed the selection, keep the browser from deleting
+      // it a second time on the rewritten buffer; unlike paste, which is left to
+      // the native action (see pasteEvent) #1314
+      e.preventDefault();
       handleRemove.call(inputmask, input, keys.Delete, pos);
       writeBuffer(input, getBuffer.call(inputmask), maskset.p, e, inputmask.undoValue !== inputmask._valueGet(true));
     },
