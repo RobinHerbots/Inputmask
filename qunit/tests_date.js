@@ -2526,6 +2526,70 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    "datetime accepts an epoch timestamp as initial value - #1186",
+    function (assert) {
+      const timestamp = new Date(2012, 0, 1, 12, 30).getTime(),
+        formatted = Inputmask.format(timestamp, {
+          alias: "datetime",
+          inputFormat: "dd/MM/yyyy HH:mm"
+        });
+      assert.equal(
+        formatted,
+        "01/01/2012 12:30",
+        "format(timestamp) result " + formatted
+      );
+
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy HH:mm"
+      }).mask(testmask);
+
+      testmask.inputmask.setValue(timestamp);
+      assert.equal(
+        testmask.value,
+        "01/01/2012 12:30",
+        "setValue(timestamp) result " + testmask.value
+      );
+
+      const before1970 = new Date(1960, 5, 15, 8, 0).getTime();
+      testmask.inputmask.setValue(before1970);
+      assert.equal(
+        testmask.value,
+        "15/06/1960 08:00",
+        "setValue(negative timestamp) result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime keeps the digit handling for a number that is no timestamp - #1186",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "yyyy-MM-dd"
+      }).mask(testmask);
+
+      testmask.inputmask.setValue(20120101);
+      assert.equal(
+        testmask.value,
+        "2012-01-01",
+        "an yyyymmdd number is still fitted into the mask " + testmask.value
+      );
+
+      testmask.inputmask.setValue(1e300);
+      assert.equal(
+        testmask.value,
+        "1300-MM-dd",
+        "an out of range number keeps the digit handling " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
     "dd/MM/yyyy overtype month 10 with 01 does not shift - #1504",
     function (assert) {
       const $fixture = $("#qunit-fixture");

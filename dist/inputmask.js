@@ -4633,6 +4633,18 @@
       date: dateObj
     }, opts);
   }
+
+  // Epoch timestamps in milliseconds. A smaller positive number is ambiguous:
+  // 20120101 is as likely an yyyymmdd value as a timestamp, so those keep the
+  // regular digit handling. A negative number cannot be a date written as digits.
+  // 1e11 is the first 12-digit millisecond value (1973-03-03).
+  const minEpochTimestamp = 1e11;
+  function isEpochTimestamp(value) {
+    return typeof value === "number" && isFinite(value) && (value < 0 || value >= minEpochTimestamp) &&
+    // finite numbers outside the Date range produce an Invalid Date, which
+    // would format the raw inputFormat tokens into the value
+    !isNaN(new Date(value).getTime());
+  }
   function getTokenMatch(pos, opts, maskset) {
     const inputmask = this;
     let calcPos = 0,
@@ -4885,6 +4897,9 @@
     onBeforeMask: function (initialValue, opts) {
       if (Object.prototype.toString.call(initialValue) === "[object Date]") {
         initialValue = importDate(initialValue, opts);
+      } else if (isEpochTimestamp(initialValue)) {
+        // epoch timestamp in milliseconds, formatted in local time like a Date
+        initialValue = importDate(new Date(initialValue), opts);
       } else if (typeof initialValue === "string" && opts.outputFormat !== opts.inputFormat) {
         // accept whole values written in the outputFormat (e.g. by a datepicker
         // setting input.value natively) next to values already in the inputFormat;
