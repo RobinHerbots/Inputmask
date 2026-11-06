@@ -57,8 +57,11 @@
     }
   }
 
+  const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+  const getPrototypeOf = Object.getPrototypeOf;
+  const objectToString = Object.prototype.toString;
   function isWritable(target, name) {
-    let descriptor = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(target, name);
+    let descriptor = getOwnPropertyDescriptor(target, name);
     if (descriptor) {
       if ("value" in descriptor) {
         return descriptor.writable !== false;
@@ -69,27 +72,32 @@
 
     // no own property: an assignment only throws when a non-configurable accessor
     // without a setter (or a non-writable data prop) blocks it on the prototype chain
-    let proto = Object.getPrototypeOf && Object.getPrototypeOf(target);
+    let proto = getPrototypeOf(target);
     while (proto) {
-      descriptor = Object.getOwnPropertyDescriptor(proto, name);
+      descriptor = getOwnPropertyDescriptor(proto, name);
       if (descriptor) {
         if ("value" in descriptor) {
           return descriptor.writable !== false;
         }
         return typeof descriptor.set === "function" || descriptor.configurable;
       }
-      proto = Object.getPrototypeOf(proto);
+      proto = getPrototypeOf(proto);
     }
     return true;
   }
+
+  // Recurse only into plain objects and arrays, like jQuery's extend: Dates,
+  // RegExps, DOM nodes, ... are copied by reference. The toString fallback keeps
+  // plain objects from another realm mergeable.
+  function isPlainObject(value) {
+    if (value === null || typeof value !== "object") {
+      return false;
+    }
+    const proto = getPrototypeOf(value);
+    return proto === Object.prototype || proto === null || objectToString.call(value) === "[object Object]";
+  }
   function extend() {
-    let options,
-      name,
-      src,
-      copy,
-      copyIsArray,
-      clone,
-      target = arguments[0] || {},
+    let target = arguments[0] || {},
       i = 1,
       deep = false;
     const length = arguments.length;
@@ -108,46 +116,53 @@
       target = {};
     }
     for (; i < length; i++) {
+      const options = arguments[i];
+
       // Only deal with non-null/undefined values
-      if ((options = arguments[i]) != null) {
-        // Extend the base object
-        for (name in options) {
-          // "__proto__" would resolve through the prototype chain: src comes back
-          // as Object.prototype and the deep merge below writes into it. Inherited
-          // keys are not ours to copy either.
-          if (name === "__proto__" || !Object.prototype.hasOwnProperty.call(options, name)) {
-            continue;
+      if (options == null) {
+        continue;
+      }
+
+      // Own enumerable keys only, like the hasOwnProperty guard this replaces
+      const names = Object.keys(options);
+      for (let keyIndex = 0; keyIndex < names.length; keyIndex++) {
+        const name = names[keyIndex];
+
+        // "__proto__" would resolve through the prototype chain: src comes back
+        // as Object.prototype and the deep merge below writes into it.
+        if (name === "__proto__") {
+          continue;
+        }
+        const src = target[name];
+        const copy = options[name];
+
+        // Prevent never-ending loop
+        if (target === copy) {
+          continue;
+        }
+
+        // Never overwrite a non-writable target property (e.g. the read-only
+        // isTrusted accessor on DOM events): assigning to it would throw. A key
+        // that is absent from the target cannot be blocked by an inherited
+        // property, so the descriptor walk is only needed for existing keys.
+        if (name in target && !isWritable(target, name)) {
+          continue;
+        }
+        let copyIsArray;
+        // Recurse if we're merging plain objects or arrays
+        if (deep && copy && (isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+          let clone;
+          if (copyIsArray) {
+            clone = src && Array.isArray(src) ? src : [];
+          } else {
+            clone = src && isPlainObject(src) ? src : {};
           }
-          src = target[name];
-          copy = options[name];
 
-          // Prevent never-ending loop
-          if (target === copy) {
-            continue;
-          }
-
-          // Never overwrite a non-writable target property (e.g. the read-only
-          // isTrusted accessor on DOM events): assigning to it would throw
-          if (!isWritable(target, name)) {
-            continue;
-          }
-
-          // Recurse if we're merging plain objects or arrays
-          if (deep && copy && (Object.prototype.toString.call(copy) === "[object Object]" || (copyIsArray = Array.isArray(copy)))) {
-            if (copyIsArray) {
-              copyIsArray = false;
-              clone = src && Array.isArray(src) ? src : [];
-            } else {
-              clone = src && Object.prototype.toString.call(src) === "[object Object]" ? src : {};
-            }
-
-            // Never move original objects, clone them
-            target[name] = extend(deep, clone, copy);
-
-            // Don't bring in undefined values
-          } else if (copy !== undefined) {
-            target[name] = copy;
-          }
+          // Never move original objects, clone them
+          target[name] = extend(deep, clone, copy);
+        } else if (copy !== undefined) {
+          // Don't bring in undefined values
+          target[name] = copy;
         }
       }
     }
@@ -2228,7 +2243,6 @@
   function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromCheckval) {
     // strict true ~ no correction or autofill
     const inputmask = this,
-      $ = this.dependencyLib,
       opts = this.opts,
       maskset = inputmask.maskset;
     strict = strict === true; // always set a value to strict to prevent possible strange behavior in the extensions
@@ -2320,9 +2334,10 @@
           if (rslt !== true && rslt.pos === undefined && rslt.c === undefined) {
             return false; // breakout if nothing to insert
           }
-          if (revalidateMask.call(inputmask, pos, $.extend({}, tst, {
+          if (revalidateMask.call(inputmask, pos, {
+            ...tst,
             input: casing.call(inputmask, elem, test, validatedPos)
-          }), fromIsValid, validatedPos) === false) {
+          }, fromIsValid, validatedPos) === false) {
             rslt = false;
           }
           return false; // break from loop
@@ -2468,8 +2483,7 @@
   // fill in best positions according the current input
   function trackbackPositions(originalPos, newPos, fillOnly) {
     const inputmask = this,
-      maskset = this.maskset,
-      $ = this.dependencyLib;
+      maskset = this.maskset;
 
     // console.log("trackbackPositions " + originalPos + " " + newPos);
     if (originalPos === undefined) {
@@ -2487,9 +2501,10 @@
           let bestMatch = determineTestTemplate.call(inputmask, ps, tests),
             np;
           if (bestMatch && (bestMatch.match.jit !== true || bestMatch.match.newBlockMarker === "master" && (np = maskset.validPositions[ps + 1]) && np.match.optionalQuantifier === true)) {
-            bestMatch = $.extend({}, bestMatch, {
+            bestMatch = {
+              ...bestMatch,
               input: getPlaceholder.call(inputmask, ps, bestMatch.match, true) || bestMatch.match.def
-            });
+            };
             bestMatch.generatedInput = true;
             revalidateMask.call(inputmask, ps, bestMatch, true);
             if (fillOnly !== true) {
