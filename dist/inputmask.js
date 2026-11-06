@@ -940,24 +940,11 @@
     }
     return false;
   }
-  function cloneTestData(value) {
-    if (!value || typeof value !== "object") return value;
-    const array = Array.isArray(value);
-    if (!array && Object.prototype.toString.call(value) !== "[object Object]") {
-      return value;
-    }
-    const clone = array ? [] : {};
-    for (const key of Object.keys(value)) {
-      if (key === "__proto__") continue;
-      const copy = value[key];
-      if (copy !== undefined) clone[key] = cloneTestData(copy);
-    }
-    return clone;
-  }
 
   // tobe put on prototype?
   function getTests(pos, ndxIntlzr, tstPs) {
     const inputmask = this,
+      $ = this.dependencyLib,
       maskset = this.maskset,
       opts = this.opts,
       maskTokens = maskset.maskToken;
@@ -1502,10 +1489,10 @@
     let result;
     if (ndxIntlzr !== undefined && maskset.tests[pos]) {
       // prioritize full tests for caching
-      result = cloneTestData(matches);
+      result = $.extend(true, [], matches);
     } else {
       // console.log("stored " + pos + " - " + JSON.stringify(matches));
-      maskset.tests[pos] = cloneTestData(matches); // set a clone to prevent overwriting some props
+      maskset.tests[pos] = $.extend(true, [], matches); // set a clone to prevent overwriting some props
       result = maskset.tests[pos];
     }
 
@@ -4404,20 +4391,6 @@
             c: currentYearNextPart[1]
           }];
         }
-      } else if (enteredPart.length === 2 && (opts.min ? opts.min.date.getFullYear() % 100 === 0 && Number(enteredPart[0]) < Number(opts.min.date.getFullYear().toString()[0]) : enteredPart[0] === "0") && ["yyyy", "YYYY"].some(yearFormat => opts.inputFormat.includes(yearFormat))) {
-        const baseYear = opts.min ? opts.min.date.getFullYear() : Math.floor(currentYear / 100) * 100,
-          year = baseYear + Number(enteredPart),
-          entryDate = new Date(year, dateParts.month - 1, dateParts.day);
-        if (dateParts.day == entryDate.getDate() && (!opts.min || entryDate.getTime() >= opts.min.date.getTime()) && (!opts.max || entryDate.getTime() <= opts.max.date.getTime())) {
-          dateParts.date.setFullYear(year);
-          dateParts.year = year.toString();
-          dateParts.rawyear = year.toString();
-          dateParts.partialyear = false;
-          // A century minimum disambiguates a two-digit year below its first digit.
-          currentResult.yearPrefill = true;
-          currentResult.yearStart = currentResult.pos - enteredPart.length + 1;
-          currentResult.pos = currentResult.yearStart + 4;
-        }
       }
     }
     return currentResult;
@@ -4454,10 +4427,6 @@
   }
   function isDateInRange(dateParts, result, opts, maskset, fromCheckval) {
     if (!result) return result;
-    if (opts.min && opts.min.date.getFullYear() % 100 === 0 && ["yyyy", "YYYY"].some(yearFormat => opts.inputFormat.includes(yearFormat)) && Number((dateParts.rawyear || "").replace(/[^0-9]/g, "")[0]) < Number(opts.min.date.getFullYear().toString()[0]) && (dateParts.rawyear || "").replace(/[^0-9]/g, "").length < 4) {
-      // Let the abbreviated year finish before comparing it with the minimum.
-      return result;
-    }
     if (result && opts.min) {
       if (/* useDateObject && (dateParts["year"] === undefined || dateParts["yearSet"]) && */!isNaN(opts.min.date.getTime())) {
         let match;
@@ -4815,13 +4784,13 @@
         // check for a valid date ~ an invalid date returns NaN which isn't equal
         if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
         result = isValidDate.call(inputmask, dateParts, result, opts);
-        if (!currentResult.yearPrefill) result = isDateInRange(dateParts, result, opts, maskset);
+        result = isDateInRange(dateParts, result, opts, maskset);
       }
       if (pos !== undefined && result && currentResult.pos !== pos.begin) {
         return {
           buffer: parse(opts.inputFormat, dateParts, opts).split(""),
           refreshFromBuffer: {
-            start: currentResult.yearStart ?? pos.begin,
+            start: pos.begin,
             end: currentResult.pos
           },
           pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position
