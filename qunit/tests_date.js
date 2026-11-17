@@ -2434,6 +2434,209 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    "datetime + prefillYear + min/max - a unique short year is completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.2000",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("010121");
+      assert.equal(testmask.value, "01.01.2021", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - a short year starting below the range is completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.2000",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("010117");
+      assert.equal(testmask.value, "01.01.2017", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - typing the full year still works",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.1950",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01011985");
+      assert.equal(testmask.value, "01.01.1985", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - a short year in the previous century is completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.1950",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("010185");
+      assert.equal(testmask.value, "01.01.1985", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - an ambiguous year is not completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.1900",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("010120");
+      assert.equal(testmask.value, "01.01.20yy", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear - without bounds the current year is completed from its prefix",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask"),
+        currentYear = new Date().getFullYear().toString();
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("0101" + currentYear.slice(0, 2));
+      assert.equal(
+        testmask.value,
+        "01.01." + currentYear,
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear - without bounds a full year outside the current century is kept",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01011985");
+      assert.equal(testmask.value, "01.01.1985", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear - with only max the current year above max is not completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask"),
+        currentYear = new Date().getFullYear(),
+        yearPrefix = currentYear.toString().slice(0, 2);
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        max: "31.12." + (currentYear - 1)
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("0101" + yearPrefix);
+      assert.equal(
+        testmask.value,
+        "01.01." + yearPrefix + "yy",
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear - without bounds the current year suffix is not completed",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask"),
+        currentYearSuffix = new Date().getFullYear().toString().slice(2);
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("0101" + currentYearSuffix);
+      assert.equal(
+        testmask.value,
+        "01.01." + currentYearSuffix + "yy",
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - completing a short year keeps the time",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd/MM/yyyy HH:mm",
+        min: "01/01/2000 00:00",
+        max: "31/12/2027 23:59"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("0101211234");
+      assert.equal(
+        testmask.value,
+        "01/01/2021 12:34",
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
     "datetime + prefillYear - deleting the hours keeps the year",
     function (assert) {
       const done = assert.async(),

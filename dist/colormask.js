@@ -4255,7 +4255,6 @@
     }
   }
   let useDateObject = false;
-  const currentYear = new Date().getFullYear();
 
   // supported codes for formatting
   // https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-time-string-format
@@ -4442,28 +4441,80 @@
     }
     return opts.tokenizer;
   }
-  function prefillYear(dateParts, currentResult, opts) {
-    if (dateParts.year !== dateParts.rawyear) {
-      const crrntyear = currentYear.toString(),
-        enteredPart = dateParts.rawyear.replace(/[^0-9]/g, ""),
-        currentYearPart = crrntyear.slice(0, enteredPart.length),
-        currentYearNextPart = crrntyear.slice(enteredPart.length);
-      if (enteredPart.length === 2 && enteredPart === currentYearPart) {
-        const entryCurrentYear = new Date(currentYear, dateParts.month - 1, dateParts.day);
-        if (dateParts.day == entryCurrentYear.getDate() && (!opts.max || opts.max.date.getTime() >= entryCurrentYear.getTime())) {
-          // update dateParts
-          dateParts.date.setFullYear(currentYear);
-          dateParts.year = crrntyear;
-          // update result
-          currentResult.insert = [{
-            pos: currentResult.pos + 1,
-            c: currentYearNextPart[0]
-          }, {
-            pos: currentResult.pos + 2,
-            c: currentYearNextPart[1]
-          }];
-        }
-      }
+
+  // Only a 4-digit year token can be completed by prefillYear.
+  function getYearToken(tokenMatch, opts) {
+    return opts.prefillYear && tokenMatch && tokenMatch.targetMatch && tokenMatch.targetMatch[0].length === 4 && formatcode(tokenMatch.targetMatch[0]) && formatcode(tokenMatch.targetMatch[0])[2] === "year" ? tokenMatch.targetMatchIndex : undefined;
+  }
+  function yearsInRange(opts) {
+    const years = [];
+    for (let year = opts.min.date.getFullYear(); year <= opts.max.date.getFullYear(); year++) years.push(pad(year, 4));
+    return years;
+  }
+
+  // With both min and max, the two typed digits are matched against the years in
+  // the range, either as the century (20 -> 20xx) or as the last two digits
+  // (21 -> 2021). Without bounds, only the current-year prefix is used, which is
+  // the original prefillYear behavior. The year is completed only when exactly
+  // one year fits.
+  function getPrefillYear(dateParts, opts, allowSuffix) {
+    const enteredPart = (dateParts.rawyear || "").replace(/[^0-9]/g, "");
+    if (enteredPart.length !== 2) return undefined;
+    const currentYear = new Date().getFullYear(),
+      minDate = allowSuffix ? opts.min.date : new Date(currentYear, 0, 1),
+      maxDate = allowSuffix ? opts.max.date : new Date(currentYear, 11, 31),
+      years = allowSuffix ? yearsInRange(opts) : [pad(currentYear, 4)],
+      hasDate = isFinite(dateParts.rawday) && isFinite(dateParts.rawmonth),
+      dayOnly = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime(),
+      minDay = dayOnly(minDate),
+      maxDay = dayOnly(maxDate),
+      candidates = years.filter(function (yearStr) {
+        if (!yearStr.startsWith(enteredPart) && (!allowSuffix || !yearStr.endsWith(enteredPart))) return false;
+        if (!hasDate) return true;
+        const year = parseInt(yearStr),
+          date = new Date(year, dateParts.month - 1, dateParts.day);
+        date.setFullYear(year); // years below 100 are mapped to 19xx by the constructor
+        return date.getDate() === parseInt(dateParts.day) && date.getTime() >= minDay && date.getTime() <= maxDay;
+      });
+    return candidates.length === 1 ? candidates[0] : undefined;
+  }
+
+  // a first year digit the range check rejects can still start a short year (1 -> 17 -> 2017)
+  function canStartShortYear(c, opts) {
+    return yearsInRange(opts).some(yearStr => yearStr[2] === c);
+  }
+  function prefillYear(dateParts, currentResult, opts, yearStart, allowSuffix) {
+    const year = getPrefillYear(dateParts, opts, allowSuffix);
+    if (year === undefined) return undefined;
+    const enteredPart = (dateParts.rawyear || "").replace(/[^0-9]/g, ""),
+      isPrefix = year.startsWith(enteredPart),
+      insertStart = isPrefix ? yearStart + 2 : yearStart,
+      insertYear = isPrefix ? year.slice(2) : year,
+      entryYear = parseInt(year),
+      entryTargetYear = new Date(entryYear, dateParts.month - 1, dateParts.day);
+    if (dateParts.day != entryTargetYear.getDate() || opts.max && opts.max.date.getTime() < entryTargetYear.getTime()) return undefined;
+    dateParts.date.setFullYear(entryYear);
+    dateParts.year = year;
+
+    // remove runs before insert in processCommandObject, so the full year wins
+    if (!isPrefix) currentResult.remove = [currentResult.pos - 1, currentResult.pos];
+    currentResult.insert = [{
+      pos: insertStart,
+      c: insertYear[0]
+    }, {
+      pos: insertStart + 1,
+      c: insertYear[1]
+    }];
+    if (!isPrefix) {
+      currentResult.insert.push({
+        pos: insertStart + 2,
+        c: insertYear[2]
+      }, {
+        pos: insertStart + 3,
+        c: insertYear[3]
+      });
+      // typed as the short year: move behind the completed year
+      currentResult.pos = yearStart + 3;
     }
     return currentResult;
   }
@@ -4866,9 +4917,18 @@
       const dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
       if (result && !isNaN(dateParts.date.getTime())) {
         // check for a valid date ~ an invalid date returns NaN which isn't equal
-        if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
+        const yearStart = getYearToken(tokenMatch, opts),
+          bounded = yearStart !== undefined && opts.min && opts.max && !isNaN(opts.min.date.getTime()) && !isNaN(opts.max.date.getTime());
+        let prefilled;
+        // the bounded replay of the completed year runs with fromCheckval
+        if (yearStart !== undefined && currentResult.pos === yearStart + 1 && (!bounded || !fromCheckval)) {
+          prefilled = prefillYear(dateParts, result, opts, yearStart, bounded);
+          if (prefilled) result = prefilled;
+        }
         result = isValidDate.call(inputmask, dateParts, result, opts);
-        result = isDateInRange(dateParts, result, opts, maskset);
+        const inRange = isDateInRange(dateParts, result, opts, maskset);
+        result = inRange === false && result && bounded && !fromCheckval && currentResult.pos === yearStart && canStartShortYear(c, opts) ? result : inRange;
+        if (prefilled && result) return result;
       }
       if (pos !== undefined && result && currentResult.pos !== pos.begin) {
         return {

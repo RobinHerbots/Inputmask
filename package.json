@@ -80,6 +80,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
+    "start": "npm run build:watch",
     "build": "node build.js",
     "build:watch": "node build.js --watch",
     "types": "tsc -p tsconfig.types.json --emitDeclarationOnly",

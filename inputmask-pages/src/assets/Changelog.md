@@ -13,6 +13,7 @@
   - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
   - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
   - `setSelection(begin, end)`, `getSelection()`/`caret`
+- datetime prefillYear completes a 2-digit `yyyy` year when `min` and `max` leave exactly one possible year (eg. `21` -> `2021`)
 - first-party framework packages: `@inputmask/react`, `@inputmask/vue`, `@inputmask/svelte`, `@inputmask/angular` and `@inputmask/jquery`, sharing the framework-agnostic `createInputmaskAdapter` controller
 
 ### Updates
@@ -57,12 +58,16 @@
 - a regex quantifier on the first element of an optional group dropped the still required positions, so `\d{2,}:\d{2}(:\d{2})?` no longer renders like `\d{2,}:\d{2}(:\d\d)?` #2226
 - the ESM bundles declared webpack's `__webpack_require__` in module scope, so a bundler injecting its own reference to that name (react-refresh prepends `__webpack_require__.$Refresh$.runtime = ...` to every module outside node_modules) bound it to our runtime instead of its own and the app died on load with `Cannot set properties of undefined (setting 'runtime')`; hits linked installs (npm `file:`, workspaces, pnpm/yarn links), not packages installed from the registry
 - the `<input-mask>` custom element was missing from the published bundles: the module that registers it is imported for its side effects only and the bundle build dropped it, so `customElements.define("input-mask", ...)` never ran
+- a date/datetime value given as an epoch timestamp (milliseconds) was fitted into the mask as digits and rendered an unrelated date, and `Inputmask.format()`, `isValid()` and `unmaskedvalue()` threw a TypeError on it; numbers below 1e11 keep the digit handling because they cannot be told apart from an yyyymmdd value #1186
+- cutting a selection was handled twice, once by the mask and once by the native cut, which could leave the field in an inconsistent state; the native cut is now cancelled and the selected value is written to the clipboard from the cut handler, also on a non-secure page where the Clipboard API is unavailable #1314
 
 ### Tests
 
 - Add Node/SSR smoke test to validate pipeline
 - Add regression test for percentage select-all overwrite issue (#2893)
 - Add regression test for regex quantifier inside an optional group (#2226)
+- Add regression test for epoch timestamp initial values in the date/datetime alias (#1186)
+- Add regression test for cutting a selected date segment (#1314)
 
 ## [5.0.10 - 31/07/2026]
 

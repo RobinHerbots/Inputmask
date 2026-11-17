@@ -126,3 +126,5 @@ Default: true
 
 Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
 This options is to disable this feature.
+
+When both `min` and `max` are set, the first two digits of a `yyyy` year are matched against the years in that range, either as the century or as the last two digits. The year is completed only when exactly one year in the range fits, e.g. with min `01.01.2000` and max `01.01.2027` typing `21` gives `2021`.
