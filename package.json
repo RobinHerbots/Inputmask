@@ -198,5 +198,10 @@
   "allowScripts": {
     "core-js@3.50.0": true,
     "unrs-resolver@1.12.2": true
+  },
+  "overrides": {
+    "@rollup/plugin-babel": {
+      "@babel/core": "$@babel/core"
+    }
   }
 }
