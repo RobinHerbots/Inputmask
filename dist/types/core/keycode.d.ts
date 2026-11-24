@@ -46,6 +46,4 @@ export namespace keyCode {
     let Meta_RIGHT: number;
     let Space: number;
 }
-export function toKey(keyCode: any, shiftKey: any): any;
-export function toKeyCode(key: any): any;
 export const keys: {};
