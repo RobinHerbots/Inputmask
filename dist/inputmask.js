@@ -709,11 +709,8 @@
       Meta_RIGHT: 92,
       Space: 32,
       ...ignorables
-    };
-    Object.entries(keyCode).reduce((acc, [key, value]) => (
-    // eslint-disable-next-line no-sequences
-    acc[value] = acc[value] === undefined ? key : acc[value], acc), {});
-    const keys = Object.entries(keyCode).reduce(
+    },
+    keys = Object.entries(keyCode).reduce(
     // eslint-disable-next-line no-sequences
     (acc, [key, value]) => (acc[key] = key === "Space" ? " " : key, acc), {});
 
