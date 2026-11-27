@@ -2453,6 +2453,44 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    "datetime + prefillYear + min/max - a leading 0 prefills the decade",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.2000",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01010");
+      assert.equal(testmask.value, "01.01.200y", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datetime + prefillYear + min/max - a leading 1 prefills the decade",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask({
+        alias: "datetime",
+        inputFormat: "dd.MM.yyyy",
+        min: "01.01.2000",
+        max: "01.01.2027"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("01011");
+      assert.equal(testmask.value, "01.01.201y", "Result " + testmask.value);
+    }
+  );
+
+  qunit.test(
     "datetime + prefillYear + min/max - a short year starting below the range is completed",
     function (assert) {
       const $fixture = $("#qunit-fixture");

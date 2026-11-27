@@ -13,7 +13,7 @@
   - `input(chars)`, `delete(direction)`, `backspace()`, `paste(text)` edit the value at the caret/selection
   - `setValue(val, caretPos)`, `getValue()`/`value`, `unmaskedvalue()`/`unmaskedValue`
   - `setSelection(begin, end)`, `getSelection()`/`caret`
-- datetime prefillYear completes a 2-digit `yyyy` year when `min` and `max` leave exactly one possible year (eg. `21` -> `2021`)
+- datetime prefillYear completes a 2-digit `yyyy` year when `min` and `max` leave exactly one possible year (eg. `21` -> `2021`), and prefills a unique decade from the first digit (eg. `1` -> `201y`)
 - first-party framework packages: `@inputmask/react`, `@inputmask/vue`, `@inputmask/svelte`, `@inputmask/angular` and `@inputmask/jquery`, sharing the framework-agnostic `createInputmaskAdapter` controller
 
 ### Updates

@@ -4479,9 +4479,12 @@
     return candidates.length === 1 ? candidates[0] : undefined;
   }
 
-  // a first year digit the range check rejects can still start a short year (1 -> 17 -> 2017)
-  function canStartShortYear(c, opts) {
-    return yearsInRange(opts).some(yearStr => yearStr[2] === c);
+  // a first year digit the range check rejects can still identify a unique decade (0 -> 200y)
+  function getShortYearPrefix(c, opts) {
+    const years = yearsInRange(opts);
+    if (years.some(yearStr => yearStr[0] === c)) return undefined;
+    const prefixes = [...new Set(years.filter(yearStr => yearStr[2] === c).map(yearStr => yearStr.slice(0, 3)))];
+    return prefixes.length === 1 ? prefixes[0] : undefined;
   }
   function prefillYear(dateParts, currentResult, opts, yearStart, allowSuffix) {
     const year = getPrefillYear(dateParts, opts, allowSuffix);
@@ -4927,7 +4930,17 @@
         }
         result = isValidDate.call(inputmask, dateParts, result, opts);
         const inRange = isDateInRange(dateParts, result, opts, maskset);
-        result = inRange === false && result && bounded && !fromCheckval && currentResult.pos === yearStart && canStartShortYear(c, opts) ? result : inRange;
+        const shortYearPrefix = inRange === false && result && bounded && !fromCheckval && currentResult.pos === yearStart ? getShortYearPrefix(c, opts) : undefined;
+        result = shortYearPrefix === undefined ? inRange : result;
+        if (shortYearPrefix !== undefined) {
+          result.insert = shortYearPrefix.split("").map((digit, i) => ({
+            pos: yearStart + i,
+            c: digit,
+            fromIsValid: true
+          }));
+          result.pos = yearStart + 2;
+          return result;
+        }
         if (prefilled && result) return result;
       }
       if (pos !== undefined && result && currentResult.pos !== pos.begin) {
