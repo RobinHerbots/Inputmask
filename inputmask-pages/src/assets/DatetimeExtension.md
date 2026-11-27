@@ -102,7 +102,7 @@ inputFormat: "dd/MM/yyyy [HH]"
 
 ### displayFormat
 
-Visual format when the input looses focus
+Visual format when the input loses focus. While editing, the value uses `inputFormat`; on blur the native input value is rewritten in `displayFormat`, including partially entered dates, and on focus the `inputFormat` mask is restored. `unmaskedvalue()` and `outputFormat` are unchanged. A different `displayFormat` forces `showMaskOnFocus`, and values assigned while blurred must still use `inputFormat`/`outputFormat`, not `displayFormat`.
 
 ### outputFormat
 

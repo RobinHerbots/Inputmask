@@ -2397,6 +2397,144 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+  qunit.module("Dates - displayFormat");
+  qunit.test(
+    "blur shows displayFormat and focus restores inputFormat",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        displayFormat: "dd MMMM yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("2331973");
+      assert.equal(testmask.value, "23/03/1973", "focused value");
+
+      testmask.blur();
+      assert.equal(testmask.value, "23 March 1973", "blurred value");
+      assert.equal(
+        testmask.inputmask.unmaskedvalue(),
+        "23/03/1973",
+        "unmasked value is unchanged"
+      );
+
+      testmask.focus();
+      setTimeout(function () {
+        assert.equal(testmask.value, "23/03/1973", "refocused value");
+        done();
+      }, 0);
+    }
+  );
+  qunit.test("partial date is formatted from its raw tokens", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      displayFormat: "dd MMMM yyyy",
+      prefillYear: false
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("2512");
+    assert.equal(testmask.value, "25/12/yyyy", "focused partial value");
+    testmask.blur();
+    assert.equal(testmask.value, "25 December yyyy", "blurred partial value");
+  });
+  qunit.test("autoUnmask .value shows display text after blur", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      displayFormat: "dd MMM yyyy",
+      outputFormat: "yyyy-MM-dd",
+      autoUnmask: true
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("25122014");
+    assert.equal(testmask.value, "2014-12-25", "focused .value is unmasked");
+    testmask.blur();
+    assert.equal(testmask.value, "25 Dec 2014", "blurred .value is display text");
+    assert.equal(
+      testmask.inputmask.unmaskedvalue(),
+      "2014-12-25",
+      "unmasked value stays in outputFormat"
+    );
+  });
+  qunit.test("blur change behavior is preserved", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      displayFormat: "dd MMM yyyy"
+    }).mask(testmask);
+    let changes = 0;
+    $(testmask).on("change", function () {
+      changes++;
+    });
+    testmask.focus();
+    $("#testmask").Type("2331973");
+    const beforeBlur = changes;
+    testmask.blur();
+    assert.equal(changes, beforeBlur, "unchanged blur does not fire change");
+
+    $fixture.append('<input type="text" id="testmask2" />');
+    const testmask2 = document.getElementById("testmask2");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      clearIncomplete: true,
+      clearMaskOnLostFocus: false
+    }).mask(testmask2);
+    let changes2 = 0;
+    $(testmask2).on("change", function () {
+      changes2++;
+    });
+    testmask2.focus();
+    $("#testmask2").Type("2512");
+
+    $fixture.append('<input type="text" id="testmask3" />');
+    const testmask3 = document.getElementById("testmask3");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      displayFormat: "dd MMM yyyy",
+      clearIncomplete: true,
+      clearMaskOnLostFocus: false
+    }).mask(testmask3);
+    let changes3 = 0;
+    $(testmask3).on("change", function () {
+      changes3++;
+    });
+    testmask3.focus(); // blurs testmask2
+    $("#testmask3").Type("2512");
+    testmask3.blur();
+    assert.equal(
+      changes3,
+      changes2,
+      "blur-time clear change behavior is unchanged"
+    );
+  });
+  qunit.test("without displayFormat blur keeps inputFormat", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", { inputFormat: "dd/MM/yyyy" }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("25122014");
+    testmask.blur();
+    assert.equal(
+      testmask.value,
+      "25/12/2014",
+      "blurred value stays in inputFormat"
+    );
+  });
   // The replay in alternate() must not advance to the maskset's last valid
   // position: prefillYear fills the two positions after the one it validated,
   // so that position runs ahead of the input and the rest of the replay would

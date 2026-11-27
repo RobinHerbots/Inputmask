@@ -4771,6 +4771,10 @@
         }
       }
       opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; // resolve possible formatAlias
+      if (opts.displayFormat !== opts.inputFormat) {
+        // Keep focus restoring the inputFormat mask without a generic focus hook.
+        opts.showMaskOnFocus = true;
+      }
       opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; // resolve possible formatAlias
       // opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, "");
       opts.regex = parse(opts.inputFormat, undefined, opts);
@@ -4954,6 +4958,16 @@
         };
       }
       return result;
+    },
+    onBeforeWrite: function (e, buffer, caretPos, opts) {
+      if (opts.displayFormat !== opts.inputFormat && e && e.type === "blur" && buffer.length > 0) {
+        const inputmask = this,
+          maskedValue = buffer.join(""),
+          dateParts = analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts),
+          displayValue = parse(opts.displayFormat, dateParts, opts);
+        buffer.splice(0, buffer.length, ...displayValue);
+        if (inputmask.undoValue === maskedValue) inputmask.undoValue = displayValue;
+      }
     },
     onKeyDown: function (e, buffer, caretPos, opts) {
       const input = this;
@@ -6825,7 +6839,7 @@
         }
         function getter() {
           if (this.inputmask) {
-            return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : getLastValidPosition.call(inputmask) !== -1 || opts.nullable !== true ? this.getRootNode().activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice()).reverse() : clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "";
+            return this.inputmask.opts.autoUnmask && (opts.displayFormat === opts.inputFormat || valueGet.call(this) === getBuffer.call(inputmask).join("")) ? this.inputmask.unmaskedvalue() : getLastValidPosition.call(inputmask) !== -1 || opts.nullable !== true ? this.getRootNode().activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice()).reverse() : clearOptionalTail.call(inputmask, getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "";
           } else {
             return valueGet.call(this);
           }
