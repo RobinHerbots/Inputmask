@@ -28,6 +28,7 @@ import testsNumericinput from "./tests_numericinput";
 import testsOption from "./tests_option";
 import testsOptional from "./tests_optional";
 import testsPaste from "./tests_paste";
+import testsPhone from "./tests_phone";
 import testsRegex from "./tests_regex";
 import testsSetvalue from "./tests_setvalue";
 
@@ -80,6 +81,7 @@ export default function registerTests(
     testsOption(qunit, Inputmask);
     testsOptional(qunit, Inputmask);
     testsPaste(qunit, Inputmask);
+    testsPhone(qunit, Inputmask);
     testsRegex(qunit, Inputmask);
     testsSetvalue(qunit, Inputmask);
 

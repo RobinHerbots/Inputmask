@@ -1,0 +1,35 @@
+{
+  "name": "inputmask.phone",
+  "version": "1.0.7-beta.0",
+  "description": "Phone aliases for Inputmask 5.x",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./lib/*": "./lib/*.js",
+    "./phone-codes": "./lib/phone-codes/index.js",
+    "./phone-codes/*": "./lib/phone-codes/*.js"
+  },
+  "files": [
+    "index.js",
+    "bin/",
+    "lib/",
+    "README.md",
+    "docs/"
+  ],
+  "scripts": {
+    "generate:metadata": "node bin/generate-from-libphonenumber.js",
+    "verify:masks": "node bin/verify-masks.js"
+  },
+  "peerDependencies": {
+    "inputmask": "^5.1.0-beta.40"
+  },
+  "devDependencies": {
+    "libphonenumber-js": "^1.13.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobinHerbots/Inputmask.git"
+  },
+  "license": "MIT"
+}

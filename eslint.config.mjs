@@ -274,7 +274,15 @@ const standardRules = {
 
 export default [
   {
-    ignores: ["build/**", "webpack.config.js", "inputmask-pages/**", "dist/**"]
+    ignores: [
+      "build/**",
+      "webpack.config.js",
+      "inputmask-pages/**",
+      "dist/**",
+      "lib/.rollup/**",
+      "lib/extensions/.rollup/**",
+      "packages/inputmask.phone/lib/phone-codes/**"
+    ]
   },
   js.configs.recommended,
   {

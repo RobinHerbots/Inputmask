@@ -8,3 +8,4 @@ package-lock.json
 *.snap
 *.ttf
 *.otf
+packages/inputmask.phone/lib/phone-codes/
